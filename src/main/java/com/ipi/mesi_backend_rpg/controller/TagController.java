@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +37,7 @@ public class TagController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-    return tagMapperService.mapTagToTagDTO(tag);
+        return tagMapperService.mapTagToTagDTO(tag);
 
     }
 
