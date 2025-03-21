@@ -87,11 +87,20 @@ public class TagController {
     @PutMapping("/{id}")
     public ResponseEntity<TagDTO> updateTag(@PathVariable Integer id, @Valid @RequestBody TagDTO tagDTO) {
         Tag tag = tagRepository.findById(id).orElse(null);
+
         if (tag == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        tagRepository.save(tagMapperService.toEntity(tagDTO));
-        return new ResponseEntity<>(tagMapperService.toDTO(tag), HttpStatus.OK);
+
+        if (!tag.getId().equals(tagDTO.id())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        
+        Tag updatedTag = tagMapperService.toEntity(tagDTO);
+        updatedTag.setId(tag.getId());
+        tagRepository.save(updatedTag);
+
+        return new ResponseEntity<>(tagMapperService.toDTO(updatedTag), HttpStatus.OK);
     }
 
 
