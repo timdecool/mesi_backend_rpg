@@ -10,7 +10,8 @@ public class TagMapperService {
     public TagDTO mapTagToTagDTO(Tag tag) {
         return new TagDTO(
                 tag.getId(),
-                tag.getName()
+                tag.getName(),
+                tag.getModules()
         );
     }
 

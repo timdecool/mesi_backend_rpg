@@ -42,12 +42,11 @@ public class TagController {
 
     }
 
-
     @PostMapping
     public ResponseEntity<TagDTO> createTag(@RequestBody TagDTO tagDTO) {
         Tag tag = new Tag();
         tag.setName(tagDTO.name());
-        tag.setModules(new ArrayList<>());
+        tag.setModules(tagDTO.modules());
         Tag savedTag = tagRepository.save(tag);
 
         return new ResponseEntity<>(tagMapperService.mapTagToTagDTO(savedTag), HttpStatus.CREATED);
