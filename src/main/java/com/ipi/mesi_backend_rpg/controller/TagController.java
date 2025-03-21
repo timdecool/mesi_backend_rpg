@@ -11,10 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/tag")
+@RequestMapping("/api/tags")
 public class TagController {
 
     TagRepository tagRepository;
@@ -26,29 +25,29 @@ public class TagController {
     }
 
     @GetMapping
-    public List<TagDTO> getAllTags() {
-        return tagRepository.findAll().stream().map(tagMapperService::mapTagToTagDTO).collect(Collectors.toList());
+    public ResponseEntity<List<TagDTO>> getAllTags() {
+        List<TagDTO> tags = tagRepository.findAll().stream().map(tagMapperService::toDTO).toList();
+        return new ResponseEntity<>(tags, HttpStatus.OK);
     }
 
     @GetMapping("/{name}")
-    public TagDTO getTagByName(@PathVariable String name) {
+    public ResponseEntity<TagDTO> getTagByName(@PathVariable String name) {
+        
         Tag tag = tagRepository.findByName(name);
+
         if (tag == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        return tagMapperService.mapTagToTagDTO(tag);
+        tagMapperService.toDTO(tag);
+        return new ResponseEntity<>(tagMapperService.toDTO(tag), HttpStatus.OK);
 
     }
 
     @PostMapping
     public ResponseEntity<TagDTO> createTag(@RequestBody TagDTO tagDTO) {
-        Tag tag = new Tag();
-        tag.setName(tagDTO.name());
-        tag.setModules(tagDTO.modules());
-        Tag savedTag = tagRepository.save(tag);
-
-        return new ResponseEntity<>(tagMapperService.mapTagToTagDTO(savedTag), HttpStatus.CREATED);
+        Tag savedTag = tagRepository.save(tagMapperService.toEntity(tagDTO));
+        return new ResponseEntity<>(tagMapperService.toDTO(savedTag), HttpStatus.CREATED);
     }
 
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TagMapperService {
 
-    public TagDTO mapTagToTagDTO(Tag tag) {
+    public TagDTO toDTO(Tag tag) {
         return new TagDTO(
                 tag.getId(),
                 tag.getName(),
@@ -15,4 +15,10 @@ public class TagMapperService {
         );
     }
 
+    public Tag toEntity(TagDTO tagDTO) {
+        Tag tag = new Tag();
+        tag.setName(tagDTO.name());
+        tag.setModules(tagDTO.modules());
+        return tag;
+    }
 }
