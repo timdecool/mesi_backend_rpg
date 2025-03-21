@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -55,7 +54,8 @@ public class Module {
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tags;
 
-    public Module() {}
+    public Module() {
+    }
 
     public Module(String title, String description, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type, String picture) {
         this.title = title;
@@ -138,5 +138,21 @@ public class Module {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.getTags().add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.getTags().remove(tag);
     }
 }
