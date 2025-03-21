@@ -81,7 +81,7 @@ public class TagController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         tagRepository.delete(tag);
-        return new ResponseEntity<>(tagMapperService.toDTO(tag), HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("/{id}")
