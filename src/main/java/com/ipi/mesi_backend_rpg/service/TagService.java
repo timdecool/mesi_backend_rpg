@@ -13,8 +13,8 @@ import java.util.List;
 @Service
 public class TagService {
 
-    private final TagRepository tagRepository;
-    private final TagMapper tagMapper;
+    TagRepository tagRepository;
+    TagMapper tagMapper;
 
     public TagService(TagRepository tagRepository, TagMapper tagMapper) {
         this.tagRepository = tagRepository;
