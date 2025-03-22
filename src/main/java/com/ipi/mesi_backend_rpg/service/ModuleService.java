@@ -1,4 +1,4 @@
-﻿package com.ipi.mesi_backend_rpg.service;
+package com.ipi.mesi_backend_rpg.service;
 
 public class ModuleService {
 }
