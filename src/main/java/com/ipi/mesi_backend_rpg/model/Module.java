@@ -1,6 +1,7 @@
 package com.ipi.mesi_backend_rpg.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -53,6 +54,11 @@ public class Module {
             joinColumns = {@JoinColumn(name = "module_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
     private List<Tag> tags;
+
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+    @JsonManagedReference("module_module_access")
+    private List<ModuleAccess> accesses;
+
 
     public Module() {
     }
