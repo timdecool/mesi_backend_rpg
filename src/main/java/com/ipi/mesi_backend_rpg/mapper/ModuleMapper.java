@@ -1,11 +1,11 @@
-package com.ipi.mesi_backend_rpg.service;
+package com.ipi.mesi_backend_rpg.mapper;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ModuleMapperService {
+public class ModuleMapper {
 
     public ModuleResponseDTO toDTO(Module module) {
         return new ModuleResponseDTO(
