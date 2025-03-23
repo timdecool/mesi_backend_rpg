@@ -80,5 +80,32 @@ public class ModuleAccessService {
         return moduleAccessMapper.toDTO(moduleAccess);
     }
 
+    public ModuleAccessDTO toggleAccessRight(Integer id, String rightType) {
+        ModuleAccess moduleAccess = moduleAccessRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "ModuleAccess not found with id: "));
+
+        switch (rightType.toLowerCase()) {
+            case "view":
+                moduleAccess.setCanView(!moduleAccess.isCanView());
+                break;
+            case "edit":
+                moduleAccess.setCanEdit(!moduleAccess.isCanEdit());
+                break;
+            case "publish":
+                moduleAccess.setCanPublish(!moduleAccess.isCanPublish());
+                break;
+            case "invite":
+                moduleAccess.setCanInvite(!moduleAccess.isCanInvite());
+                break;
+            default:
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Invalid right type: " + rightType);
+        }
+
+        ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
+        return moduleAccessMapper.toDTO(savedAccess);
+    }
+
 
 }

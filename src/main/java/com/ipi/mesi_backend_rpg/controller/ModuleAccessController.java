@@ -63,5 +63,13 @@ public class ModuleAccessController {
         return new ResponseEntity<>(deletedModuleAccess, HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping("/{id}/rights/{rightType}")
+    public ResponseEntity<ModuleAccessDTO> toggleAccessRight(
+            @PathVariable Integer id,
+            @PathVariable String rightType) {
+        ModuleAccessDTO updatedAccess = moduleAccessService.toggleAccessRight(id, rightType);
+        return ResponseEntity.ok(updatedAccess);
+    }
+
 
 }
