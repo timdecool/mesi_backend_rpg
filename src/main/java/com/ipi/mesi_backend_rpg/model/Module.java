@@ -1,4 +1,4 @@
-﻿package com.ipi.mesi_backend_rpg.model;
+package com.ipi.mesi_backend_rpg.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
+@Entity
 public class Module {
 
     @Id
@@ -25,16 +26,8 @@ public class Module {
     //TODO: Make join on User Table
     private String createdBy;
 
-    @NotNull(message = "Please indicate a date")
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
-    @NotNull(message = "Please indicate a date")
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime updatedAt;
 
     private Boolean isTemplate;
@@ -54,6 +47,10 @@ public class Module {
         this.isTemplate = isTemplate;
         this.type = type;
         this.picture = picture;
+    }
+
+    public Module() {
+
     }
 
     public long getId() {
