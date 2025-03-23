@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Module {
@@ -37,6 +38,18 @@ public class Module {
 
     private String picture;
 
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {
+                    CascadeType.PERSIST,
+                    CascadeType.MERGE
+            })
+    @JoinTable(name = "module_tag",
+            joinColumns = {@JoinColumn(name = "module_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private List<Tag> tags;
+
+    public Module() {
+    }
 
     public Module(String title, String description, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type, String picture) {
         this.title = title;
@@ -47,10 +60,6 @@ public class Module {
         this.isTemplate = isTemplate;
         this.type = type;
         this.picture = picture;
-    }
-
-    public Module() {
-
     }
 
     public long getId() {
@@ -123,5 +132,21 @@ public class Module {
 
     public void setPicture(String picture) {
         this.picture = picture;
+    }
+
+    public List<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.getTags().add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.getTags().remove(tag);
     }
 }
