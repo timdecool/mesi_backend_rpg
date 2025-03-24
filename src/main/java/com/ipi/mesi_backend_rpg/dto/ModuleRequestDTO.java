@@ -11,3 +11,5 @@ public record ModuleRequestDTO(
         @NotNull String picture
 ) {
 }
+
+

@@ -2,8 +2,6 @@ package com.ipi.mesi_backend_rpg.controller;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
-import com.ipi.mesi_backend_rpg.model.Module;
-import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
 import com.ipi.mesi_backend_rpg.service.ModuleService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,7 +16,7 @@ import java.util.List;
 public class ModuleController {
 
     private final ModuleService moduleService;
-    public ModuleController(ModuleService moduleService, ModuleMapper moduleMapperService) {
+    public ModuleController(ModuleService moduleService) {
         this.moduleService = moduleService;
     }
 
@@ -38,7 +36,7 @@ public class ModuleController {
     }
 
     @PostMapping
-    public ResponseEntity<ModuleResponseDTO> createModule(@RequestBody ModuleRequestDTO moduleRequestDTO) {
+    public ResponseEntity<ModuleResponseDTO> createModule(@Valid @RequestBody ModuleRequestDTO moduleRequestDTO) {
         ModuleResponseDTO module = moduleService.createModule(moduleRequestDTO);
         return new ResponseEntity<>(module, HttpStatus.CREATED);
     }
