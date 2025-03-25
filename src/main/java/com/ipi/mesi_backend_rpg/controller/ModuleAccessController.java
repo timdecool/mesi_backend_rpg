@@ -5,7 +5,6 @@ import com.ipi.mesi_backend_rpg.model.AccessRight;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.service.ModuleAccessService;
-import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,12 +44,6 @@ public class ModuleAccessController {
         ModuleAccessDTO createdModuleAccess = moduleAccessService.createModuleAccess(moduleId, userId);
 
         return new ResponseEntity<>(createdModuleAccess, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ModuleAccessDTO> updateModuleAccess(@PathVariable Integer id, @Valid @RequestBody ModuleAccessDTO moduleAccessDTO) {
-        ModuleAccessDTO updatedModuleAccess = moduleAccessService.updateModuleAccess(id, moduleAccessDTO);
-        return new ResponseEntity<>(updatedModuleAccess, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

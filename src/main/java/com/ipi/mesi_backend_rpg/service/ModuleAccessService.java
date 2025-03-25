@@ -68,22 +68,7 @@ public class ModuleAccessService {
         moduleAccess = moduleAccessRepository.save(moduleAccess);
         return moduleAccessMapper.toDTO(moduleAccess);
     }
-
-    public ModuleAccessDTO updateModuleAccess(Integer id, ModuleAccessDTO moduleAccessDTO) {
-
-        ModuleAccess existingModuleAccess = moduleAccessRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ModuleAccess not found"));
-
-        if (!existingModuleAccess.getId().equals(moduleAccessDTO.id())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and body do not match");
-        }
-
-        ModuleAccess updatedModuleAccess = moduleAccessMapper.toEntity(moduleAccessDTO);
-        updatedModuleAccess.setId(existingModuleAccess.getId());
-        moduleAccessRepository.save(updatedModuleAccess);
-        return moduleAccessMapper.toDTO(updatedModuleAccess);
-    }
-
+    
     public ModuleAccessDTO deleteModuleAccess(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
