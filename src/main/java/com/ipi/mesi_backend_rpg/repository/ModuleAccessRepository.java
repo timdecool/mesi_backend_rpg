@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface ModuleAccessRepository extends JpaRepository<ModuleAccess, Integer> {
 
-    ModuleAccess findByModule(Module module);
+    List<ModuleAccess> findAllByModule(Module module);
     
     List<ModuleAccess> findAllByUser(User user);
+
+    ModuleAccess findModuleAccessBymoduleAndUser(Module module, User user);
 }
