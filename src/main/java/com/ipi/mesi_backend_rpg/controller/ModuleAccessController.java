@@ -21,7 +21,7 @@ public class ModuleAccessController {
     public ModuleAccessController(ModuleAccessService moduleAccessService) {
         this.moduleAccessService = moduleAccessService;
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<ModuleAccessDTO> getModuleAccessById(@PathVariable Integer id) {
         ModuleAccessDTO moduleAccess = moduleAccessService.getModuleAccessById(id);
@@ -40,9 +40,9 @@ public class ModuleAccessController {
         return new ResponseEntity<>(moduleAccess, HttpStatus.OK);
     }
 
-    @PostMapping("/module/{module-id}")
-    public ResponseEntity<ModuleAccessDTO> createModuleAccess(@Valid @RequestBody ModuleAccessDTO moduleAccessDTO, @PathVariable("module-id") Long moduleId) {
-        ModuleAccessDTO createdModuleAccess = moduleAccessService.createModuleAccess(moduleAccessDTO, moduleId);
+    @PostMapping("/module/{module-id}/user/{user-id}")
+    public ResponseEntity<ModuleAccessDTO> createModuleAccess(@PathVariable("module-id") Long moduleId, @PathVariable("user-id") Integer userId) {
+        ModuleAccessDTO createdModuleAccess = moduleAccessService.createModuleAccess(moduleId, userId);
 
         return new ResponseEntity<>(createdModuleAccess, HttpStatus.CREATED);
     }

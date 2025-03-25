@@ -8,6 +8,7 @@ import com.ipi.mesi_backend_rpg.model.ModuleAccess;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,13 +22,15 @@ public class ModuleAccessService {
     ModuleAccessRepository moduleAccessRepository;
     ModuleAccessMapper moduleAccessMapper;
     ModuleRepository moduleRepository;
+    UserRepository userRepository;
 
-    public ModuleAccessService(ModuleAccessRepository moduleAccessRepository, ModuleAccessMapper moduleAccessMapper, ModuleRepository moduleRepository) {
+    public ModuleAccessService(ModuleAccessRepository moduleAccessRepository, ModuleAccessMapper moduleAccessMapper, ModuleRepository moduleRepository, UserRepository userRepository) {
         this.moduleAccessRepository = moduleAccessRepository;
         this.moduleAccessMapper = moduleAccessMapper;
         this.moduleRepository = moduleRepository;
+        this.userRepository = userRepository;
     }
-    
+
     public ModuleAccessDTO getModuleAccessById(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -51,10 +54,17 @@ public class ModuleAccessService {
         return moduleAccessMapper.toDTO(moduleAccess);
     }
 
-    public ModuleAccessDTO createModuleAccess(ModuleAccessDTO moduleAccessDTO, Long moduleId) {
-        ModuleAccess moduleAccess = moduleAccessMapper.toEntity(moduleAccessDTO);
+    public ModuleAccessDTO createModuleAccess(Long moduleId, Integer userId) {
+
+        ModuleAccess moduleAccess = new ModuleAccess();
         Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         moduleAccess.setModule(module);
+        moduleAccess.setUser(user);
+        moduleAccess.setCanEdit(true);
+        moduleAccess.setCanView(true);
+        moduleAccess.setCanPublish(true);
+        moduleAccess.setCanInvite(true);
         moduleAccess = moduleAccessRepository.save(moduleAccess);
         return moduleAccessMapper.toDTO(moduleAccess);
     }
