@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,7 +45,10 @@ public class Module {
     @JoinTable(name = "module_tag",
             joinColumns = {@JoinColumn(name = "module_id")},
             inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    private List<Tag> tags;
+    private List<Tag> tags = new ArrayList<>();
+
+    @OneToMany(mappedBy = "module", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<ModuleVersion> versions = new ArrayList<>();
 
     public Module() {
     }
@@ -146,5 +150,21 @@ public class Module {
 
     public void removeTag(Tag tag) {
         this.getTags().remove(tag);
+    }
+
+    public List<ModuleVersion> getVersions() {
+        return versions;
+    }
+
+    public void setVersions(List<ModuleVersion> versions) {
+        this.versions = versions;
+    }
+
+    public void addVersion(ModuleVersion version) {
+        this.getVersions().add(version);
+    }
+
+    public void removeVersion(ModuleVersion version) {
+        this.getVersions().remove(version);
     }
 }
