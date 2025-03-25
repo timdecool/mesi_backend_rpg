@@ -6,11 +6,13 @@ import com.ipi.mesi_backend_rpg.model.Module;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class ModuleMapper {
 
     public ModuleResponseDTO toDTO(Module module) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return new ModuleResponseDTO(
                 module.getId(),
                 module.getTitle(),

@@ -1,5 +1,6 @@
 package com.ipi.mesi_backend_rpg.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,16 +25,15 @@ public class Module {
 
     //TODO: Make join on User Table
     private String createdBy;
-
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     private Boolean isTemplate;
 
-    //TODO: Make join on ModuleType Table
+    //TODO: Make join on ModuleType Enum
     private String type;
 
+    //TODO: Picture handling (separate table?)
     private String picture;
 
     @ManyToMany(fetch = FetchType.LAZY,
