@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class ModuleVersionService {
 
@@ -42,5 +44,24 @@ public class ModuleVersionService {
         newVersion.setCreatedAt(version.getCreatedAt());
         ModuleVersion savedVersion = moduleVersionRepository.save(newVersion);
         return moduleVersionMapper.toDTO(savedVersion);
+    }
+
+    public void deleteVersion(Long id) {
+        ModuleVersion version = moduleVersionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));;
+
+        Module module = version.getModule();
+        if(module.getVersions().size() == 1) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This module has no other version");
+        }
+
+        moduleVersionRepository.delete(version);
+    }
+
+    public List<ModuleVersionDTO> findAllByModule(Module module) {
+        if(module == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "module not found");
+        }
+
+        return moduleVersionRepository.findAllByModule(module).stream().map(moduleVersionMapper::toDTO).toList();
     }
 }

@@ -1,7 +1,6 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
-import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import org.springframework.stereotype.Service;
 

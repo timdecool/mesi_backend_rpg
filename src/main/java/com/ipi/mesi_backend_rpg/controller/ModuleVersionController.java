@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/versions")
 public class ModuleVersionController {
@@ -22,6 +24,12 @@ public class ModuleVersionController {
     public ResponseEntity<ModuleVersionDTO> getModuleVersionById(@PathVariable("id") Long id) {
         ModuleVersionDTO moduleVersion = moduleVersionService.findById(id);
         return new ResponseEntity<>(moduleVersion, HttpStatus.OK);
+    }
+
+    @GetMapping("/module/{moduleId}")
+    public ResponseEntity<List<ModuleVersionDTO>> getModuleVersionByModuleId(@PathVariable("moduleId") Module module) {
+        List<ModuleVersionDTO> moduleVersions = moduleVersionService.findAllByModule(module);
+        return new ResponseEntity<>(moduleVersions, HttpStatus.OK);
     }
 
     @PostMapping("/module/{moduleId}")
@@ -42,6 +50,12 @@ public class ModuleVersionController {
     ) {
         ModuleVersionDTO moduleVersion = moduleVersionService.updateVersion(moduleVersionDTO, id);
         return new ResponseEntity<>(moduleVersion, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteModuleVersion(@PathVariable("id") Long id) {
+        moduleVersionService.deleteVersion(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
