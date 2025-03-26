@@ -4,6 +4,7 @@ import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
 import com.ipi.mesi_backend_rpg.model.Module;
+import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,17 @@ public class ModuleService {
 
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
         Module module = moduleMapper.toEntity(moduleRequestDTO);
+
+        ModuleVersion moduleVersion = new ModuleVersion();
+        moduleVersion.setModule(module);
+        moduleVersion.setVersion(1);
+        moduleVersion.setCreatedBy("author");
+        moduleVersion.setPublished(false);
+        moduleVersion.setGameSystem("");
+        moduleVersion.setLanguage("");
+        module.addVersion(moduleVersion);
+
+
         Module savedModule = moduleRepository.save(module);
         return moduleMapper.toDTO(savedModule);
     }
