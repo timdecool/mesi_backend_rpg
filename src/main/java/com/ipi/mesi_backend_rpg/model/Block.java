@@ -3,7 +3,7 @@ package com.ipi.mesi_backend_rpg.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 public class Block {
@@ -18,21 +18,21 @@ public class Block {
     private ModuleVersion module_version;
 
     private String title;
-    private Integer order;
+    private Integer blockOrder;
     private String type;
 
     //TODO : Relation Many to One to User
     private String createdBy;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDate createdAt;
+    private LocalDate updatedAt;
 
     public Block() {
     }
 
-    public Block(ModuleVersion module_version, String title, Integer order, String type, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Block(ModuleVersion module_version, String title, Integer blockOrder, String type, String createdBy, LocalDate createdAt, LocalDate updatedAt) {
         this.module_version = module_version;
         this.title = title;
-        this.order = order;
+        this.blockOrder = blockOrder;
         this.type = type;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
@@ -47,11 +47,11 @@ public class Block {
         this.id = id;
     }
 
-    public ModuleVersion getModuleVersion() {
+    public ModuleVersion getModule_version() {
         return module_version;
     }
 
-    public void setModuleVersion(ModuleVersion module_version) {
+    public void setModule_version(ModuleVersion module_version) {
         this.module_version = module_version;
     }
 
@@ -63,12 +63,12 @@ public class Block {
         this.title = title;
     }
 
-    public Integer getOrder() {
-        return order;
+    public Integer getBlockOrder() {
+        return blockOrder;
     }
 
-    public void setOrder(Integer order) {
-        this.order = order;
+    public void setBlockOrder(Integer blockOrder) {
+        this.blockOrder = blockOrder;
     }
 
     public String getType() {
@@ -79,27 +79,27 @@ public class Block {
         this.type = type;
     }
 
-    public String getUser() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setUser(String user) {
-        this.createdBy = user;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public LocalDate getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(LocalDate createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public LocalDate getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(LocalDate updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
