@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface BlockRepository extends JpaRepository<Block, Long> {
-    List<Block> findAllByModule_version(ModuleVersion moduleVersion);
+    List<Block> findAllByModuleVersion(ModuleVersion moduleVersion);
 }

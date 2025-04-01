@@ -15,7 +15,7 @@ public class Block {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_version_id", nullable = false)
     @JsonBackReference("module_version_block")
-    private ModuleVersion module_version;
+    private ModuleVersion moduleVersion;
 
     private String title;
     private Integer blockOrder;
@@ -29,8 +29,8 @@ public class Block {
     public Block() {
     }
 
-    public Block(ModuleVersion module_version, String title, Integer blockOrder, String type, String createdBy, LocalDate createdAt, LocalDate updatedAt) {
-        this.module_version = module_version;
+    public Block(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, String createdBy, LocalDate createdAt, LocalDate updatedAt) {
+        this.moduleVersion = moduleVersion;
         this.title = title;
         this.blockOrder = blockOrder;
         this.type = type;
@@ -47,12 +47,12 @@ public class Block {
         this.id = id;
     }
 
-    public ModuleVersion getModule_version() {
-        return module_version;
+    public ModuleVersion getModuleVersion() {
+        return moduleVersion;
     }
 
-    public void setModule_version(ModuleVersion module_version) {
-        this.module_version = module_version;
+    public void setModuleVersion(ModuleVersion moduleVersion) {
+        this.moduleVersion = moduleVersion;
     }
 
     public String getTitle() {

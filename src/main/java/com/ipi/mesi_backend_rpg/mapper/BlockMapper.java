@@ -10,7 +10,7 @@ public class BlockMapper {
     public BlockDTO toDTO(Block block) {
         return new BlockDTO(
                 block.getId(),
-                block.getModule_version(),
+                block.getModuleVersion(),
                 block.getTitle(),
                 block.getType(),
                 block.getBlockOrder(),
@@ -21,6 +21,7 @@ public class BlockMapper {
     public Block toEntity(BlockDTO blockDTO) {
         Block block = new Block();
         block.setId(blockDTO.id());
+        block.setModuleVersion(blockDTO.moduleVersion());
         block.setTitle(blockDTO.title());
         block.setType(blockDTO.type());
         block.setBlockOrder(blockDTO.blockOrder());

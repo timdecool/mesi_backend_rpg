@@ -24,7 +24,7 @@ public class BlockService {
     }
 
     public List<BlockDTO> getAllBlocks(ModuleVersion moduleVersion) {
-        List<Block> blocks = blockRepository.findAllByModule_version(moduleVersion);
+        List<Block> blocks = blockRepository.findAllByModuleVersion(moduleVersion);
         return blocks.stream().map(block -> blockMapper.toDTO(block)).toList();
     }
 

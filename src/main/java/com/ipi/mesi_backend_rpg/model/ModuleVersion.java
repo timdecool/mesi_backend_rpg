@@ -30,7 +30,7 @@ public class ModuleVersion {
 
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "module_version", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "moduleVersion", fetch = FetchType.LAZY)
     @JsonManagedReference("module_version_block")
     private List<Block> blocks;
 
