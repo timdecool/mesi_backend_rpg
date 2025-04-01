@@ -6,11 +6,13 @@ import com.ipi.mesi_backend_rpg.model.Block;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.BlockRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Service
 public class BlockService {
 
     BlockRepository blockRepository;
