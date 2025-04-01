@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record BlockDTO(
-        @NotNull Long id,
+        Long id,
         @NotNull ModuleVersion moduleVersion,
         @NotNull @NotBlank String title,
         @NotNull @NotBlank String type,

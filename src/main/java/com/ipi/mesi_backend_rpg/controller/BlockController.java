@@ -21,7 +21,7 @@ public class BlockController {
     }
 
     @GetMapping("/module-version/{module-version}")
-    public ResponseEntity<List<BlockDTO>> getAllBlocks(@PathVariable ModuleVersion moduleVersion) {
+    public ResponseEntity<List<BlockDTO>> getAllBlocks(@PathVariable(name = "module-version", required = true) ModuleVersion moduleVersion) {
         List<BlockDTO> blocks = blockService.getAllBlocks(moduleVersion);
         return new ResponseEntity<>(blocks, HttpStatus.OK);
     }
