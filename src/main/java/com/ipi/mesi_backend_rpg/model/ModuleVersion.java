@@ -31,7 +31,6 @@ public class ModuleVersion {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "moduleVersion", fetch = FetchType.LAZY)
-    @JsonManagedReference("module_version_block")
     private List<Block> blocks;
 
     public ModuleVersion(Module module, int version, String createdBy, boolean published, String gameSystem, String language) {
