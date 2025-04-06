@@ -14,7 +14,7 @@ import java.util.List;
 @RequestMapping("/api/block")
 public class BlockController {
 
-    BlockService blockService;
+    private final BlockService blockService;
 
     public BlockController(BlockService blockService) {
         this.blockService = blockService;

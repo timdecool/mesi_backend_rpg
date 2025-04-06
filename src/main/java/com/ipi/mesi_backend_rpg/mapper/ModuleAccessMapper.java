@@ -10,9 +10,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ModuleAccessMapper {
-    
-    ModuleRepository moduleRepository;
-    UserRepository userRepository;
+
+    public final ModuleRepository moduleRepository;
+    public final UserRepository userRepository;
 
     public ModuleAccessMapper(ModuleRepository moduleRepository, UserRepository userRepository) {
         this.moduleRepository = moduleRepository;
