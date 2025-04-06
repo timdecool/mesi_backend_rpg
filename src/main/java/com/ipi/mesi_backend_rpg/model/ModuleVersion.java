@@ -33,6 +33,10 @@ public class ModuleVersion {
     @OneToMany(mappedBy = "moduleVersion", fetch = FetchType.LAZY)
     private List<Block> blocks;
 
+    @OneToMany(mappedBy = "moduleVersion", fetch = FetchType.LAZY)
+    @JsonManagedReference("module_version_module_block")
+    private List<ModuleBlock> moduleBlocks;
+
     public ModuleVersion(Module module, int version, String createdBy, boolean published, String gameSystem, String language) {
         this();
         this.module = module;

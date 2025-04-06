@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -55,6 +54,9 @@ public class Module {
     @JsonManagedReference("module_module_access")
     private List<ModuleAccess> accesses;
 
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+    @JsonManagedReference("module_module_block")
+    private List<ModuleBlock> moduleBlocks;
 
     public Module() {
     }
