@@ -6,37 +6,37 @@ import jakarta.persistence.*;
 import java.time.LocalDate;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Block {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "module_version_id", nullable = false)
-    @JsonBackReference("module_version_block")
-    private ModuleVersion moduleVersion;
+    protected ModuleVersion moduleVersion;
 
-    private String title;
-    private Integer blockOrder;
-    private String type;
+    protected String title;
+    protected Integer blockOrder;
+    protected String type;
 
     //TODO : Relation Many to One to User
-    private String createdBy;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+    protected String createdBy;
+    protected LocalDate createdAt;
+    protected LocalDate updatedAt;
 
     public Block() {
+        this.createdAt = LocalDate.now();
+        this.updatedAt = LocalDate.now();
     }
 
-    public Block(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, String createdBy, LocalDate createdAt, LocalDate updatedAt) {
+    public Block(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, String createdBy) {
+        this();
         this.moduleVersion = moduleVersion;
         this.title = title;
         this.blockOrder = blockOrder;
         this.type = type;
         this.createdBy = createdBy;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public Long getId() {

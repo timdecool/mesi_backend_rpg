@@ -41,7 +41,7 @@ public class BlockService {
         Block existingBlock = blockRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-        if (!existingBlock.getId().equals(blockDTO.id())) {
+        if (!existingBlock.getId().equals(blockDTO.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and body do not match");
         }
 
