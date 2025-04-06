@@ -2,12 +2,10 @@ package com.ipi.mesi_backend_rpg.mapper;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
-import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class ModuleMapper {
@@ -27,7 +25,6 @@ public class ModuleMapper {
                 module.getDescription(),
                 module.getTemplate(),
                 module.getType(),
-                module.getPicture(),
                 module.getCreatedBy(),
                 module.getCreatedAt(),
                 module.getUpdatedAt(),
@@ -44,8 +41,7 @@ public class ModuleMapper {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 moduleRequestDTO.isTemplate(),
-                moduleRequestDTO.type(),
-                moduleRequestDTO.picture()
+                moduleRequestDTO.type()
         );
     }
 }
