@@ -55,7 +55,6 @@ public class Module {
     private List<ModuleAccess> accesses;
 
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
-    @JsonManagedReference("module_module_block")
     private List<IntegratedModuleBlock> moduleBlocks;
 
     public Module() {
