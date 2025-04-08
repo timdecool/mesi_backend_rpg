@@ -1,14 +1,12 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,10 +21,13 @@ public class GameSystem {
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
+    @OneToMany(mappedBy = "gameSystem", fetch = FetchType.LAZY)
+    private List<ModuleVersion> moduleVersions;
+
     public GameSystem(String name, LocalDate createdAt, LocalDate updatedAt) {
         this.name = name;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    
+
 }

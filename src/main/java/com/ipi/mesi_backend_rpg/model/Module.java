@@ -81,8 +81,4 @@ public class Module {
         this.getVersions().add(version);
     }
 
-    public void removeVersion(ModuleVersion version) {
-        this.getVersions().remove(version);
-    }
-
 }

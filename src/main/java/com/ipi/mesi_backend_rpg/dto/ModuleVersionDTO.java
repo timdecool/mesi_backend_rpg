@@ -9,12 +9,12 @@ public record ModuleVersionDTO(
         Long moduleId,
         Integer version,
         String createdBy,
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime createdAt,
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime updatedAt,
         Boolean published,
-        String gameSystem,
+        Long gameSystemId,
         String language
 ) {
 }
