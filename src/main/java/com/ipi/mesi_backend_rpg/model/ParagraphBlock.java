@@ -1,8 +1,14 @@
 package com.ipi.mesi_backend_rpg.model;
 
 import jakarta.persistence.Entity;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class ParagraphBlock extends Block {
 
     private String paragraph;
@@ -18,24 +24,5 @@ public class ParagraphBlock extends Block {
         this.paragraph = paragraph;
         this.style = style;
     }
-
-    public ParagraphBlock() {
-
-    }
-
-    public String getParagraph() {
-        return paragraph;
-    }
-
-    public void setParagraph(String paragraph) {
-        this.paragraph = paragraph;
-    }
-
-    public String getStyle() {
-        return style;
-    }
-
-    public void setStyle(String style) {
-        this.style = style;
-    }
+    
 }

@@ -23,7 +23,7 @@ public class ModuleMapper {
                 module.getId(),
                 module.getTitle(),
                 module.getDescription(),
-                module.getTemplate(),
+                module.getIsTemplate(),
                 module.getType(),
                 module.getCreatedBy(),
                 module.getCreatedAt(),
