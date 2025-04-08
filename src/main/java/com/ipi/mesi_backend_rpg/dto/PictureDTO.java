@@ -10,6 +10,6 @@ public record PictureDTO(
         Long pictureUsageId,
         String title,
         String src,
-        LocalDate createAt,
+        LocalDate createdAt,
         LocalDate updateAt) {
 }

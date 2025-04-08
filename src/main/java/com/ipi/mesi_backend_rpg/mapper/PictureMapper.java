@@ -14,7 +14,7 @@ public class PictureMapper {
                 picture.getPictureUsageId(),
                 picture.getTitle(),
                 picture.getSrc(),
-                picture.getCreateAt(),
+                picture.getCreatedAt(),
                 picture.getUpdateAt()
         );
     }
@@ -25,7 +25,7 @@ public class PictureMapper {
                 dto.pictureUsageId(),
                 dto.title(),
                 dto.src(),
-                dto.createAt(),
+                dto.createdAt(),
                 dto.updateAt()
         );
         picture.setId(dto.id());

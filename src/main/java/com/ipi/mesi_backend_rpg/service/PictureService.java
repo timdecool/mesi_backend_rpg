@@ -32,7 +32,7 @@ public class PictureService {
         Picture picture = pictureMapper.toEntity(pictureDTO);
         picture.setPictureUsage(PictureUsage.MODULE);
         picture.setPictureUsageId(moduleId);
-        picture.setCreateAt(LocalDate.now());
+        picture.setCreatedAt(LocalDate.now());
         picture.setUpdateAt(LocalDate.now());
         pictureRepository.save(picture);
 
@@ -63,7 +63,7 @@ public class PictureService {
         Picture picture = pictureRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Picture not found"));
         pictureRepository.delete(picture);
-        
+
         return pictureMapper.toDTO(picture);
     }
 

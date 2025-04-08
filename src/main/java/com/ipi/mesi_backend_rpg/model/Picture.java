@@ -18,18 +18,18 @@ public class Picture {
 
     private String title;
     private String src;
-    private LocalDate createAt;
+    private LocalDate createdAt;
     private LocalDate updateAt;
 
     public Picture() {
     }
 
-    public Picture(PictureUsage pictureUsage, Long pictureUsageId, String title, String src, LocalDate createAt, LocalDate updateAt) {
+    public Picture(PictureUsage pictureUsage, Long pictureUsageId, String title, String src, LocalDate createdAt, LocalDate updateAt) {
         this.pictureUsage = pictureUsage;
         this.pictureUsageId = pictureUsageId;
         this.title = title;
         this.src = src;
-        this.createAt = createAt;
+        this.createdAt = createdAt;
         this.updateAt = updateAt;
     }
 
@@ -73,12 +73,12 @@ public class Picture {
         this.src = src;
     }
 
-    public LocalDate getCreateAt() {
-        return createAt;
+    public LocalDate getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public LocalDate getUpdateAt() {
