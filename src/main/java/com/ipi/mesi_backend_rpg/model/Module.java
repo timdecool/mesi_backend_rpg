@@ -34,9 +34,6 @@ public class Module {
     //TODO: Make join on ModuleType Enum
     private String type;
 
-    //TODO: Picture handling (separate table?)
-    private String picture;
-
     @ManyToMany(fetch = FetchType.LAZY,
             cascade = {
                     CascadeType.PERSIST,
@@ -60,7 +57,7 @@ public class Module {
     public Module() {
     }
 
-    public Module(String title, String description, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type, String picture) {
+    public Module(String title, String description, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type) {
         this.title = title;
         this.description = description;
         this.createdBy = createdBy;
@@ -68,7 +65,6 @@ public class Module {
         this.updatedAt = updatedAt;
         this.isTemplate = isTemplate;
         this.type = type;
-        this.picture = picture;
     }
 
     public long getId() {
@@ -133,14 +129,6 @@ public class Module {
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
     }
 
     public List<Tag> getTags() {

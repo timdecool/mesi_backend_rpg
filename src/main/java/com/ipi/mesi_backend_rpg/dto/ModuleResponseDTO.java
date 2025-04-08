@@ -11,15 +11,13 @@ public record ModuleResponseDTO(
         String description,
         Boolean isTemplate,
         String type,
-        String picture,
         String createdBy,
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime createdAt,
-        @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime updatedAt,
         List<ModuleVersionDTO> versions,
 
         List<TagDTO> tags
-)
-{
+) {
 }

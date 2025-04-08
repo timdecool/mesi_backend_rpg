@@ -12,9 +12,7 @@ public record ModuleRequestDTO(
         @NotNull(message = "Template status is not provided.")
         Boolean isTemplate,
         @NotNull(message = "Type is not provided.")
-        String type,
-        @NotNull(message = "Picture is not provided.")
-        String picture
+        String type
 ) {
 }
 
