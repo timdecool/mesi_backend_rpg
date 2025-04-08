@@ -19,6 +19,7 @@ public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final ModuleMapper moduleMapper;
+
     public ModuleService(ModuleRepository moduleRepository, ModuleMapper moduleMapper) {
         this.moduleRepository = moduleRepository;
         this.moduleMapper = moduleMapper;
@@ -32,7 +33,7 @@ public class ModuleService {
         Optional<Module> module = moduleRepository.findById(id);
         return module.map(moduleMapper::toDTO).orElse(null);
     }
-
+    
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
         Module module = moduleMapper.toEntity(moduleRequestDTO);
 

@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

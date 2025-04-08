@@ -11,12 +11,10 @@ public class ModuleAccess {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "module_id", nullable = false)
     @JsonBackReference("module_module_access")
     private Module module;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference("user_module_access")
     private User user;
 
