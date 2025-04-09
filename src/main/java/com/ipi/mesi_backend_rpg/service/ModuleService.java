@@ -25,7 +25,6 @@ public class ModuleService {
     private final ModuleMapper moduleMapper;
     private final GameSystemRepository gameSystemRepository;
 
-
     public List<ModuleResponseDTO> findAllModules() {
         return moduleRepository.findAll().stream().map(moduleMapper::toDTO).toList();
     }
@@ -38,7 +37,7 @@ public class ModuleService {
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
         Module module = moduleMapper.toEntity(moduleRequestDTO);
         GameSystem gameSystem = gameSystemRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid gameSystem"));
-        
+
         ModuleVersion moduleVersion = new ModuleVersion();
         moduleVersion.setModule(module);
         moduleVersion.setVersion(1);

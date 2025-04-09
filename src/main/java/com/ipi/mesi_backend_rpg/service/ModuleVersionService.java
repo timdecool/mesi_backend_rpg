@@ -5,6 +5,7 @@ import com.ipi.mesi_backend_rpg.mapper.ModuleVersionMapper;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,18 +13,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ModuleVersionService {
 
     private final ModuleVersionRepository moduleVersionRepository;
     private final ModuleVersionMapper moduleVersionMapper;
-    public ModuleVersionService(
-            ModuleVersionRepository moduleVersionRepository,
-            ModuleVersionMapper moduleVersionMapper
-    ) {
-        this.moduleVersionRepository = moduleVersionRepository;
-        this.moduleVersionMapper = moduleVersionMapper;
-    }
-
+    
     public ModuleVersionDTO findById(Long id) {
         ModuleVersion moduleVersion = moduleVersionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));
         return moduleVersionMapper.toDTO(moduleVersion);
@@ -37,7 +32,7 @@ public class ModuleVersionService {
     }
 
     public ModuleVersionDTO updateVersion(ModuleVersionDTO moduleVersionDTO, Long id) {
-        ModuleVersion version = moduleVersionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));;
+        ModuleVersion version = moduleVersionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));
         ModuleVersion newVersion = moduleVersionMapper.toEntity(moduleVersionDTO);
         newVersion.setId(version.getId());
         newVersion.setModule(version.getModule());
@@ -47,10 +42,10 @@ public class ModuleVersionService {
     }
 
     public void deleteVersion(Long id) {
-        ModuleVersion version = moduleVersionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));;
+        ModuleVersion version = moduleVersionRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));
 
         Module module = version.getModule();
-        if(module.getVersions().size() == 1) {
+        if (module.getVersions().size() == 1) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This module has no other version");
         }
 
@@ -58,7 +53,7 @@ public class ModuleVersionService {
     }
 
     public List<ModuleVersionDTO> findAllByModule(Module module) {
-        if(module == null) {
+        if (module == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "module not found");
         }
 

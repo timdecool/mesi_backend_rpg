@@ -6,19 +6,16 @@ import com.ipi.mesi_backend_rpg.model.ModuleAccess;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ModuleAccessMapper {
 
     public final ModuleRepository moduleRepository;
     public final UserRepository userRepository;
-
-    public ModuleAccessMapper(ModuleRepository moduleRepository, UserRepository userRepository) {
-        this.moduleRepository = moduleRepository;
-        this.userRepository = userRepository;
-    }
-
+    
     public ModuleAccessDTO toDTO(ModuleAccess moduleAccess) {
         return new ModuleAccessDTO(
                 moduleAccess.getId(),

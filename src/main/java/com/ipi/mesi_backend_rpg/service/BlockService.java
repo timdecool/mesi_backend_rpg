@@ -5,6 +5,7 @@ import com.ipi.mesi_backend_rpg.mapper.BlockMapper;
 import com.ipi.mesi_backend_rpg.model.Block;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.BlockRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,16 +14,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BlockService {
 
-    BlockRepository blockRepository;
-    BlockMapper blockMapper;
-
-    public BlockService(BlockRepository blockRepository, BlockMapper blockMapper) {
-        this.blockRepository = blockRepository;
-        this.blockMapper = blockMapper;
-    }
-
+    private final BlockRepository blockRepository;
+    private final BlockMapper blockMapper;
+    
     public List<BlockDTO> getAllBlocks(ModuleVersion moduleVersion) {
         List<Block> blocks = blockRepository.findAllByModuleVersion(moduleVersion);
         return blocks.stream().map(block -> blockMapper.toDTO(block)).toList();
