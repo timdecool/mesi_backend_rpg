@@ -8,21 +8,17 @@ import com.ipi.mesi_backend_rpg.model.IntegratedModuleBlock;
 import com.ipi.mesi_backend_rpg.model.ParagraphBlock;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.service.ModuleVersionService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BlockMapper {
 
     private final ModuleVersionService moduleVersionService;
     private final ModuleVersionMapper moduleVersionMapper;
     private final ModuleRepository moduleRepository;
-
-    public BlockMapper(ModuleVersionService moduleVersionService, ModuleVersionMapper moduleVersionMapper, ModuleRepository moduleRepository) {
-        this.moduleVersionService = moduleVersionService;
-        this.moduleVersionMapper = moduleVersionMapper;
-        this.moduleRepository = moduleRepository;
-    }
-
+    
     public BlockDTO toDTO(Block block) {
 
         if (block instanceof ParagraphBlock paragraphBlock) {
@@ -77,7 +73,7 @@ public class BlockMapper {
             );
             //TODO:ajouter type de bloc ici
         }
-        
+
         throw new IllegalArgumentException("Unknown block type");
     }
 }

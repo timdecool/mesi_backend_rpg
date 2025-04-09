@@ -7,6 +7,7 @@ import com.ipi.mesi_backend_rpg.model.Picture;
 import com.ipi.mesi_backend_rpg.model.PictureUsage;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.PictureRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,18 +16,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PictureService {
 
     private final PictureRepository pictureRepository;
     private final PictureMapper pictureMapper;
     private final ModuleRepository moduleRepository;
-
-    public PictureService(PictureRepository pictureRepository, PictureMapper pictureMapper, ModuleRepository moduleRepository) {
-        this.pictureRepository = pictureRepository;
-        this.pictureMapper = pictureMapper;
-        this.moduleRepository = moduleRepository;
-    }
-
+    
     public PictureDTO createModulePicture(PictureDTO pictureDTO, Long moduleId) {
         Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
         Picture picture = pictureMapper.toEntity(pictureDTO);

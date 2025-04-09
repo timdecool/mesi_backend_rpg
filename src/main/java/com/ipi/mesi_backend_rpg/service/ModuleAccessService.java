@@ -9,6 +9,7 @@ import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,21 +17,14 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ModuleAccessService {
 
-
-    ModuleAccessRepository moduleAccessRepository;
-    ModuleAccessMapper moduleAccessMapper;
-    ModuleRepository moduleRepository;
-    UserRepository userRepository;
-
-    public ModuleAccessService(ModuleAccessRepository moduleAccessRepository, ModuleAccessMapper moduleAccessMapper, ModuleRepository moduleRepository, UserRepository userRepository) {
-        this.moduleAccessRepository = moduleAccessRepository;
-        this.moduleAccessMapper = moduleAccessMapper;
-        this.moduleRepository = moduleRepository;
-        this.userRepository = userRepository;
-    }
-
+    private final ModuleAccessRepository moduleAccessRepository;
+    private final ModuleAccessMapper moduleAccessMapper;
+    private final ModuleRepository moduleRepository;
+    private final UserRepository userRepository;
+    
     public ModuleAccessDTO getModuleAccessById(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -68,7 +62,7 @@ public class ModuleAccessService {
         moduleAccess = moduleAccessRepository.save(moduleAccess);
         return moduleAccessMapper.toDTO(moduleAccess);
     }
-    
+
     public ModuleAccessDTO deleteModuleAccess(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND)

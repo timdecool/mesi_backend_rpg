@@ -4,6 +4,7 @@ import com.ipi.mesi_backend_rpg.dto.TagDTO;
 import com.ipi.mesi_backend_rpg.mapper.TagMapper;
 import com.ipi.mesi_backend_rpg.model.Tag;
 import com.ipi.mesi_backend_rpg.repository.TagRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,16 +12,12 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TagService {
 
     TagRepository tagRepository;
     TagMapper tagMapper;
-
-    public TagService(TagRepository tagRepository, TagMapper tagMapper) {
-        this.tagRepository = tagRepository;
-        this.tagMapper = tagMapper;
-    }
-
+    
     public List<TagDTO> getAllTags() {
         return tagRepository.findAll().stream()
                 .map(tagMapper::toDTO)

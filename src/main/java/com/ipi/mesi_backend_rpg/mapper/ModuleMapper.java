@@ -3,21 +3,18 @@ package com.ipi.mesi_backend_rpg.mapper;
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class ModuleMapper {
 
     private final ModuleVersionMapper moduleVersionMapper;
     private final TagMapper tagMapper;
-
-    public ModuleMapper(ModuleVersionMapper moduleVersionMapper, TagMapper tagMapper) {
-        this.moduleVersionMapper = moduleVersionMapper;
-        this.tagMapper = tagMapper;
-    }
-
+    
     public ModuleResponseDTO toDTO(Module module) {
         return new ModuleResponseDTO(
                 module.getId(),
