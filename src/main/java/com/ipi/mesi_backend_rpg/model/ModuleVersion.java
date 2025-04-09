@@ -1,11 +1,15 @@
 package com.ipi.mesi_backend_rpg.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
 public class ModuleVersion {
 
     @Id
@@ -17,22 +21,21 @@ public class ModuleVersion {
 
     private int version;
     private boolean published;
-    // TODO: ManyToOne GameSystem
-    private String gameSystem;
-
     private String language;
 
     // TODO: ManyToOne User
     private String createdBy;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "moduleVersion", fetch = FetchType.LAZY)
     private List<Block> blocks;
 
-    public ModuleVersion(Module module, int version, String createdBy, boolean published, String gameSystem, String language) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GameSystem gameSystem;
+
+    public ModuleVersion(Module module, int version, String createdBy, boolean published, GameSystem gameSystem, String language) {
         this();
         this.module = module;
         this.version = version;
@@ -45,77 +48,5 @@ public class ModuleVersion {
     public ModuleVersion() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Module getModule() {
-        return module;
-    }
-
-    public void setModule(Module module) {
-        this.module = module;
-    }
-
-    public int getVersion() {
-        return version;
-    }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public boolean isPublished() {
-        return published;
-    }
-
-    public void setPublished(boolean published) {
-        this.published = published;
-    }
-
-    public String getGameSystem() {
-        return gameSystem;
-    }
-
-    public void setGameSystem(String gameSystem) {
-        this.gameSystem = gameSystem;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
     }
 }

@@ -3,10 +3,13 @@ package com.ipi.mesi_backend_rpg.service;
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
+import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
+import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,15 +18,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final ModuleMapper moduleMapper;
+    private final GameSystemRepository gameSystemRepository;
 
-    public ModuleService(ModuleRepository moduleRepository, ModuleMapper moduleMapper) {
-        this.moduleRepository = moduleRepository;
-        this.moduleMapper = moduleMapper;
-    }
 
     public List<ModuleResponseDTO> findAllModules() {
         return moduleRepository.findAll().stream().map(moduleMapper::toDTO).toList();
@@ -33,16 +34,17 @@ public class ModuleService {
         Optional<Module> module = moduleRepository.findById(id);
         return module.map(moduleMapper::toDTO).orElse(null);
     }
-    
+
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
         Module module = moduleMapper.toEntity(moduleRequestDTO);
-
+        GameSystem gameSystem = gameSystemRepository.findById(1L).orElseThrow(() -> new IllegalArgumentException("Invalid gameSystem"));
+        
         ModuleVersion moduleVersion = new ModuleVersion();
         moduleVersion.setModule(module);
         moduleVersion.setVersion(1);
         moduleVersion.setCreatedBy("author");
         moduleVersion.setPublished(false);
-        moduleVersion.setGameSystem("");
+        moduleVersion.setGameSystem(gameSystem);
         moduleVersion.setLanguage("");
         module.addVersion(moduleVersion);
 

@@ -4,12 +4,18 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Module {
 
     @Id
@@ -28,7 +34,6 @@ public class Module {
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
     private Boolean isTemplate;
 
     //TODO: Make join on ModuleType Enum
@@ -54,9 +59,6 @@ public class Module {
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     private List<IntegratedModuleBlock> moduleBlocks;
 
-    public Module() {
-    }
-
     public Module(String title, String description, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type) {
         this.title = title;
         this.description = description;
@@ -67,78 +69,6 @@ public class Module {
         this.type = type;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Boolean getTemplate() {
-        return isTemplate;
-    }
-
-    public void setTemplate(Boolean template) {
-        isTemplate = template;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public List<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<Tag> tags) {
-        this.tags = tags;
-    }
-
     public void addTag(Tag tag) {
         this.getTags().add(tag);
     }
@@ -147,19 +77,8 @@ public class Module {
         this.getTags().remove(tag);
     }
 
-    public List<ModuleVersion> getVersions() {
-        return versions;
-    }
-
-    public void setVersions(List<ModuleVersion> versions) {
-        this.versions = versions;
-    }
-
     public void addVersion(ModuleVersion version) {
         this.getVersions().add(version);
     }
 
-    public void removeVersion(ModuleVersion version) {
-        this.getVersions().remove(version);
-    }
 }
