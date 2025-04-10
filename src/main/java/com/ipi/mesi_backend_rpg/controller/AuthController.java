@@ -14,7 +14,7 @@ import java.util.Map;
 @RequestMapping("/api")
 public class AuthController {
 
-    @GetMapping("/public/test")
+    @GetMapping("/public/login")
     public ResponseEntity<Map<String, String>> publicEndpoint() {
         Map<String, String> response = new HashMap<>();
         response.put("message", "Ceci est un endpoint public accessible sans authentification");
@@ -22,9 +22,9 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/secured/user-info")
+    @GetMapping("/user")
     public ResponseEntity<Map<String, Object>> securedEndpoint() {
-       
+
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Map<String, Object> response = new HashMap<>();
