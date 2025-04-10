@@ -26,11 +26,13 @@ Dans ce dossier, créez deux fichiers de configuration essentiels :
 - `application.properties`
 - `firebase-service-account.json`
 
-> **Important** : Vous devez demander le contenu de ces fichiers aux développeurs du projet. Ces fichiers contiennent des informations sensibles comme les identifiants de base de données et les clés d'API Firebase.
+> **Important** : Vous devez demander le contenu de ces fichiers aux développeurs du projet. Ces fichiers contiennent
+> des informations sensibles comme les identifiants de base de données et les clés d'API Firebase.
 
 ### 2. Configuration de la base de données MySQL
 
 Assurez-vous que :
+
 - Votre serveur MySQL est en cours d'exécution
 - Le port MySQL est ouvert et accessible
 - Les identifiants de connexion MySQL correspondent à ceux spécifiés dans le fichier `application.properties`
@@ -48,20 +50,15 @@ Ou utilisez l'option de synchronisation Maven depuis votre IDE (Eclipse, Intelli
 
 ### 4. Lancement du projet
 
-Une fois les étapes précédentes complétées, vous pouvez lancer le projet :
-
-```bash
-# À la racine du projet
-mvn spring-boot:run
-```
-
-Ou utilisez les fonctionnalités de lancement de votre IDE.
+Une fois les étapes précédentes complétées, vous pouvez lancer le projet
 
 ## Résolution des problèmes courants
 
-- **Erreur de connexion à la base de données** : Vérifiez que le serveur MySQL est en cours d'exécution et que les informations de connexion dans `application.properties` sont correctes.
+- **Erreur de connexion à la base de données** : Vérifiez que le serveur MySQL est en cours d'exécution et que les
+  informations de connexion dans `application.properties` sont correctes.
 - **Dépendances manquantes** : Exécutez à nouveau la synchronisation Maven.
-- **Erreur d'authentification Firebase** : Vérifiez que le fichier `firebase-service-account.json` est correctement formaté et contient les bonnes informations.
+- **Erreur d'authentification Firebase** : Vérifiez que le fichier `firebase-service-account.json` est correctement
+  formaté et contient les bonnes informations.
 
 ## Contact
 
