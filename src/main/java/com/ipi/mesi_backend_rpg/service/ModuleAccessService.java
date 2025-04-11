@@ -24,7 +24,7 @@ public class ModuleAccessService {
     private final ModuleAccessMapper moduleAccessMapper;
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
-    
+
     public ModuleAccessDTO getModuleAccessById(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -48,7 +48,7 @@ public class ModuleAccessService {
         return moduleAccessMapper.toDTO(moduleAccess);
     }
 
-    public ModuleAccessDTO createModuleAccess(Long moduleId, Integer userId) {
+    public ModuleAccessDTO createModuleAccess(Long moduleId, Long userId) {
 
         ModuleAccess moduleAccess = new ModuleAccess();
         Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));

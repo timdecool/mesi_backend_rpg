@@ -29,7 +29,6 @@ public class MesiBackendRpgApplication {
             String rawPassword = "password123";
             User user = new User();
             user.setUsername("john_doe");
-            user.setPassword("password123");
             user.setEmail("john.doe@example.com");
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
