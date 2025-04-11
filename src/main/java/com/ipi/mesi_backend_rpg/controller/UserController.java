@@ -3,6 +3,7 @@ package com.ipi.mesi_backend_rpg.controller;
 
 import com.ipi.mesi_backend_rpg.dto.UserDTO;
 import com.ipi.mesi_backend_rpg.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
         UserDTO user = userService.createUser(userDTO);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UserDTO userDTO) {
         UserDTO user = userService.updateUser(id, userDTO);
         return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
     }
