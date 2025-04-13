@@ -4,12 +4,18 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph")
+        @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
+        @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stats"),
+        @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name="integratedModule")
         //TODO: Ajouter type de bloc ici
 })
+@Getter
+@Setter
 public abstract class BlockDTO {
     private Long id;
     @NotNull
@@ -30,44 +36,4 @@ public abstract class BlockDTO {
     }
 
     public BlockDTO() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public @NotNull Long getModuleVersionId() {
-        return moduleVersionId;
-    }
-
-    public void setModuleVersionId(@NotNull Long moduleVersionId) {
-        this.moduleVersionId = moduleVersionId;
-    }
-
-    public @NotNull @NotBlank String getTitle() {
-        return title;
-    }
-
-    public void setTitle(@NotNull @NotBlank String title) {
-        this.title = title;
-    }
-
-    public @NotNull Integer getBlockOrder() {
-        return blockOrder;
-    }
-
-    public void setBlockOrder(@NotNull Integer blockOrder) {
-        this.blockOrder = blockOrder;
-    }
-
-    public @NotNull @NotBlank String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(@NotNull @NotBlank String createdBy) {
-        this.createdBy = createdBy;
-    }
 }
