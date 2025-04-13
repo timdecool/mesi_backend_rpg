@@ -2,10 +2,10 @@ package com.ipi.mesi_backend_rpg.service;
 
 import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
-import com.ipi.mesi_backend_rpg.model.Module;
+// import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.Picture;
 import com.ipi.mesi_backend_rpg.model.PictureUsage;
-import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+// import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.PictureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,10 +21,10 @@ public class PictureService {
 
     private final PictureRepository pictureRepository;
     private final PictureMapper pictureMapper;
-    private final ModuleRepository moduleRepository;
+    // private final ModuleRepository moduleRepository;
     
     public PictureDTO createModulePicture(PictureDTO pictureDTO, Long moduleId) {
-        Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
+        // Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
         Picture picture = pictureMapper.toEntity(pictureDTO);
         picture.setPictureUsage(PictureUsage.MODULE);
         picture.setPictureUsageId(moduleId);

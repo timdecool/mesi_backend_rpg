@@ -36,7 +36,7 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(7);
             try {
                 FirebaseToken decodedToken = firebaseAuth.verifyIdToken(token);
-                String uid = decodedToken.getUid();
+                // String uid = decodedToken.getUid();
                 UserDetails userDetails = User.builder()
                         .username(decodedToken.getUid())
                         .password("")

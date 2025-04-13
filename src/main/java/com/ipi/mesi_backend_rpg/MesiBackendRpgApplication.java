@@ -26,7 +26,7 @@ public class MesiBackendRpgApplication {
 
             // Création User Test
 
-            String rawPassword = "password123";
+            // String rawPassword = "password123";
             User user = new User();
             user.setUsername("john_doe");
             user.setEmail("john.doe@example.com");

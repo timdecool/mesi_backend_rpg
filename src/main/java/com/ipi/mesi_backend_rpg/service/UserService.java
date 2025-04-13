@@ -30,6 +30,13 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public UserDTO getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no use found for email " + email));
+    
+        return userMapper.toDTO(user);
+    }
+
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
 
