@@ -25,7 +25,7 @@ public class UserService {
     }
 
     public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no use found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
 
         return userMapper.toDTO(user);
     }
@@ -44,7 +44,7 @@ public class UserService {
     }
 
     public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no use found"));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
 
         if (!existingUser.getId().equals(userDTO.id())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and body do not match");
