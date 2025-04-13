@@ -11,7 +11,7 @@ public record ModuleResponseDTO(
         String description,
         Boolean isTemplate,
         String type,
-        String createdBy,
+        UserDTO creator,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime createdAt,
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

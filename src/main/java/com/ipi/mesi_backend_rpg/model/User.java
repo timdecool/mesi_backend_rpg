@@ -26,6 +26,9 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<ModuleAccess> accesses;
 
+    @OneToMany(mappedBy= "createdBy", fetch = FetchType.LAZY)
+    private List<Module> createdModules;
+
     public User(String username, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.username = username;
         this.email = email;
