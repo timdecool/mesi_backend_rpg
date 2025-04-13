@@ -72,6 +72,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.ipi.mesi_backend_rpg.MesiBackendRpgApplication</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
