@@ -30,7 +30,6 @@ Dans ce dossier, créez deux fichiers de configuration essentiels :
 > des informations sensibles comme les identifiants de base de données et les clés d'API Firebase.
 
 ### 2. Configuration de la base de données MySQL
-*Ignorer cette étape dans le cadre d'un lancement avec Docker.*
 
 Assurez-vous que :
 
@@ -52,21 +51,6 @@ Ou utilisez l'option de synchronisation Maven depuis votre IDE (Eclipse, Intelli
 ### 4. Lancement du projet
 
 Une fois les étapes précédentes complétées, vous pouvez lancer le projet
-
-**Lancement avec Docker**
-
-Le fichier *compose.yaml* est configuré pour un lancement local dans un cadre de développement. Pour lancer le projet, il faut que l'engine de Docker tourne sur la machine, puis entrer les commandes suivantes :
-```
-docker compose build #Construire l'image
-docker compose up #Lancer l'image
-```
-
-Pour reconstruire l'image si besoin, d'abord exécuter
-```
-docker compose down -v
-```
-Puis de nouveau les commandes ci-dessus.
-
 
 ## Résolution des problèmes courants
 
