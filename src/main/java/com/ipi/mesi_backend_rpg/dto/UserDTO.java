@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public record UserDTO(
+public record   UserDTO(
         Long id,
 
-        @NotNull @NotBlank(message = "username should not be empty")
+        // @NotNull @NotBlank(message = "username should not be empty")
         String username,
 
         @NotNull @NotBlank(message = "email should not be empty")
