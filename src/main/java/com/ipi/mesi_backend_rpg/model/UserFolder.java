@@ -16,18 +16,17 @@ public class UserFolder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long folder_id;
-    
-    private Long user_id;
+    private Long folderId;
+
+    private Long userId;
 
     private String name;
 
-    private Long parent_folder;
+    private Long parentFolder;
 
-    public UserFolder(Long folder_id, Long user_id, String name, Long parent_folder){
-        this.folder_id = folder_id;
-        this.user_id = user_id;
+    public UserFolder(Long userId, String name, Long parentFolder) {
+        this.userId = userId;
         this.name = name;
-        this.parent_folder = parent_folder;
+        this.parentFolder = parentFolder;
     }
 }

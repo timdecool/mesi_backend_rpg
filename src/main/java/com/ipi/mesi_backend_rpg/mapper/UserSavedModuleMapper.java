@@ -7,23 +7,24 @@ import com.ipi.mesi_backend_rpg.model.UserSavedModule;
 
 @Service
 public class UserSavedModuleMapper {
+
     public UserSavedModuleDTO toDTO(UserSavedModule userSavedModule) {
         return new UserSavedModuleDTO(
-                userSavedModule.getSaved_module_id(),
-                userSavedModule.getUser_id(),
-                userSavedModule.getModule_id(),
-                userSavedModule.getModule_version_id(),
-                userSavedModule.getFolder_id(),
+                userSavedModule.getSavedModuleId(),
+                userSavedModule.getUserId(),
+                userSavedModule.getModuleId(),
+                userSavedModule.getModuleVersionId(),
+                userSavedModule.getFolderId(),
                 userSavedModule.getAlias());
     }
 
     public UserSavedModule toEntity(UserSavedModuleDTO dto) {
-        return new UserSavedModule(
-                dto.saved_module_id(),
-                dto.user_id(),
-                dto.module_id(),
-                dto.module_version_id(),
-                dto.folder_id(),
+        UserSavedModule entity = new UserSavedModule(
+                dto.userId(),
+                dto.moduleId(),
+                dto.moduleVersionId(),
+                dto.folderId(),
                 dto.alias());
+        return entity;
     }
 }

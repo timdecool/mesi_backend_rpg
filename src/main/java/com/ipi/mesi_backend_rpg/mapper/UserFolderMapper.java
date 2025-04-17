@@ -10,10 +10,9 @@ public class UserFolderMapper {
 
     public UserFolderDTO toDTO(UserFolder userFolder) {
         return new UserFolderDTO(
-                userFolder.getFolder_id(),
-                userFolder.getUser_id(),
+                userFolder.getFolderId(),
+                userFolder.getUserId(),
                 userFolder.getName(),
-                userFolder.getParent_folder());
+                userFolder.getParentFolder());
     }
-
 }
