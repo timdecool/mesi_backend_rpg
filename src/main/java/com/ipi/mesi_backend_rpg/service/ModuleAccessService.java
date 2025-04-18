@@ -1,5 +1,11 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.ipi.mesi_backend_rpg.dto.ModuleAccessDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleAccessMapper;
 import com.ipi.mesi_backend_rpg.model.AccessRight;
@@ -9,12 +15,8 @@ import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -77,20 +79,11 @@ public class ModuleAccessService {
                         "ModuleAccess not found with id: "));
 
         switch (accessRight) {
-            case VIEW:
-                moduleAccess.setCanView(!moduleAccess.isCanView());
-                break;
-            case EDIT:
-                moduleAccess.setCanEdit(!moduleAccess.isCanEdit());
-                break;
-            case PUBLISH:
-                moduleAccess.setCanPublish(!moduleAccess.isCanPublish());
-                break;
-            case INVITE:
-                moduleAccess.setCanInvite(!moduleAccess.isCanInvite());
-                break;
-            default:
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            case VIEW -> moduleAccess.setCanView(!moduleAccess.isCanView());
+            case EDIT -> moduleAccess.setCanEdit(!moduleAccess.isCanEdit());
+            case PUBLISH -> moduleAccess.setCanPublish(!moduleAccess.isCanPublish());
+            case INVITE -> moduleAccess.setCanInvite(!moduleAccess.isCanInvite());
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Invalid right type: " + accessRight + "only accept VIEW, EDIT, PUBLISH, INVITE");
         }
 
