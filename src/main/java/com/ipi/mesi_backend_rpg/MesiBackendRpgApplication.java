@@ -32,6 +32,12 @@ public class MesiBackendRpgApplication {
     @Value("${firebase.web.api.key}")
     private String firebaseApiKey;
 
+    @Value("${email}")
+    private String email;
+
+    @Value("${mdp}")
+    private String mdp;
+
     public static void main(String[] args) {
         SpringApplication.run(MesiBackendRpgApplication.class, args);
     }
@@ -80,8 +86,8 @@ public class MesiBackendRpgApplication {
 
             // === 2. Vérification/Création Utilisateur Firebase ===
             logger.info("Verification/Creation de l'utilisateur de test Firebase...");
-            String testEmail = "charlesdenner12@gmail.com"; // email de test
-            String testPassword = "221004"; // mot de passe de test
+            String testEmail = this.email; // email de test
+            String testPassword = this.mdp; // mot de passe de test
             String uid = null;
 
             try {
