@@ -40,7 +40,7 @@ public class ModuleMapper {
         return new Module(
                 moduleRequestDTO.title(),
                 moduleRequestDTO.description(),
-                userRepository.findById(moduleRequestDTO.creatorId()).orElseThrow(),
+                userRepository.findById(moduleRequestDTO.creator().id()).orElseThrow(),
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 moduleRequestDTO.isTemplate(),

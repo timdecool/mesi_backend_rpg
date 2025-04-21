@@ -13,8 +13,8 @@ public record ModuleRequestDTO(
         Boolean isTemplate,
         @NotNull(message = "Type is not provided.")
         String type,
-        @NotNull(message = "Creator id is not provided.")
-        Long creatorId
+        @NotNull(message = "Creator is not provided.")
+        UserDTO creator
 ) {
 }
 
