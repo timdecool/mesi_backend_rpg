@@ -54,9 +54,9 @@ public class Module {
     @OneToMany(mappedBy = "module", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ModuleVersion> versions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "module", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("module_module_access")
-    private List<ModuleAccess> accesses;
+    private List<ModuleAccess> accesses = new ArrayList<>();
 
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     private List<IntegratedModuleBlock> moduleBlocks;
@@ -82,5 +82,9 @@ public class Module {
     public void addVersion(ModuleVersion version) {
         this.getVersions().add(version);
     }
+
+    public void addAccess(ModuleAccess access) { this.getAccesses().add(access); }
+    public void removeAccess(ModuleAccess access) { this.getAccesses().remove(access); }
+
 
 }

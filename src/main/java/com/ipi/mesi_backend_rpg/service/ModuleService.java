@@ -5,9 +5,11 @@ import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.model.Module;
+import com.ipi.mesi_backend_rpg.model.ModuleAccess;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +26,7 @@ public class ModuleService {
     private final ModuleRepository moduleRepository;
     private final ModuleMapper moduleMapper;
     private final GameSystemRepository gameSystemRepository;
+    private final UserRepository userRepository;
 
     public List<ModuleResponseDTO> findAllModules() {
         return moduleRepository.findAll().stream().map(moduleMapper::toDTO).toList();
@@ -41,12 +44,20 @@ public class ModuleService {
         ModuleVersion moduleVersion = new ModuleVersion();
         moduleVersion.setModule(module);
         moduleVersion.setVersion(1);
-        moduleVersion.setCreatedBy("author");
+        moduleVersion.setCreator(userRepository.findById(module.getCreator().getId()).orElseThrow(() -> new IllegalArgumentException("Invalid user")));
         moduleVersion.setPublished(false);
         moduleVersion.setGameSystem(gameSystem);
         moduleVersion.setLanguage("");
         module.addVersion(moduleVersion);
 
+        ModuleAccess moduleAccess = new ModuleAccess();
+        moduleAccess.setModule(module);
+        moduleAccess.setUser(userRepository.findById(moduleVersion.getCreator().getId()).orElseThrow(() -> new IllegalArgumentException("Invalid user")));
+        moduleAccess.setCanView(true);
+        moduleAccess.setCanEdit(true);
+        moduleAccess.setCanInvite(true);
+        moduleAccess.setCanPublish(true);
+        module.addAccess(moduleAccess);
 
         Module savedModule = moduleRepository.save(module);
         return moduleMapper.toDTO(savedModule);

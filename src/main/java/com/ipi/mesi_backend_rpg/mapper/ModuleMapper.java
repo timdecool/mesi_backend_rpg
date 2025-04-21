@@ -18,6 +18,7 @@ public class ModuleMapper {
     private final UserMapper userMapper;
     private final TagMapper tagMapper;
     private final UserRepository userRepository;
+    private final ModuleAccessMapper moduleAccessMapper;
 
     public ModuleResponseDTO toDTO(Module module) {
         return new ModuleResponseDTO(
@@ -30,6 +31,7 @@ public class ModuleMapper {
                 module.getCreatedAt(),
                 module.getUpdatedAt(),
                 module.getVersions().stream().map(moduleVersionMapper::toDTO).toList(),
+                module.getAccesses().stream().map(moduleAccessMapper::toDTO).toList(),
                 module.getTags().stream().map(tagMapper::toDTO).toList()
         );
     }

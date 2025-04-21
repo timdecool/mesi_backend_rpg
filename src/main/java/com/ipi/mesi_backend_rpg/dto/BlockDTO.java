@@ -7,7 +7,8 @@ import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph")
+        @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
+        @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module")
         //TODO: Ajouter type de bloc ici
 })
 public abstract class BlockDTO {
@@ -18,15 +19,15 @@ public abstract class BlockDTO {
     private String title;
     @NotNull
     private Integer blockOrder;
-    @NotNull @NotBlank
-    private String createdBy;
+    @NotNull
+    private UserDTO creator;
 
-    public BlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, String createdBy) {
+    public BlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
         this.id = id;
         this.moduleVersionId = moduleVersionId;
         this.title = title;
         this.blockOrder = blockOrder;
-        this.createdBy = createdBy;
+        this.creator = creator;
     }
 
     public BlockDTO() {}
@@ -63,11 +64,11 @@ public abstract class BlockDTO {
         this.blockOrder = blockOrder;
     }
 
-    public @NotNull @NotBlank String getCreatedBy() {
-        return createdBy;
+    public @NotNull UserDTO getCreator() {
+        return creator;
     }
 
-    public void setCreatedBy(@NotNull @NotBlank String createdBy) {
-        this.createdBy = createdBy;
+    public void setCreator(@NotNull UserDTO creator) {
+        this.creator = creator;
     }
 }
