@@ -14,8 +14,8 @@ public class StatBlock extends Block {
     private String statRules;
     private String statValues;
 
-    public StatBlock(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, String createdBy, String statRules, String statValues) {
-        super(moduleVersion, title, blockOrder, type, createdBy);
+    public StatBlock(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, User creator, String statRules, String statValues) {
+        super(moduleVersion, title, blockOrder, type, creator);
         this.statRules = statRules;
         this.statValues = statValues;
     }

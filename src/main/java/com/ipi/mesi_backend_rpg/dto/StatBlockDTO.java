@@ -10,8 +10,8 @@ public class StatBlockDTO extends BlockDTO {
     private String statValues;
     public StatBlockDTO() {}
 
-    public StatBlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, String createdBy, String statRules, String statValues) {
-        super(id, moduleVersionId, title, blockOrder, createdBy);
+    public StatBlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator, String statRules, String statValues) {
+        super(id, moduleVersionId, title, blockOrder, creator);
         this.statRules = statRules;
         this.statValues = statValues;
     }
