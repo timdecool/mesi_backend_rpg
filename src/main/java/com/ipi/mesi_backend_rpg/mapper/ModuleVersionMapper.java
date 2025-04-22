@@ -4,6 +4,7 @@ import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
+import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +15,15 @@ import java.time.LocalDateTime;
 public class ModuleVersionMapper {
 
     private final GameSystemRepository gameSystemRepository;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public ModuleVersionDTO toDTO(ModuleVersion moduleVersion) {
         return new ModuleVersionDTO(
                 moduleVersion.getId(),
                 moduleVersion.getModule().getId(),
                 moduleVersion.getVersion(),
-                moduleVersion.getCreatedBy(),
+                userMapper.toDTO(moduleVersion.getCreator()),
                 moduleVersion.getCreatedAt(),
                 moduleVersion.getUpdatedAt(),
                 moduleVersion.isPublished(),
@@ -36,7 +39,7 @@ public class ModuleVersionMapper {
         ModuleVersion moduleVersion = new ModuleVersion();
         moduleVersion.setId(moduleVersionDTO.id());
         moduleVersion.setVersion(moduleVersionDTO.version());
-        moduleVersion.setCreatedBy(moduleVersionDTO.createdBy());
+        moduleVersion.setCreator(userRepository.findById(moduleVersionDTO.creator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + moduleVersionDTO.creator().id())));
         moduleVersion.setCreatedAt(moduleVersionDTO.createdAt() != null ? moduleVersionDTO.createdAt() : LocalDateTime.now());
         moduleVersion.setPublished(moduleVersionDTO.published());
         moduleVersion.setGameSystem(gameSystem);

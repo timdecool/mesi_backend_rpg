@@ -7,6 +7,7 @@ import com.ipi.mesi_backend_rpg.model.Block;
 import com.ipi.mesi_backend_rpg.model.IntegratedModuleBlock;
 import com.ipi.mesi_backend_rpg.model.ParagraphBlock;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import com.ipi.mesi_backend_rpg.service.ModuleVersionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,9 @@ public class BlockMapper {
     private final ModuleVersionService moduleVersionService;
     private final ModuleVersionMapper moduleVersionMapper;
     private final ModuleRepository moduleRepository;
-    
+    private final UserMapper userMapper;
+    private final UserRepository userRepository;
+
     public BlockDTO toDTO(Block block) {
 
         if (block instanceof ParagraphBlock paragraphBlock) {
@@ -29,7 +32,7 @@ public class BlockMapper {
                     paragraphBlock.getModuleVersion().getId(),
                     paragraphBlock.getTitle(),
                     paragraphBlock.getBlockOrder(),
-                    paragraphBlock.getCreatedBy()
+                    userMapper.toDTO(paragraphBlock.getCreator())
             );
         }
         //TODO: ajouter type de bloc ici
@@ -41,7 +44,7 @@ public class BlockMapper {
                     integratedModuleBlock.getModuleVersion().getId(),
                     integratedModuleBlock.getTitle(),
                     integratedModuleBlock.getBlockOrder(),
-                    integratedModuleBlock.getCreatedBy()
+                    userMapper.toDTO(integratedModuleBlock.getCreator())
             );
         }
 
@@ -56,7 +59,7 @@ public class BlockMapper {
                     paragraphBlockDTO.getTitle(),
                     paragraphBlockDTO.getBlockOrder(),
                     "paragraph",
-                    paragraphBlockDTO.getCreatedBy(),
+                    userRepository.findById(paragraphBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + paragraphBlockDTO.getCreator().id())),
                     paragraphBlockDTO.getParagraph(),
                     paragraphBlockDTO.getStyle()
             );
@@ -68,7 +71,7 @@ public class BlockMapper {
                     integratedModuleBlockDTO.getTitle(),
                     integratedModuleBlockDTO.getBlockOrder(),
                     "block",
-                    integratedModuleBlockDTO.getCreatedBy(),
+                    userRepository.findById(integratedModuleBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + integratedModuleBlockDTO.getCreator().id())),
                     moduleRepository.findById(integratedModuleBlockDTO.getModuleId()).orElse(null)
             );
             //TODO:ajouter type de bloc ici

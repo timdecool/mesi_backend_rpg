@@ -23,8 +23,8 @@ public class ModuleVersion {
     private boolean published;
     private String language;
 
-    // TODO: ManyToOne User
-    private String createdBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User creator;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -35,11 +35,11 @@ public class ModuleVersion {
     @ManyToOne(fetch = FetchType.LAZY)
     private GameSystem gameSystem;
 
-    public ModuleVersion(Module module, int version, String createdBy, boolean published, GameSystem gameSystem, String language) {
+    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem, String language) {
         this();
         this.module = module;
         this.version = version;
-        this.createdBy = createdBy;
+        this.creator = creator;
         this.published = published;
         this.gameSystem = gameSystem;
         this.language = language;

@@ -26,6 +26,12 @@ public class User {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<ModuleAccess> accesses;
 
+    @OneToMany(mappedBy= "creator", fetch = FetchType.LAZY)
+    private List<Module> createdModules;
+
+    @OneToMany(mappedBy="creator", fetch = FetchType.LAZY)
+    private List<ModuleVersion> createdModuleVersions;
+
     @OneToOne(mappedBy = "user")
     private UserProfile profile;
 

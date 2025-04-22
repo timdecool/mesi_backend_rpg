@@ -23,8 +23,9 @@ public class Block {
     protected Integer blockOrder;
     protected String type;
 
-    //TODO : Relation Many to One to User
-    protected String createdBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    protected User creator;
+
     protected LocalDate createdAt;
     protected LocalDate updatedAt;
 
@@ -33,13 +34,13 @@ public class Block {
         this.updatedAt = LocalDate.now();
     }
 
-    public Block(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, String createdBy) {
+    public Block(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, User creator) {
         this();
         this.moduleVersion = moduleVersion;
         this.title = title;
         this.blockOrder = blockOrder;
         this.type = type;
-        this.createdBy = createdBy;
+        this.creator = creator;
     }
     
 }

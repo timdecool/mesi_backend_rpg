@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 public record ModuleAccessDTO(
         Integer id,
         Long moduleId,
-        Long userId,
+        UserDTO user,
         @NotNull boolean canView,
         @NotNull boolean canEdit,
         @NotNull boolean canPublish,
