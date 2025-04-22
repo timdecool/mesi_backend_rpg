@@ -15,12 +15,13 @@ public class ModuleAccessMapper {
 
     public final ModuleRepository moduleRepository;
     public final UserRepository userRepository;
-    
+    private final UserMapper userMapper;
+
     public ModuleAccessDTO toDTO(ModuleAccess moduleAccess) {
         return new ModuleAccessDTO(
                 moduleAccess.getId(),
                 moduleAccess.getModule().getId(),
-                moduleAccess.getUser().getId(),
+                userMapper.toDTO(moduleAccess.getUser()),
                 moduleAccess.isCanView(),
                 moduleAccess.isCanEdit(),
                 moduleAccess.isCanPublish(),
@@ -33,7 +34,7 @@ public class ModuleAccessMapper {
         Module module = moduleRepository.findById(moduleAccessDTO.moduleId())
                 .orElseThrow(() -> new IllegalArgumentException("Module non trouvé"));
 
-        User user = userRepository.findById(moduleAccessDTO.userId())
+        User user = userRepository.findById(moduleAccessDTO.user().id())
                 .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         ModuleAccess moduleAccess = new ModuleAccess();

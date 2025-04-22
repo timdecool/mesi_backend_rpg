@@ -30,10 +30,12 @@ public class Module {
     @NotBlank(message = "description required")
     private String description;
 
-    //TODO: Make join on User Table
-    private String createdBy;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User creator;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
     private Boolean isTemplate;
 
     //TODO: Make join on ModuleType Enum
@@ -52,17 +54,17 @@ public class Module {
     @OneToMany(mappedBy = "module", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ModuleVersion> versions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "module", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("module_module_access")
-    private List<ModuleAccess> accesses;
+    private List<ModuleAccess> accesses = new ArrayList<>();
 
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     private List<IntegratedModuleBlock> moduleBlocks;
 
-    public Module(String title, String description, String createdBy, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type) {
+    public Module(String title, String description, User creator, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type) {
         this.title = title;
         this.description = description;
-        this.createdBy = createdBy;
+        this.creator = creator;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.isTemplate = isTemplate;
@@ -80,5 +82,9 @@ public class Module {
     public void addVersion(ModuleVersion version) {
         this.getVersions().add(version);
     }
+
+    public void addAccess(ModuleAccess access) { this.getAccesses().add(access); }
+    public void removeAccess(ModuleAccess access) { this.getAccesses().remove(access); }
+
 
 }

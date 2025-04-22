@@ -19,8 +19,8 @@ public class ParagraphBlock extends Block {
         this.style = style;
     }
 
-    public ParagraphBlock(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, String createdBy, String paragraph, String style) {
-        super(moduleVersion, title, blockOrder, type, createdBy);
+    public ParagraphBlock(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, User creator, String paragraph, String style) {
+        super(moduleVersion, title, blockOrder, type, creator);
         this.paragraph = paragraph;
         this.style = style;
     }

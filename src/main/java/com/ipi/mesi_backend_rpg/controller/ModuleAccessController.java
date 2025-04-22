@@ -40,7 +40,7 @@ public class ModuleAccessController {
     }
 
     @PostMapping("/module/{module-id}/user/{user-id}")
-    public ResponseEntity<ModuleAccessDTO> createModuleAccess(@PathVariable("module-id") Long moduleId, @PathVariable("user-id") Integer userId) {
+    public ResponseEntity<ModuleAccessDTO> createModuleAccess(@PathVariable("module-id") Long moduleId, @PathVariable("user-id") Long userId) {
         ModuleAccessDTO createdModuleAccess = moduleAccessService.createModuleAccess(moduleId, userId);
 
         return new ResponseEntity<>(createdModuleAccess, HttpStatus.CREATED);

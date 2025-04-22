@@ -21,7 +21,6 @@ public class ModuleAccess {
     private Module module;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference("user_module_access")
     private User user;
 
     private boolean canView;

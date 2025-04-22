@@ -7,8 +7,8 @@ public class IntegratedModuleBlockDTO extends BlockDTO {
     public IntegratedModuleBlockDTO() {
     }
 
-    public IntegratedModuleBlockDTO(Long moduleId, Long id, Long moduleVersionId, String title, Integer blockOrder, String createdBy) {
-        super(id, moduleVersionId, title, blockOrder, createdBy);
+    public IntegratedModuleBlockDTO(Long moduleId, Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
+        super(id, moduleVersionId, title, blockOrder, creator);
         this.moduleId = moduleId;
     }
 

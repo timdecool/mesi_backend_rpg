@@ -4,18 +4,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
-        @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stats"),
-        @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name="integratedModule")
+        @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module")
         //TODO: Ajouter type de bloc ici
 })
-@Getter
-@Setter
 public abstract class BlockDTO {
     private Long id;
     @NotNull
@@ -24,16 +19,56 @@ public abstract class BlockDTO {
     private String title;
     @NotNull
     private Integer blockOrder;
-    @NotNull @NotBlank
-    private String createdBy;
+    @NotNull
+    private UserDTO creator;
 
-    public BlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, String createdBy) {
+    public BlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
         this.id = id;
         this.moduleVersionId = moduleVersionId;
         this.title = title;
         this.blockOrder = blockOrder;
-        this.createdBy = createdBy;
+        this.creator = creator;
     }
 
     public BlockDTO() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotNull Long getModuleVersionId() {
+        return moduleVersionId;
+    }
+
+    public void setModuleVersionId(@NotNull Long moduleVersionId) {
+        this.moduleVersionId = moduleVersionId;
+    }
+
+    public @NotNull @NotBlank String getTitle() {
+        return title;
+    }
+
+    public void setTitle(@NotNull @NotBlank String title) {
+        this.title = title;
+    }
+
+    public @NotNull Integer getBlockOrder() {
+        return blockOrder;
+    }
+
+    public void setBlockOrder(@NotNull Integer blockOrder) {
+        this.blockOrder = blockOrder;
+    }
+
+    public @NotNull UserDTO getCreator() {
+        return creator;
+    }
+
+    public void setCreator(@NotNull UserDTO creator) {
+        this.creator = creator;
+    }
 }

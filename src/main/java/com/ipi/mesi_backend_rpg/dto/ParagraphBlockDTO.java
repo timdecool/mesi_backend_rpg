@@ -11,8 +11,8 @@ public class ParagraphBlockDTO extends BlockDTO {
 
     public ParagraphBlockDTO() {}
 
-    public ParagraphBlockDTO(String paragraph, String style, Long id, Long moduleVersionId, String title, Integer blockOrder, String createdBy) {
-        super(id, moduleVersionId, title, blockOrder, createdBy);
+    public ParagraphBlockDTO(String paragraph, String style, Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
+        super(id, moduleVersionId, title, blockOrder, creator);
         this.paragraph = paragraph;
         this.style = style;
     }
