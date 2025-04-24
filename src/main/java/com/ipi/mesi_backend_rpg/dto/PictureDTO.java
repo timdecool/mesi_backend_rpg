@@ -1,15 +1,16 @@
 package com.ipi.mesi_backend_rpg.dto;
 
-import com.ipi.mesi_backend_rpg.model.PictureUsage;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record PictureDTO(
         Long id,
-        PictureUsage pictureUsage,
-        Long pictureUsageId,
         String title,
         String src,
-        LocalDate createdAt,
-        LocalDate updateAt) {
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        LocalDateTime createdAt,
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        LocalDateTime updatedAt) {
 }

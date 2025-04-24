@@ -4,7 +4,6 @@ import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
 // import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.Picture;
-import com.ipi.mesi_backend_rpg.model.PictureUsage;
 // import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.PictureRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,24 +22,26 @@ public class PictureService {
     // private final ModuleRepository moduleRepository;
     
     public PictureDTO createModulePicture(PictureDTO pictureDTO, Long moduleId) {
-        // Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
         Picture picture = pictureMapper.toEntity(pictureDTO);
-        picture.setPictureUsage(PictureUsage.MODULE);
-        picture.setPictureUsageId(moduleId);
-        picture.setCreatedAt(LocalDate.now());
-        picture.setUpdateAt(LocalDate.now());
         pictureRepository.save(picture);
 
         return pictureMapper.toDTO(picture);
     }
     // TODO: Ajouter les services pour assoccier de création d'images à des utilisation PictureBlock et UserProfile
 
-    public List<PictureDTO> getPictures(Long pictureUsageId, PictureUsage pictureUsage) {
-        List<Picture> pictures = pictureRepository.findByPictureUsageAndPictureUsageId(pictureUsage, pictureUsageId);
-        return pictures.stream()
-                .map(pictureMapper::toDTO)
-                .toList();
+    public PictureDTO createBlockPicture(PictureDTO pictureDTO, Long blockId) {
+        Picture picture = pictureMapper.toEntity(pictureDTO);
+        pictureRepository.save(picture);
+
+        return pictureMapper.toDTO(picture);
     }
+
+//    public List<PictureDTO> getPictures(Long pictureUsageId, PictureUsage pictureUsage) {
+//        List<Picture> pictures = pictureRepository.findByPictureUsageAndPictureUsageId(pictureUsage, pictureUsageId);
+//        return pictures.stream()
+//                .map(pictureMapper::toDTO)
+//                .toList();
+//    }
 
     public PictureDTO updatePicture(PictureDTO pictureDTO, Long id) {
         Picture existingPicture = pictureRepository.findById(id)
@@ -49,7 +49,6 @@ public class PictureService {
 
         existingPicture.setTitle(pictureDTO.title());
         existingPicture.setSrc(pictureDTO.src());
-        existingPicture.setUpdateAt(LocalDate.now());
 
         pictureRepository.save(existingPicture);
         return pictureMapper.toDTO(existingPicture);

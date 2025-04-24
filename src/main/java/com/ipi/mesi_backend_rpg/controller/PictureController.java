@@ -1,13 +1,10 @@
 package com.ipi.mesi_backend_rpg.controller;
 
 import com.ipi.mesi_backend_rpg.dto.PictureDTO;
-import com.ipi.mesi_backend_rpg.model.PictureUsage;
 import com.ipi.mesi_backend_rpg.service.PictureService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/pictures")
@@ -26,11 +23,11 @@ public class PictureController {
 
     // TODO: Add endpoint for other picture entity creation
 
-    @GetMapping("/usage-type/{usageType}/usage-id/{usageId}")
-    public ResponseEntity<List<PictureDTO>> getPicturesByUsage(@PathVariable PictureUsage usageType, @PathVariable Long usageId) {
-        List<PictureDTO> pictures = pictureService.getPictures(usageId, usageType);
-        return new ResponseEntity<>(pictures, HttpStatus.OK);
-    }
+//    @GetMapping("/usage-type/{usageType}/usage-id/{usageId}")
+//    public ResponseEntity<List<PictureDTO>> getPicturesByUsage() {
+//        List<PictureDTO> pictures = pictureService.getPictures(usageId, usageType);
+//        return new ResponseEntity<>(pictures, HttpStatus.OK);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<PictureDTO> updatePicture(@RequestBody PictureDTO dto, @PathVariable Long id) {

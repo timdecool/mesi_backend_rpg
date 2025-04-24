@@ -19,6 +19,7 @@ public record ModuleResponseDTO(
         LocalDateTime updatedAt,
         List<ModuleVersionDTO> versions,
         List<ModuleAccessDTO> accesses,
-        List<TagDTO> tags
+        List<TagDTO> tags,
+        PictureDTO picture
 ) {
 }
