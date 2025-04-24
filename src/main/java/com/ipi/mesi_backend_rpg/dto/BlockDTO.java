@@ -11,7 +11,8 @@ import lombok.Setter;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
         @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module"),
-        @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stat")
+        @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stat"),
+        @JsonSubTypes.Type(value = MusicBlockDTO.class, name = "music")
         //TODO: Ajouter type de bloc ici
 })
 @Setter
