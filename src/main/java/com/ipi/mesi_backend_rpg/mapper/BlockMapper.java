@@ -1,13 +1,7 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
-import com.ipi.mesi_backend_rpg.dto.BlockDTO;
-import com.ipi.mesi_backend_rpg.dto.IntegratedModuleBlockDTO;
-import com.ipi.mesi_backend_rpg.dto.ParagraphBlockDTO;
-import com.ipi.mesi_backend_rpg.dto.StatBlockDTO;
-import com.ipi.mesi_backend_rpg.model.Block;
-import com.ipi.mesi_backend_rpg.model.IntegratedModuleBlock;
-import com.ipi.mesi_backend_rpg.model.ParagraphBlock;
-import com.ipi.mesi_backend_rpg.model.StatBlock;
+import com.ipi.mesi_backend_rpg.dto.*;
+import com.ipi.mesi_backend_rpg.model.*;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
@@ -52,7 +46,7 @@ public class BlockMapper {
             );
         }
 
-        if(block instanceof StatBlock statBlock) {
+        if (block instanceof StatBlock statBlock) {
             return new StatBlockDTO(
                     statBlock.getId(),
                     statBlock.getModuleVersion().getId(),
@@ -61,6 +55,18 @@ public class BlockMapper {
                     userMapper.toDTO(statBlock.getCreator()),
                     statBlock.getStatRules(),
                     statBlock.getStatValues()
+            );
+        }
+
+        if (block instanceof MusicBlock musicBlock) {
+            return new MusicBlockDTO(
+                    musicBlock.getLabel(),
+                    musicBlock.getSrc(),
+                    musicBlock.getId(),
+                    musicBlock.getModuleVersion().getId(),
+                    musicBlock.getTitle(),
+                    musicBlock.getBlockOrder(),
+                    userMapper.toDTO(musicBlock.getCreator())
             );
         }
 
@@ -92,18 +98,31 @@ public class BlockMapper {
             );
         }
 
-        if(blockDTO instanceof StatBlockDTO statBlockDTO) {
-                return new StatBlock(
-                        moduleVersionRepository.findById(statBlockDTO.getModuleVersionId()).orElseThrow(() -> new IllegalArgumentException("Invalid module version id: " + statBlockDTO.getModuleVersionId())),
-                        statBlockDTO.getTitle(),
-                        statBlockDTO.getBlockOrder(),
-                        "stat",
-                        userRepository.findById(statBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user : " + statBlockDTO.getCreator().id())),
-                        statBlockDTO.getStatRules(),
-                        statBlockDTO.getStatValues()
-                );
+        if (blockDTO instanceof StatBlockDTO statBlockDTO) {
+            return new StatBlock(
+                    moduleVersionRepository.findById(statBlockDTO.getModuleVersionId()).orElseThrow(() -> new IllegalArgumentException("Invalid module version id: " + statBlockDTO.getModuleVersionId())),
+                    statBlockDTO.getTitle(),
+                    statBlockDTO.getBlockOrder(),
+                    "stat",
+                    userRepository.findById(statBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user : " + statBlockDTO.getCreator().id())),
+                    statBlockDTO.getStatRules(),
+                    statBlockDTO.getStatValues()
+            );
         }
-            //TODO:ajouter type de bloc ici
+
+        if (blockDTO instanceof MusicBlockDTO musicBlockDTO) {
+            return new MusicBlock(
+                    musicBlockDTO.getLabel(),
+                    musicBlockDTO.getLabel(),
+                    moduleVersionRepository.findById(musicBlockDTO.getModuleVersionId()).orElseThrow(() -> new IllegalArgumentException("Invalid module version id: " + musicBlockDTO.getModuleVersionId())),
+                    musicBlockDTO.getTitle(),
+                    musicBlockDTO.getBlockOrder(),
+                    "music",
+                    userRepository.findById(musicBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user : " + musicBlockDTO.getCreator().id()))
+            );
+        }
+
+        //TODO:ajouter type de bloc ici
 
         throw new IllegalArgumentException("Unknown block type");
     }
