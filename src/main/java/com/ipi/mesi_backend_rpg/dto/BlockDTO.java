@@ -20,7 +20,8 @@ public abstract class BlockDTO {
     private Long id;
     @NotNull
     private Long moduleVersionId;
-    @NotNull @NotBlank
+    @NotNull
+    @NotBlank
     private String title;
     @NotNull
     private Integer blockOrder;
@@ -35,6 +36,7 @@ public abstract class BlockDTO {
         this.creator = creator;
     }
 
-    public BlockDTO() {}
+    public BlockDTO() {
+    }
 
 }
