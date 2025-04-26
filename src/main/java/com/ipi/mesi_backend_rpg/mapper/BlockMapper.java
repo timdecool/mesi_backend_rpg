@@ -6,7 +6,6 @@ import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import com.ipi.mesi_backend_rpg.service.ModuleVersionService;
-import com.ipi.mesi_backend_rpg.service.PictureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +20,6 @@ public class BlockMapper {
     private final UserRepository userRepository;
     private final ModuleVersionRepository moduleVersionRepository;
     private final PictureMapper pictureMapper;
-    private final PictureService pictureService;
 
     public BlockDTO toDTO(Block block) {
 
