@@ -12,6 +12,8 @@ public record UserProfileDTO(
         LocalDate createdAt,
 
         @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate updatedAt
+        LocalDate updatedAt,
+
+        PictureDTO picture
 ) {
 }
