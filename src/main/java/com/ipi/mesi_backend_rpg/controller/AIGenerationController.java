@@ -19,22 +19,7 @@ public class AIGenerationController {
 
     @PostMapping("/generate")
     public ResponseEntity<AIGenerationResponse> generateContent(@RequestBody AIGenerationRequest request) {
-        String content;
-        
-        switch (request.getType().toLowerCase()) {
-            case "paragraph":
-                content = aiBlockGenerationService.generateParagraphBlock(request.getParameters());
-                break;
-            case "stat":
-                content = aiBlockGenerationService.generateStatBlock(request.getParameters());
-                break;
-            case "music":
-                content = aiBlockGenerationService.generateMusicDescription(request.getParameters());
-                break;
-            default:
-                return ResponseEntity.badRequest().build();
-        }
-        
+        String content = this.aiBlockGenerationService.generateBlock(request.getType(), request.getParameters());
         AIGenerationResponse response = new AIGenerationResponse(content, request.getType());
         return ResponseEntity.ok(response);
     }
