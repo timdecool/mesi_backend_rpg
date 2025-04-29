@@ -14,7 +14,8 @@ public record ModuleRequestDTO(
         @NotNull(message = "Type is not provided.")
         String type,
         @NotNull(message = "Creator is not provided.")
-        UserDTO creator
+        UserDTO creator,
+        PictureDTO picture
 ) {
 }
 

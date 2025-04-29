@@ -61,6 +61,9 @@ public class Module {
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     private List<IntegratedModuleBlock> moduleBlocks;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Picture picture;
+
     public Module(String title, String description, User creator, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type) {
         this.title = title;
         this.description = description;
@@ -69,6 +72,11 @@ public class Module {
         this.updatedAt = updatedAt;
         this.isTemplate = isTemplate;
         this.type = type;
+
+    }
+    public Module(String title, String description, User creator, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type, Picture picture) {
+        this(title, description, creator, createdAt, updatedAt, isTemplate, type);
+        this.picture = picture;
     }
 
     public void addTag(Tag tag) {

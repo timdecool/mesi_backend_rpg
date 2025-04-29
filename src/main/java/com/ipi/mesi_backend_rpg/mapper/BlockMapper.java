@@ -19,6 +19,7 @@ public class BlockMapper {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final ModuleVersionRepository moduleVersionRepository;
+    private final PictureMapper pictureMapper;
 
     public BlockDTO toDTO(Block block) {
 
@@ -70,6 +71,18 @@ public class BlockMapper {
             );
         }
 
+        if (block instanceof PictureBlock pictureBlock) {
+            return new PictureBlockDTO(
+                    pictureBlock.getLabel(),
+                    pictureMapper.toDTO(pictureBlock.getPicture()),
+                    pictureBlock.getId(),
+                    pictureBlock.getModuleVersion().getId(),
+                    pictureBlock.getTitle(),
+                    pictureBlock.getBlockOrder(),
+                    userMapper.toDTO(pictureBlock.getCreator())
+            );
+        }
+
         throw new IllegalArgumentException("Unknown block type");
     }
 
@@ -113,12 +126,24 @@ public class BlockMapper {
         if (blockDTO instanceof MusicBlockDTO musicBlockDTO) {
             return new MusicBlock(
                     musicBlockDTO.getLabel(),
-                    musicBlockDTO.getLabel(),
+                    musicBlockDTO.getSrc(),
                     moduleVersionRepository.findById(musicBlockDTO.getModuleVersionId()).orElseThrow(() -> new IllegalArgumentException("Invalid module version id: " + musicBlockDTO.getModuleVersionId())),
                     musicBlockDTO.getTitle(),
                     musicBlockDTO.getBlockOrder(),
                     "music",
                     userRepository.findById(musicBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user : " + musicBlockDTO.getCreator().id()))
+            );
+        }
+
+        if (blockDTO instanceof PictureBlockDTO pictureBlockDTO) {
+            return new PictureBlock(
+                    pictureBlockDTO.getLabel(),
+                    pictureMapper.toEntity(pictureBlockDTO.getPicture()),
+                    moduleVersionRepository.findById(pictureBlockDTO.getModuleVersionId()).orElseThrow(() -> new IllegalArgumentException("Invalid module version id: " + pictureBlockDTO.getModuleVersionId())),
+                    pictureBlockDTO.getTitle(),
+                    pictureBlockDTO.getBlockOrder(),
+                    "picture",
+                    userRepository.findById(pictureBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user: " + pictureBlockDTO.getCreator().id()))
             );
         }
 
