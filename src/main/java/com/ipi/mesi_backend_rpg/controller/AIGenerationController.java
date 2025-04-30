@@ -1,7 +1,7 @@
 package com.ipi.mesi_backend_rpg.controller;
 
-import com.ipi.mesi_backend_rpg.dto.ai.AnthropicDTOs.AIGenerationRequest;
-import com.ipi.mesi_backend_rpg.dto.ai.AnthropicDTOs.AIGenerationResponse;
+import com.ipi.mesi_backend_rpg.dto.ai.AIGenerationRequest;
+import com.ipi.mesi_backend_rpg.dto.ai.AIGenerationResponse;
 import com.ipi.mesi_backend_rpg.service.AIBlockGenerationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

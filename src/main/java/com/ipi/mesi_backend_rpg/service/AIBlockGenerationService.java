@@ -1,13 +1,14 @@
 package com.ipi.mesi_backend_rpg.service;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
+import com.ipi.mesi_backend_rpg.enums.EBlockType;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,24 +17,21 @@ public class AIBlockGenerationService {
     private final AnthropicService anthropicService;
     private final GameSystemRepository gameSystemRepository;
 
-    public String generateBlock(String type, Map<String, String> parameters) {
-        switch (type) {
+    public String generateBlock(EBlockType type, Map<String, String> parameters){
+        switch (type.toString().toLowerCase()) {
             case "paragraph" -> {
-                return this.generateParagraphBlock(parameters);
+                return generateParagraphBlock(parameters);
             }
             case "stat" -> {
-                return this.generateStatBlock(parameters);
-            }
-            case "music" -> {
-                return this.generateMusicDescription(parameters);
+                return generateStatBlock(parameters);
             }
             default -> {
-                throw new AssertionError("Type de bloc inconnu: " + type);
+                return generateMusicDescription(parameters);
             }
         }
     }
 
-    private String generateParagraphBlock(Map<String, String> parameters) {
+    public String generateParagraphBlock(Map<String, String> parameters) {
         String gameSystem = parameters.getOrDefault("gameSystem", "fantasy");
         String tone = parameters.getOrDefault("tone", "descriptif");
         String context = parameters.getOrDefault("context", "");
