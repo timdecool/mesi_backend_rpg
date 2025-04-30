@@ -3,7 +3,6 @@ package com.ipi.mesi_backend_rpg.dto.ai;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ipi.mesi_backend_rpg.enums.EBlockType;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +13,7 @@ public class AnthropicResponse {
     private String id;
         private String model;
         private List<Content> content;  // Changé pour une liste d'objets Content
-        private EBlockType type;
+        private String type;
         @JsonProperty("stop_reason")
         private String stopReason;
         private Usage usage;

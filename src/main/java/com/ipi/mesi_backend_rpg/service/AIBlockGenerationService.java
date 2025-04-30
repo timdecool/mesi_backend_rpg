@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.service;
 
-import com.ipi.mesi_backend_rpg.enums.EBlockType;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 
@@ -17,7 +16,7 @@ public class AIBlockGenerationService {
     private final AnthropicService anthropicService;
     private final GameSystemRepository gameSystemRepository;
 
-    public String generateBlock(EBlockType type, Map<String, String> parameters){
+    public String generateBlock(String type, Map<String, String> parameters){
         switch (type.toString().toLowerCase()) {
             case "paragraph" -> {
                 return generateParagraphBlock(parameters);
