@@ -1,10 +1,17 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.ipi.mesi_backend_rpg.dto.BlockDTO;
+import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
+import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
 import com.ipi.mesi_backend_rpg.dto.ai.AIGenerationResponse;
+import com.ipi.mesi_backend_rpg.dto.ai.AIModuleDTO;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 
@@ -16,8 +23,11 @@ public class AIBlockGenerationService {
 
     private final AnthropicService anthropicService;
     private final GameSystemRepository gameSystemRepository;
+    private final ModuleService moduleService;
+    private final ModuleVersionService moduleVersionService;
+    private final BlockService blockService;
 
-    public AIGenerationResponse generateBlock(String type, Map<String, String> parameters){
+    public AIGenerationResponse generateBlock(String type, Map<String, String> parameters) {
         switch (type.toLowerCase()) {
             case "paragraph" -> {
                 return new AIGenerationResponse(generateParagraphBlock(parameters), type);
@@ -107,5 +117,30 @@ public class AIBlockGenerationService {
                 scene, atmosphere);
 
         return anthropicService.generateContent(systemPrompt, userPrompt);
+    }
+
+    public AIModuleDTO getModuleForAIGeneration(Long moduleId, Long versionId) {
+        // Get the module
+        ModuleResponseDTO moduleDTO = moduleService.findById(moduleId);
+        if (moduleDTO == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found");
+        }
+
+        // Get the specific version or use the latest if versionId is null
+        ModuleVersionDTO versionDTO;
+        if (versionId != null) {
+            versionDTO = moduleVersionService.findById(versionId);
+        } else if (!moduleDTO.versions().isEmpty()) {
+            // Get the latest version (assuming versions are ordered)
+            versionDTO = moduleDTO.versions().get(0);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No versions found for this module");
+        }
+
+        // Get all blocks for this version
+        List<BlockDTO> blocks = blockService.getAllBlocks(
+                moduleVersionService.toEntity(versionDTO));
+
+        return new AIModuleDTO(moduleDTO, versionDTO, blocks);
     }
 }

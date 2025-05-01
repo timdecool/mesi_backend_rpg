@@ -1,16 +1,18 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleVersionMapper;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -58,5 +60,11 @@ public class ModuleVersionService {
         }
 
         return moduleVersionRepository.findAllByModule(module).stream().map(moduleVersionMapper::toDTO).toList();
+    }
+
+    public ModuleVersion toEntity(ModuleVersionDTO dto) {
+        return moduleVersionRepository.findById(dto.id())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, 
+                        "Module version not found with id: " + dto.id()));
     }
 }
