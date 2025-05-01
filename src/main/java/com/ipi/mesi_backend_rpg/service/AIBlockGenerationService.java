@@ -1,13 +1,14 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.ipi.mesi_backend_rpg.dto.ai.AIGenerationResponse;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -16,16 +17,16 @@ public class AIBlockGenerationService {
     private final AnthropicService anthropicService;
     private final GameSystemRepository gameSystemRepository;
 
-    public String generateBlock(String type, Map<String, String> parameters){
-        switch (type.toString().toLowerCase()) {
+    public AIGenerationResponse generateBlock(String type, Map<String, String> parameters){
+        switch (type.toLowerCase()) {
             case "paragraph" -> {
-                return generateParagraphBlock(parameters);
+                return new AIGenerationResponse(generateParagraphBlock(parameters), type);
             }
             case "stat" -> {
-                return generateStatBlock(parameters);
+                return new AIGenerationResponse(generateStatBlock(parameters), type);
             }
             default -> {
-                return generateMusicDescription(parameters);
+                return new AIGenerationResponse(generateMusicDescription(parameters), type);
             }
         }
     }
@@ -57,7 +58,7 @@ public class AIBlockGenerationService {
         return anthropicService.generateContent(systemPrompt, userPrompt);
     }
 
-    private String generateStatBlock(Map<String, String> parameters) {
+    public String generateStatBlock(Map<String, String> parameters) {
         String gameSystem = parameters.getOrDefault("gameSystem", "Donjon et Dragon");
         Long gameSystemId = Long.valueOf(parameters.getOrDefault("gameSystemId", "1"));
         String entityType = parameters.getOrDefault("entityType", "monster");
@@ -87,7 +88,7 @@ public class AIBlockGenerationService {
         return anthropicService.generateContent(systemPrompt, userPrompt);
     }
 
-    private String generateMusicDescription(Map<String, String> parameters) {
+    public String generateMusicDescription(Map<String, String> parameters) {
         String atmosphere = parameters.getOrDefault("atmosphere", "mystérieuse");
         String scene = parameters.getOrDefault("scene", "exploration");
 

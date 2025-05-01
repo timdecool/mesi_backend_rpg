@@ -1,17 +1,18 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.time.Duration;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
 import com.ipi.mesi_backend_rpg.configuration.AnthropicConfig;
 import com.ipi.mesi_backend_rpg.dto.ai.AnthropicRequest;
 import com.ipi.mesi_backend_rpg.dto.ai.AnthropicResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
-
-import java.time.Duration;
 
 @Service
 @Slf4j
@@ -103,11 +104,13 @@ public class AnthropicService {
                 systemPrompt.replace("\"", "\\\"").replace("\n", "\\n"),
                 userPrompt.replace("\"", "\\\"").replace("\n", "\\n"));
 
-        log.info("Commande curl pour test direct:\ncurl -X POST https://api.anthropic.com/v1/messages \\\n" +
-                "-H \"x-api-key: VOTRE_CLÉ\" \\\n" +
-                "-H \"anthropic-version: 2023-06-01\" \\\n" +
-                "-H \"content-type: application/json\" \\\n" +
-                "-d '{}'", json);
+        log.info("""
+                Commande curl pour test direct:
+                curl -X POST https://api.anthropic.com/v1/messages \\
+                -H "x-api-key: VOTRE_CL\u00c9" \\
+                -H "anthropic-version: 2023-06-01" \\
+                -H "content-type: application/json" \\
+                -d '{}'""", json);
     }
 
     private static class AnthropicOverloadedException extends RuntimeException {
