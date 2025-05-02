@@ -1,23 +1,22 @@
 package com.ipi.mesi_backend_rpg;
 
-// Imports Java Standard et Spring
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Map; // Pour traiter la réponse JSON de l'API REST
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value; // Pour injecter la clé API
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.reactive.function.client.WebClient; // Client HTTP réactif
-import org.springframework.web.reactive.function.client.WebClientResponseException; // Exceptions WebClient
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import com.google.firebase.ErrorCode;
-import com.google.firebase.auth.FirebaseAuth; // Type réactif (même si on l'utilise en bloquant ici)
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.UserRecord;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
@@ -45,21 +44,18 @@ public class MesiBackendRpgApplication {
     @Bean
     public CommandLineRunner demo(UserRepository userRepository,
             GameSystemRepository gameSystemRepository,
-            FirebaseAuth firebaseAuth, // Toujours nécessaire pour vérifier/créer l'utilisateur
-            WebClient.Builder webClientBuilder) { // Injecter le Builder pour WebClient
+            FirebaseAuth firebaseAuth,
+            WebClient.Builder webClientBuilder) {
         return (args) -> {
             logger.info("Debut de l'execution du CommandLineRunner...");
 
-            // === 1. Initialisation données locales (BDD SQL) ===
-            // Gardez cette partie si vous en avez besoin
             try {
                 User localUser = new User();
                 localUser.setUsername("john_doe");
-                localUser.setEmail("john.doe@example.com"); // Peut-être utiliser un email différent de celui de
-                                                            // Firebase pour éviter confusion
+                localUser.setEmail("john.doe@example.com");
+
                 localUser.setCreatedAt(LocalDateTime.now());
                 localUser.setUpdatedAt(LocalDateTime.now());
-                // Optionnel: Vérifier si l'utilisateur local existe déjà
                 if (userRepository.findByEmail(localUser.getEmail()).isEmpty()) {
                     userRepository.save(localUser);
                     logger.info("Utilisateur local cree avec succes : {}", localUser.getEmail());
@@ -71,7 +67,6 @@ public class MesiBackendRpgApplication {
                 gameSystem.setName("Donjon et Dragon");
                 gameSystem.setCreatedAt(LocalDate.now());
                 gameSystem.setUpdatedAt(LocalDate.now());
-                // Optionnel: Vérifier si le GameSystem existe déjà (ex: par nom ou ID fixe)
                 if (gameSystemRepository.findById(1L).isEmpty()) { // Exemple: on suppose ID 1 pour D&D
                     gameSystemRepository.save(gameSystem);
                     logger.info("GameSystem local cree : {}", gameSystem.getName());
@@ -84,10 +79,9 @@ public class MesiBackendRpgApplication {
             }
             logger.info("Initialisation données locales terminee.");
 
-            // === 2. Vérification/Création Utilisateur Firebase ===
             logger.info("Verification/Creation de l'utilisateur de test Firebase...");
-            String testEmail = this.email; // email de test
-            String testPassword = this.mdp; // mot de passe de test
+            String testEmail = this.email; 
+            String testPassword = this.mdp;
             String uid = null;
 
             try {
@@ -118,21 +112,16 @@ public class MesiBackendRpgApplication {
                 }
             }
 
-            // === 3. Connexion via API REST pour obtenir l'ID Token ===
             if (uid != null) { // On ne tente la connexion que si l'utilisateur existe
                 logger.info("Tentative de connexion via l'API REST Firebase pour obtenir l'ID Token...");
                 WebClient webClient = webClientBuilder.baseUrl("https://identitytoolkit.googleapis.com/v1").build();
 
-                // Corps JSON pour l'API REST signInWithPassword
                 Map<String, Object> requestBody = Map.of(
                         "email", testEmail,
                         "password", testPassword,
                         "returnSecureToken", true);
 
                 try {
-                    // Appel SYNCHRONE à l'API REST
-                    // Le .block() est acceptable ici car on est dans un CommandLineRunner au
-                    // démarrage
                     ParameterizedTypeReference<Map<String, Object>> mapTypeReference = new ParameterizedTypeReference<Map<String, Object>>() {
                     };
 
@@ -162,12 +151,10 @@ public class MesiBackendRpgApplication {
                     }
 
                 } catch (WebClientResponseException e) {
-                    // Gérer les erreurs HTTP spécifiques (4xx, 5xx)
                     logger.error(
                             "Erreur lors de l'appel à l'API REST Firebase signInWithPassword : Statut={}, Réponse={}",
                             e.getStatusCode(), e.getResponseBodyAsString(), e);
                 } catch (Exception e) {
-                    // Gérer les autres erreurs (réseau, etc.)
                     logger.error("Erreur inattendue lors de la connexion via l'API REST Firebase : {}", e.getMessage(),
                             e);
                 }

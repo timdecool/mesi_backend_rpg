@@ -36,17 +36,7 @@ public class ModuleGenerationService {
             // Récupérer le système de jeu
             GameSystem gameSystem = gameSystemRepository.findById(gameSystemId)
                     .orElseThrow(() -> new RuntimeException("Système de jeu non trouvé avec l'ID: " + gameSystemId));
-
-            // Générer une description ou utiliser celle fournie
-            String moduleDescription = description;
-            if (moduleDescription == null || moduleDescription.isEmpty()) {
-                String descSystemPrompt = "Tu es un expert en création de modules de jeu de rôle.";
-                String descUserPrompt = String.format(
-                        "Écris une brève description (2-3 phrases) pour un module de jeu de rôle intitulé \"%s\" sur le thème \"%s\" pour le système %s.",
-                        title, theme, gameSystem.getName());
-                moduleDescription = anthropicService.generateContent(descSystemPrompt, descUserPrompt);
-            }
-
+                    
             // Demander à l'IA de générer la structure globale du module
             String structureSystemPrompt = """
                     Tu es un expert en conception de modules de jeu de rôle.
@@ -114,7 +104,7 @@ public class ModuleGenerationService {
             // Assembler la réponse finale
             Map<String, Object> response = new HashMap<>();
             response.put("title", title);
-            response.put("description", moduleDescription);
+            response.put("description", description);
             response.put("gameSystemId", gameSystemId);
             response.put("blocks", generatedBlocks);
 
