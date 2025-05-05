@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,22 +19,21 @@ public class Picture {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    private PictureUsage pictureUsage;
-
-    private Long pictureUsageId;
-
     private String title;
     private String src;
-    private LocalDate createdAt;
-    private LocalDate updateAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public Picture(PictureUsage pictureUsage, Long pictureUsageId, String title, String src, LocalDate createdAt, LocalDate updateAt) {
-        this.pictureUsage = pictureUsage;
-        this.pictureUsageId = pictureUsageId;
+    public Picture(String title, String src) {
         this.title = title;
         this.src = src;
-        this.createdAt = createdAt;
-        this.updateAt = updateAt;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+
 }

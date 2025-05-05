@@ -25,6 +25,9 @@ public class UserProfile {
     @OneToOne
     private User user;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Picture picture;
+
     public UserProfile(String description, LocalDate createdAt, LocalDate updatedAt) {
         this.description = description;
         this.createdAt = createdAt;
