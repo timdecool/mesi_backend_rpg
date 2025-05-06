@@ -7,14 +7,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
-        @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module"),
-        @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stat"),
-        @JsonSubTypes.Type(value = MusicBlockDTO.class, name = "music"),
-        @JsonSubTypes.Type(value = PictureBlockDTO.class, name = "picture")
-        //TODO: Ajouter type de bloc ici
+    @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
+    @JsonSubTypes.Type(value = MusicBlockDTO.class, name = "music"),
+    @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stat"),
+    @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module")
 })
 @Setter
 @Getter
@@ -29,6 +27,8 @@ public abstract class BlockDTO {
     private Integer blockOrder;
     @NotNull
     private UserDTO creator;
+    @NotNull
+    private String type;
 
     public BlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
         this.id = id;

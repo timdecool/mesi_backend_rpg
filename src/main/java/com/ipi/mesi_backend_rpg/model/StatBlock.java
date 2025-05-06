@@ -1,5 +1,6 @@
 package com.ipi.mesi_backend_rpg.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@DiscriminatorValue("stat")
 public class StatBlock extends Block {
 
     private String statRules;

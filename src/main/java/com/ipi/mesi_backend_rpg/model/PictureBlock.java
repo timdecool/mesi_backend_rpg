@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@DiscriminatorValue("picture")
 public class PictureBlock extends Block {
     private String label;
 

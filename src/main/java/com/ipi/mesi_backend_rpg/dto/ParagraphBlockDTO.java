@@ -9,11 +9,14 @@ public class ParagraphBlockDTO extends BlockDTO {
     private String paragraph;
     private String style;
 
-    public ParagraphBlockDTO() {}
+    public ParagraphBlockDTO() {
+        setType("paragraph");
+    }
 
     public ParagraphBlockDTO(String paragraph, String style, Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
         super(id, moduleVersionId, title, blockOrder, creator);
         this.paragraph = paragraph;
         this.style = style;
+        setType("paragraph");
     }
 }

@@ -5,22 +5,22 @@ import com.ipi.mesi_backend_rpg.model.*;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
-import com.ipi.mesi_backend_rpg.service.ModuleVersionService;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class BlockMapper {
 
-    private final ModuleVersionService moduleVersionService;
-    private final ModuleVersionMapper moduleVersionMapper;
     private final ModuleRepository moduleRepository;
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final ModuleVersionRepository moduleVersionRepository;
     private final PictureMapper pictureMapper;
 
+    
     public BlockDTO toDTO(Block block) {
 
         if (block instanceof ParagraphBlock paragraphBlock) {
@@ -90,11 +90,13 @@ public class BlockMapper {
 
         if (blockDTO instanceof ParagraphBlockDTO paragraphBlockDTO) {
             return new ParagraphBlock(
-                    moduleVersionMapper.toEntity(moduleVersionService.findById(paragraphBlockDTO.getModuleVersionId())),
+                    moduleVersionRepository.findById(paragraphBlockDTO.getModuleVersionId())
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid moduleVersion id")),
                     paragraphBlockDTO.getTitle(),
                     paragraphBlockDTO.getBlockOrder(),
                     "paragraph",
-                    userRepository.findById(paragraphBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + paragraphBlockDTO.getCreator().id())),
+                    userRepository.findById(paragraphBlockDTO.getCreator().id())
+                        .orElseThrow(() -> new IllegalArgumentException("Invalid user id")),
                     paragraphBlockDTO.getParagraph(),
                     paragraphBlockDTO.getStyle()
             );

@@ -24,7 +24,6 @@ public class ModuleMapper {
     private final PictureMapper pictureMapper;
 
     public ModuleResponseDTO toDTO(Module module) {
-
         PictureDTO pictureDTO = null;
         if (module.getPicture() != null) {
             pictureDTO = pictureMapper.toDTO(module.getPicture());
@@ -42,8 +41,7 @@ public class ModuleMapper {
                 module.getVersions().stream().map(moduleVersionMapper::toDTO).toList(),
                 module.getAccesses().stream().map(moduleAccessMapper::toDTO).toList(),
                 module.getTags().stream().map(tagMapper::toDTO).toList(),
-                pictureDTO
-        );
+                pictureDTO);
     }
 
     public Module toEntity(ModuleRequestDTO moduleRequestDTO) {
@@ -54,12 +52,12 @@ public class ModuleMapper {
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 moduleRequestDTO.isTemplate(),
-                moduleRequestDTO.type()
-        );
+                moduleRequestDTO.type());
 
-        if(moduleRequestDTO.picture() != null) {
+        if (moduleRequestDTO.picture() != null) {
             module.setPicture(pictureMapper.toEntity(moduleRequestDTO.picture()));
         }
+
         return module;
     }
 }
