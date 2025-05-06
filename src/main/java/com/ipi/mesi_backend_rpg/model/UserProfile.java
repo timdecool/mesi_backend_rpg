@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.model;
 
-
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,6 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String description;
     private LocalDate createdAt;
     private LocalDate updatedAt;

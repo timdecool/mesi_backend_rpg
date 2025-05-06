@@ -42,5 +42,4 @@ public class Block {
         this.type = type;
         this.creator = creator;
     }
-    
 }
