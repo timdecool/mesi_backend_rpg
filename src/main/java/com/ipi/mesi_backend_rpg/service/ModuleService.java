@@ -3,7 +3,9 @@ package com.ipi.mesi_backend_rpg.service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -123,5 +125,17 @@ public class ModuleService {
 
     public void deleteModule(Long id) {
         moduleRepository.findById(id).ifPresent(moduleRepository::delete);
+    }
+
+    public List<ModuleResponseDTO> searchModules(String query) {
+        PageRequest pageable = PageRequest.of(0, 30); // Les 30 premiers résultats (page 0, taille 30)
+        List<Module> modules = moduleRepository.findByTitleOrDescriptionContainingIgnoreCase(query, pageable);
+
+        if (modules.isEmpty()) {
+            return List.of(); // Retourne une liste vide si aucun résultat
+        }
+        return modules.stream()
+                .map(moduleMapper::toDTO)
+                .collect(Collectors.toList());
     }
 }

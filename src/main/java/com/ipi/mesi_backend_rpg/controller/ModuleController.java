@@ -55,4 +55,10 @@ public class ModuleController {
         moduleService.deleteModule(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/search/{query}")
+    public ResponseEntity<List<ModuleResponseDTO>> searchModules(@PathVariable String query) {
+        List<ModuleResponseDTO> modules = moduleService.searchModules(query);
+        return new ResponseEntity<>(modules, HttpStatus.OK);
+    }
 }
