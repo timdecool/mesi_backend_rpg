@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@DiscriminatorValue("paragraph")
 public class ParagraphBlock extends Block {
 
     private String paragraph;

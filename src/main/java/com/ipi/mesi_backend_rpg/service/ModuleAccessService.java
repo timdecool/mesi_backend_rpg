@@ -1,12 +1,20 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleAccessDTO;
+import com.ipi.mesi_backend_rpg.dto.UserDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleAccessMapper;
 import com.ipi.mesi_backend_rpg.model.AccessRight;
 import com.ipi.mesi_backend_rpg.model.Module;
@@ -53,8 +61,10 @@ public class ModuleAccessService {
     public ModuleAccessDTO createModuleAccess(Long moduleId, Long userId) {
 
         ModuleAccess moduleAccess = new ModuleAccess();
-        Module module = moduleRepository.findById(moduleId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         moduleAccess.setModule(module);
         moduleAccess.setUser(user);
         moduleAccess.setCanEdit(true);
@@ -65,10 +75,37 @@ public class ModuleAccessService {
         return moduleAccessMapper.toDTO(moduleAccess);
     }
 
+    public ModuleAccessDTO createModuleAccessFromDTO(ModuleAccessDTO accessDTO, Module module) {
+        if (accessDTO == null) {
+            throw new IllegalArgumentException("ModuleAccessDTO cannot be null for creation.");
+        }
+        if (module == null) {
+            throw new IllegalArgumentException("Module cannot be null for creation.");
+        }
+        UserDTO userFromDto = accessDTO.user();
+        if (userFromDto == null || userFromDto.id() == null) {
+            throw new IllegalArgumentException("User information (UserDTO with ID) is missing in ModuleAccessDTO for creation.");
+        }
+
+        ModuleAccessDTO dtoForMapper = new ModuleAccessDTO(
+            null, 
+            module.getId(), 
+            userFromDto,
+            accessDTO.canView(),
+            accessDTO.canEdit(),
+            accessDTO.canPublish(),
+            accessDTO.canInvite()
+        );
+
+        ModuleAccess newAccessEntity = moduleAccessMapper.toEntity(dtoForMapper);
+
+        ModuleAccess savedAccess = moduleAccessRepository.save(newAccessEntity);
+        return moduleAccessMapper.toDTO(savedAccess);
+    }
+
     public ModuleAccessDTO deleteModuleAccess(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
-        );
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         moduleAccessRepository.delete(moduleAccess);
         return moduleAccessMapper.toDTO(moduleAccess);
     }
@@ -84,12 +121,117 @@ public class ModuleAccessService {
             case PUBLISH -> moduleAccess.setCanPublish(!moduleAccess.isCanPublish());
             case INVITE -> moduleAccess.setCanInvite(!moduleAccess.isCanInvite());
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Invalid right type: " + accessRight + "only accept VIEW, EDIT, PUBLISH, INVITE");
+                    "Invalid right type: " + accessRight + "only accept VIEW, EDIT, PUBLISH, INVITE");
         }
 
         ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
         return moduleAccessMapper.toDTO(savedAccess);
     }
 
+    public ModuleAccessDTO updateModuleAccess(Integer id, ModuleAccessDTO moduleAccessDTO) {
+        ModuleAccess moduleAccess = moduleAccessRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "ModuleAccess not found with id: " + id));
 
+        moduleAccess.setCanView(moduleAccessDTO.canView());
+        moduleAccess.setCanEdit(moduleAccessDTO.canEdit());
+        moduleAccess.setCanPublish(moduleAccessDTO.canPublish());
+        moduleAccess.setCanInvite(moduleAccessDTO.canInvite());
+
+        ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
+        return moduleAccessMapper.toDTO(savedAccess);
+    }
+
+    public void synchronizeModuleAccesses(Module module, List<ModuleAccessDTO> incomingAccessDTOs) {
+        if (module == null) {
+            throw new IllegalArgumentException("Module cannot be null for synchronizing accesses.");
+        }
+        List<ModuleAccessDTO> dtosToProcess = (incomingAccessDTOs == null) ? new ArrayList<>() : incomingAccessDTOs;
+
+        // Récupérer les accès actuels en BD pour ce module
+        Map<Integer, ModuleAccess> currentDbAccessMap = moduleAccessRepository.findAllByModule(module).stream()
+                .collect(Collectors.toMap(ModuleAccess::getId, Function.identity()));
+
+        // Ensemble des IDs des DTOs entrants qui ont un ID non nul (pour identifier
+        // les mises à jour et les suppressions)
+        Set<Integer> incomingDtoNonNullIds = dtosToProcess.stream()
+                .map(ModuleAccessDTO::id)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        // Utiliser une copie pour pouvoir y ajouter les IDs des accès qui sont "créés"
+        // mais qui en fait mettaient à jour un existant
+        Set<Integer> finalIdsToKeep = new HashSet<>(incomingDtoNonNullIds);
+
+        // Traiter les créations et les mises à jour
+        for (ModuleAccessDTO dto : dtosToProcess) {
+            UserDTO userFromDto = dto.user();
+            if (userFromDto == null || userFromDto.id() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "User information (UserDTO with ID) is required for each ModuleAccessDTO.");
+            }
+
+            if (dto.id() != null) { // Le DTO suggère une MISE À JOUR (car il a un ID)
+                ModuleAccess existingAccessEntity = currentDbAccessMap.get(dto.id());
+                if (existingAccessEntity != null) { // L'ID du DTO existe en BD
+                    // Vérifications de cohérence
+                    if (existingAccessEntity.getModule().getId() != module.getId()) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "ModuleAccess with ID " + dto.id() + " does not belong to the provided module "
+                                        + module.getId() + ".");
+                    }
+                    if (!existingAccessEntity.getUser().getId().equals(userFromDto.id())) {
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "ModuleAccess with ID " + dto.id() + " is for user "
+                                        + existingAccessEntity.getUser().getId() +
+                                        ", but DTO specifies user " + userFromDto.id()
+                                        + ". User cannot be changed on an existing access.");
+                    }
+                    updateModuleAccess(dto.id(), dto); // Met à jour les droits
+                } else {
+                    // Le DTO a un ID, mais cet ID n'est pas (ou plus) dans la base de données pour
+                    // ce module.
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "ModuleAccess with ID " + dto.id() + " provided for update, but not found for module "
+                                    + module.getId() + ".");
+                }
+            } else { // Le DTO suggère une CRÉATION (car id est null)
+                User userEntityForDto = userRepository.findById(userFromDto.id())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                                "User with id " + userFromDto.id() + " specified in DTO not found."));
+
+                ModuleAccess accessAlreadyExistsForUser = moduleAccessRepository.findModuleAccessBymoduleAndUser(module,
+                        userEntityForDto);
+
+                if (accessAlreadyExistsForUser != null) {
+                    // Un accès existe déjà pour cette combinaison module/utilisateur.
+                    // On le met à jour avec les droits du DTO courant.
+                    ModuleAccessDTO dtoForExistingAccessUpdate = new ModuleAccessDTO(
+                            accessAlreadyExistsForUser.getId(),
+                            module.getId(),
+                            userFromDto,
+                            dto.canView(),
+                            dto.canEdit(),
+                            dto.canPublish(),
+                            dto.canInvite());
+                    updateModuleAccess(accessAlreadyExistsForUser.getId(), dtoForExistingAccessUpdate);
+                    finalIdsToKeep.add(accessAlreadyExistsForUser.getId()); // S'assurer que cet ID n'est pas supprimé
+                } else {
+                    // C'est une vraie nouvelle création.
+                    ModuleAccessDTO createdAccessDTO = createModuleAccessFromDTO(dto, module);
+                    finalIdsToKeep.add(createdAccessDTO.id()); // Ajouter l'ID nouvellement créé à la liste des IDs à
+                                                               // conserver
+                }
+            }
+        }
+
+        // Traiter les SUPPRESSIONS
+        Set<Integer> dbIdsToDelete = currentDbAccessMap.keySet().stream()
+                .filter(dbId -> !finalIdsToKeep.contains(dbId))
+                .collect(Collectors.toSet());
+
+        for (Integer idToDelete : dbIdsToDelete) {
+            deleteModuleAccess(idToDelete);
+        }
+    }
 }
