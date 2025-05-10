@@ -3,7 +3,9 @@ package com.ipi.mesi_backend_rpg.repository;
 import com.ipi.mesi_backend_rpg.model.Module;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -32,4 +34,10 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
         ORDER BY COUNT(usm.savedModuleId) DESC
     """)
     List<Module> findMostSavedModules(Pageable pageable);
+
+    @Query("""
+           SELECT m FROM Module m
+           ORDER BY m.createdAt DESC
+           """)
+    List<Module> findMostRecentModules(PageRequest of);
 }

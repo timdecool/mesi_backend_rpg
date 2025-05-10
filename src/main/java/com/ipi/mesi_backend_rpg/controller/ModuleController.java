@@ -40,6 +40,11 @@ public class ModuleController {
         return new ResponseEntity<>(moduleService.getMostSavedModules(), HttpStatus.OK);
     }
 
+    @GetMapping("/most-recent")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostRecentModules() {
+        return new ResponseEntity<>(moduleService.getMostRecentModules(), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ModuleResponseDTO> createModule(@Valid @RequestBody ModuleRequestDTO moduleRequestDTO) {
         ModuleResponseDTO module = moduleService.createModule(moduleRequestDTO);
