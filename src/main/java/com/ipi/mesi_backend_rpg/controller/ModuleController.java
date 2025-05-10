@@ -35,6 +35,11 @@ public class ModuleController {
         return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
+    @GetMapping("/most-saved")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostSavedModules() {
+        return new ResponseEntity<>(moduleService.getMostSavedModules(), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ModuleResponseDTO> createModule(@Valid @RequestBody ModuleRequestDTO moduleRequestDTO) {
         ModuleResponseDTO module = moduleService.createModule(moduleRequestDTO);

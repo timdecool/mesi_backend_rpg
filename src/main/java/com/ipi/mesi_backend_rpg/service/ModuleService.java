@@ -138,4 +138,9 @@ public class ModuleService {
                 .map(moduleMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<ModuleResponseDTO> getMostSavedModules() {
+        return moduleRepository.findMostSavedModules(PageRequest.of(0, 10))
+                .stream().map(moduleMapper::toDTO).collect(Collectors.toList());
+    }
 }

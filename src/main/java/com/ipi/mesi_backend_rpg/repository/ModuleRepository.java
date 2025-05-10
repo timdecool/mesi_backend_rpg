@@ -24,4 +24,12 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
      */
     @Query("SELECT m FROM Module m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(m.description) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Module> findByTitleOrDescriptionContainingIgnoreCase(@Param("query") String query, Pageable pageable);
+
+    @Query("""
+        SELECT m FROM Module m
+        JOIN UserSavedModule usm ON m.id = usm.moduleId
+        GROUP BY m.id
+        ORDER BY COUNT(usm.savedModuleId) DESC
+    """)
+    List<Module> findMostSavedModules(Pageable pageable);
 }
