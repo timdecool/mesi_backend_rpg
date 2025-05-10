@@ -128,8 +128,7 @@ public class ModuleService {
 
     @Transactional
     public void deleteModule(Long id) {
-        userSavedModuleRepository.deleteByModuleId(id);
-        moduleRepository.findById(id).ifPresent(moduleRepository::delete);
+        userSavedModuleRepository.deleteByModule_Id(id);
     }
 
     public List<ModuleResponseDTO> searchModules(String query) {

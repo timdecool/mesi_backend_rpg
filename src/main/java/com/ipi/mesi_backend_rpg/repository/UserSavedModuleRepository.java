@@ -20,12 +20,12 @@ public interface UserSavedModuleRepository extends JpaRepository<UserSavedModule
 
     List<UserSavedModule> findByUserIdAndFolderId(Long userId, Long folderId);
 
-    List<UserSavedModule> findByUserIdAndModuleId(Long userId, Long moduleId);
+    List<UserSavedModule> findByUserIdAndModule_Id(Long userId, Long moduleId);
 
     List<UserSavedModule> findByUserIdAndAliasContaining(Long userId, String alias);
 
     @Modifying
     @Transactional
-    @Query("DELETE FROM UserSavedModule u WHERE u.moduleId = :moduleId")
-    void deleteByModuleId(@Param("moduleId") Long moduleId);
+    @Query("DELETE FROM UserSavedModule u WHERE u.module.id = :moduleId")
+    void deleteByModule_Id(@Param("moduleId") Long moduleId);
 }

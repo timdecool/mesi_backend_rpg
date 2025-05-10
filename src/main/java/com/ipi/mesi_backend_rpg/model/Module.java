@@ -71,6 +71,9 @@ public class Module {
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     private List<IntegratedModuleBlock> moduleBlocks;
 
+    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSavedModule> savedModules = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Picture picture;
 
@@ -110,6 +113,14 @@ public class Module {
 
     public void removeAccess(ModuleAccess access) {
         this.getAccesses().remove(access);
+    }
+
+    public void addSavedModule(UserSavedModule savedModule) {
+        this.getSavedModules().add(savedModule);
+    }
+
+    public void removeSavedModule(UserSavedModule savedModule) {
+        this.getSavedModules().remove(savedModule);
     }
 
 }
