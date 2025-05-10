@@ -1,12 +1,7 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
-import com.ipi.mesi_backend_rpg.dto.BlockDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
-import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
-import com.ipi.mesi_backend_rpg.model.Block;
-import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.model.ModuleComment;
-import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

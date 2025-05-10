@@ -1,25 +1,18 @@
 package com.ipi.mesi_backend_rpg.service;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
-import com.ipi.mesi_backend_rpg.dto.ModuleVersionDTO;
-import com.ipi.mesi_backend_rpg.mapper.BlockMapper;
 import com.ipi.mesi_backend_rpg.mapper.ModuleCommentMapper;
-import com.ipi.mesi_backend_rpg.mapper.ModuleVersionMapper;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleComment;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.ModuleCommentRepository;
-import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

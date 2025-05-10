@@ -1,6 +1,5 @@
 package com.ipi.mesi_backend_rpg.repository;
 
-import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 
 import java.util.List;
