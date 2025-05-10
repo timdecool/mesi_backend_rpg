@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.ipi.mesi_backend_rpg.dto.UserSavedModuleDTO;
 import com.ipi.mesi_backend_rpg.mapper.UserSavedModuleMapper;
 import com.ipi.mesi_backend_rpg.model.UserSavedModule;
+import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserSavedModuleService {
     private final UserSavedModuleRepository userSavedModuleRepository;
     private final UserSavedModuleMapper userSavedModuleMapper;
+    private final ModuleRepository moduleRepository;
 
     public ResponseEntity<List<UserSavedModuleDTO>> getAllModulesByUserId(Long userId) {
         List<UserSavedModuleDTO> savedModules = userSavedModuleRepository.findByUserId(userId)
@@ -55,7 +57,7 @@ public class UserSavedModuleService {
     }
 
     public List<UserSavedModuleDTO> getModulesByUserIdAndModuleId(Long userId, Long moduleId) {
-        return userSavedModuleRepository.findByUserIdAndModuleId(userId, moduleId)
+        return userSavedModuleRepository.findByUserIdAndModule_Id(userId, moduleId)
                 .stream()
                 .map(userSavedModuleMapper::toDTO)
                 .collect(Collectors.toList());
@@ -81,12 +83,14 @@ public class UserSavedModuleService {
     public ResponseEntity<UserSavedModuleDTO> updateSavedModule(Long savedModuleId,
             UserSavedModuleDTO userSavedModuleDTO) {
         return userSavedModuleRepository.findById(savedModuleId)
-                .map(module -> {
-                    module.setModuleId(userSavedModuleDTO.moduleId());
-                    module.setModuleVersionId(userSavedModuleDTO.moduleVersionId());
-                    module.setFolderId(userSavedModuleDTO.folderId());
-                    module.setAlias(userSavedModuleDTO.alias());
-                    UserSavedModule updatedModule = userSavedModuleRepository.save(module);
+                .map(savedModule -> {
+                    moduleRepository.findById(userSavedModuleDTO.moduleId())
+                            .ifPresent(savedModule::setModule);
+                    savedModule.setModuleVersionId(userSavedModuleDTO.moduleVersionId());
+                    savedModule.setFolderId(userSavedModuleDTO.folderId());
+                    savedModule.setAlias(userSavedModuleDTO.alias());
+
+                    UserSavedModule updatedModule = userSavedModuleRepository.save(savedModule);
                     return new ResponseEntity<>(userSavedModuleMapper.toDTO(updatedModule), HttpStatus.OK);
                 })
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Saved module not found"));
