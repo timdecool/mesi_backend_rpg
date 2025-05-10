@@ -28,6 +28,10 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
     @Query("""
         SELECT m FROM Module m
         JOIN UserSavedModule usm ON m.id = usm.moduleId
+        WHERE EXISTS (
+            SELECT mv FROM ModuleVersion mv
+            WHERE mv.module = m AND mv.published = true
+        )
         GROUP BY m.id
         ORDER BY COUNT(usm.savedModuleId) DESC
     """)
@@ -35,6 +39,10 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
 
     @Query("""
            SELECT m FROM Module m
+           WHERE EXISTS (
+               SELECT mv FROM ModuleVersion mv
+               WHERE mv.module = m AND mv.published = true
+           )
            ORDER BY m.createdAt DESC
            """)
     List<Module> findMostRecentModules(Pageable pageable);
