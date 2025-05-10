@@ -61,6 +61,9 @@ public class Module {
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
     private List<IntegratedModuleBlock> moduleBlocks;
 
+    @OneToMany(mappedBy = "module", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ModuleComment> comments;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Picture picture;
 

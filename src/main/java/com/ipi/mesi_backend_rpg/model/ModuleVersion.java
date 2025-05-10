@@ -35,6 +35,9 @@ public class ModuleVersion {
     @ManyToOne(fetch = FetchType.LAZY)
     private GameSystem gameSystem;
 
+    @OneToMany(mappedBy = "moduleVersion", orphanRemoval = true)
+    private List<ModuleComment> comments;
+
     public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem, String language) {
         this();
         this.module = module;
