@@ -139,13 +139,13 @@ public class ModuleService {
                 .collect(Collectors.toList());
     }
 
-    public List<ModuleResponseDTO> getMostSavedModules() {
-        return moduleRepository.findMostSavedModules(PageRequest.of(0, 10))
+    public List<ModuleResponseDTO> getMostSavedModules(int limit) {
+        return moduleRepository.findMostSavedModules(PageRequest.of(0, limit))
                 .stream().map(moduleMapper::toDTO).collect(Collectors.toList());
     }
 
-    public List<ModuleResponseDTO> getMostRecentModules() {
-        return moduleRepository.findMostRecentModules(PageRequest.of(0, 10))
+    public List<ModuleResponseDTO> getMostRecentModules(int limit) {
+        return moduleRepository.findMostRecentModules(PageRequest.of(0, limit))
                 .stream().map(moduleMapper::toDTO).collect(Collectors.toList());
     }
 }
