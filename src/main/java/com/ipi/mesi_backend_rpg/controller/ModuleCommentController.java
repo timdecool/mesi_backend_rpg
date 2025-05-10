@@ -29,14 +29,24 @@ public class ModuleCommentController {
 
 
     @GetMapping("/module/{moduleId}")
-    public ResponseEntity<List<ModuleCommentDTO>> getModuleCommentsByModule(@PathVariable("moduleId") Module module) {
-        List<ModuleCommentDTO> moduleVersions = moduleCommentService.findAllByModule(module);
+    public ResponseEntity<List<ModuleCommentDTO>> getModuleCommentsByModule(
+            @PathVariable("moduleId") Module module,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int limit
+    )
+    {
+        List<ModuleCommentDTO> moduleVersions = moduleCommentService.findAllByModule(module, page, limit);
         return new ResponseEntity<>(moduleVersions, HttpStatus.OK);
     }
 
     @GetMapping("/version/{moduleVersionId}")
-    public ResponseEntity<List<ModuleCommentDTO>> getModuleCommentsByModuleVersion(@PathVariable("moduleVersionId") ModuleVersion moduleVersion) {
-        List<ModuleCommentDTO> moduleVersions = moduleCommentService.findAllByModuleVersion(moduleVersion);
+    public ResponseEntity<List<ModuleCommentDTO>> getModuleCommentsByModuleVersion(
+        @PathVariable("moduleVersionId") ModuleVersion moduleVersion,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int limit
+        )
+    {
+        List<ModuleCommentDTO> moduleVersions = moduleCommentService.findAllByModuleVersion(moduleVersion, page, limit);
         return new ResponseEntity<>(moduleVersions, HttpStatus.OK);
     }
 

@@ -11,6 +11,7 @@ import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.ModuleCommentRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -59,20 +60,20 @@ public class ModuleCommentService {
         moduleCommentRepository.delete(comment);
     }
 
-    public List<ModuleCommentDTO> findAllByModule(Module module) {
+    public List<ModuleCommentDTO> findAllByModule(Module module, int page, int limit) {
         if (module == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "module not found");
         }
 
-        return moduleCommentRepository.findAllByModule(module).stream().map(moduleCommentMapper::toDTO).toList();
+        return moduleCommentRepository.findAllByModule(module, PageRequest.of(page, limit)).stream().map(moduleCommentMapper::toDTO).toList();
     }
 
-    public List<ModuleCommentDTO> findAllByModuleVersion(ModuleVersion moduleVersion) {
+    public List<ModuleCommentDTO> findAllByModuleVersion(ModuleVersion moduleVersion, int page, int limit) {
         if (moduleVersion == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found");
         }
 
-        return moduleCommentRepository.findAllByModuleVersion(moduleVersion).stream().map(moduleCommentMapper::toDTO).toList();
+        return moduleCommentRepository.findAllByModuleVersion(moduleVersion, PageRequest.of(page, limit)).stream().map(moduleCommentMapper::toDTO).toList();
     }
 
 }
