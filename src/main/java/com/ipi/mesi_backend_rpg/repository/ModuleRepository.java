@@ -1,5 +1,6 @@
 package com.ipi.mesi_backend_rpg.repository;
 
+import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 
 import java.util.List;
@@ -24,4 +25,7 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
      */
     @Query("SELECT m FROM Module m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(m.description) LIKE LOWER(CONCAT('%', :query, '%'))")
     List<Module> findByTitleOrDescriptionContainingIgnoreCase(@Param("query") String query, Pageable pageable);
+
+    @Query("SELECT m FROM Module m JOIN ModuleComment c ON c.module = m GROUP BY m ORDER BY COUNT(c) DESC")
+    List<Module> findMostCommentedModules(Pageable pageable);
 }

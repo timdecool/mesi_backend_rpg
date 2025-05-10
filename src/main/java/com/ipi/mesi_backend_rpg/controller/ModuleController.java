@@ -35,6 +35,14 @@ public class ModuleController {
         return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
+    @GetMapping("/most-commented")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostCommentedModules(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int page
+            ) {
+        return new ResponseEntity<>(moduleService.getMostCommentedModules(limit, page), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ModuleResponseDTO> createModule(@Valid @RequestBody ModuleRequestDTO moduleRequestDTO) {
         ModuleResponseDTO module = moduleService.createModule(moduleRequestDTO);
