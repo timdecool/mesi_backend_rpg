@@ -54,4 +54,16 @@ public class UserController {
         userService.deleteUser(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/search/username/{query}") 
+    public ResponseEntity<List<UserDTO>> searchUsersByUsername(@PathVariable String query) {
+        List<UserDTO> users = userService.searchUsersByUsername(query);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/email/{query}") 
+    public ResponseEntity<List<UserDTO>> searchUsersByEmail(@PathVariable String query) {
+        List<UserDTO> users = userService.searchUsersByEmail(query);
+        return new ResponseEntity<>(users, HttpStatus.OK);
+    }
 }

@@ -47,12 +47,18 @@ public class ModuleController {
             @PathVariable Long id
     ) {
         ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO);
-        return new ResponseEntity<>(module, HttpStatus.OK);
+        return new ResponseEntity<ModuleResponseDTO>(module, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteModule(@PathVariable Long id) {
         moduleService.deleteModule(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/search/{query}")
+    public ResponseEntity<List<ModuleResponseDTO>> searchModules(@PathVariable String query) {
+        List<ModuleResponseDTO> modules = moduleService.searchModules(query);
+        return new ResponseEntity<>(modules, HttpStatus.OK);
     }
 }

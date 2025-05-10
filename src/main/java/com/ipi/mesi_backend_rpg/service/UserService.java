@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,5 +62,24 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public List<UserDTO> searchUsersByUsername(String query) {
+        List<User> users = userRepository.findFirst20ByUsernameContainingIgnoreCase(query);
+        if (users.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found with username containing: " + query);
+        }
+        return users.stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserDTO> searchUsersByEmail(String query) { 
+        List<User> users = userRepository.findFirst20ByEmailContainingIgnoreCase(query);
+        if (users.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found with email containing: " + query);
+        }
+        return users.stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 
 }

@@ -1,7 +1,6 @@
 package com.ipi.mesi_backend_rpg.controller;
 
 import com.ipi.mesi_backend_rpg.dto.BlockDTO;
-import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.service.BlockService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,27 +19,33 @@ public class BlockController {
         this.blockService = blockService;
     }
 
-    @GetMapping("/module-version/{module-version}")
-    public ResponseEntity<List<BlockDTO>> getAllBlocks(@PathVariable(name = "module-version", required = true) ModuleVersion moduleVersion) {
-        List<BlockDTO> blocks = blockService.getAllBlocks(moduleVersion);
-        return new ResponseEntity<>(blocks, HttpStatus.OK);
+    @GetMapping("/module-version/{moduleVersionId}")
+    public ResponseEntity<List<BlockDTO>> getBlocksByModuleVersionId(@PathVariable Long moduleVersionId) {
+        List<BlockDTO> blocks = blockService.getAllBlocksByModuleVersionId(moduleVersionId);
+        return ResponseEntity.ok(blocks);
     }
-
+    
     @PostMapping
     public ResponseEntity<BlockDTO> createBlock(@Valid @RequestBody BlockDTO blockDTO) {
-        BlockDTO block = blockService.createBlock(blockDTO);
-        return new ResponseEntity<>(block, HttpStatus.CREATED);
+        BlockDTO createdBlock = blockService.createBlock(blockDTO);
+        return new ResponseEntity<>(createdBlock, HttpStatus.CREATED);
     }
-
+    
     @PutMapping("/{id}")
     public ResponseEntity<BlockDTO> updateBlock(@PathVariable Long id, @Valid @RequestBody BlockDTO blockDTO) {
-        BlockDTO block = blockService.updateBlock(id, blockDTO);
-        return new ResponseEntity<>(block, HttpStatus.OK);
+        BlockDTO updatedBlock = blockService.updateBlock(id, blockDTO);
+        return ResponseEntity.ok(updatedBlock);
     }
-
+    
     @DeleteMapping("/{id}")
-    public ResponseEntity<BlockDTO> deleteBlock(@PathVariable Long id) {
-        BlockDTO block = blockService.deleteBlock(id);
-        return new ResponseEntity<>(block, HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> deleteBlock(@PathVariable Long id) {
+        blockService.deleteBlock(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @PostMapping("/batch")
+    public ResponseEntity<Void> createOrUpdateBlocks(@Valid @RequestBody List<BlockDTO> blockDTOs) {
+        blockService.createOrUpdateBlocks(blockDTOs);
+        return ResponseEntity.ok().build();
     }
 }

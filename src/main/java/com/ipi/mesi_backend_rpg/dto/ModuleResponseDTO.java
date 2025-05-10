@@ -1,10 +1,9 @@
 package com.ipi.mesi_backend_rpg.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ipi.mesi_backend_rpg.model.ModuleAccess;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public record ModuleResponseDTO(
         Long id,
