@@ -15,15 +15,16 @@ import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
 import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
+import com.ipi.mesi_backend_rpg.model.Module;
+import com.ipi.mesi_backend_rpg.model.ModuleAccess;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
 
-import com.ipi.mesi_backend_rpg.model.Module;
-import com.ipi.mesi_backend_rpg.model.ModuleAccess;
-
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -41,6 +42,8 @@ public class ModuleService {
 
     private final GameSystemRepository gameSystemRepository;
     private final UserRepository userRepository;
+
+    private final UserSavedModuleRepository userSavedModuleRepository;
 
     public List<ModuleResponseDTO> findAllModules() {
         return moduleRepository.findAll().stream().map(moduleMapper::toDTO).toList();
@@ -123,7 +126,9 @@ public class ModuleService {
         return findById(existingModule.getId());
     }
 
+    @Transactional
     public void deleteModule(Long id) {
+        userSavedModuleRepository.deleteByModuleId(id);
         moduleRepository.findById(id).ifPresent(moduleRepository::delete);
     }
 

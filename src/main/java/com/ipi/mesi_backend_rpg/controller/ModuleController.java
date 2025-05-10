@@ -1,15 +1,24 @@
 package com.ipi.mesi_backend_rpg.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.service.ModuleService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/modules")
@@ -47,7 +56,7 @@ public class ModuleController {
             @PathVariable Long id
     ) {
         ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO);
-        return new ResponseEntity<ModuleResponseDTO>(module, HttpStatus.OK);
+        return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
