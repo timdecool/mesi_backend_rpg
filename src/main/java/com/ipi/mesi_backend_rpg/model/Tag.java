@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,18 +19,16 @@ public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    private Long id;
 
     @NotNull(message = "tag name mandatory")
     @NotBlank(message = "tag name empty")
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {
-                    CascadeType.PERSIST,
-                    CascadeType.MERGE
-            },
-            mappedBy = "tags")
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    }, mappedBy = "tags")
     @JsonIgnore
     private List<Module> modules;
 
@@ -37,5 +36,18 @@ public class Tag {
         this.name = name;
         this.modules = modules;
     }
-    
+
+    public void addToModule(Module module) {
+        if (this.modules == null) {
+            this.modules = new ArrayList<>();
+        }
+        this.modules.add(module);
+        if (module.getTags() == null) {
+            module.setTags(new ArrayList<>());
+        }
+        if (!module.getTags().contains(this)) {
+            module.getTags().add(this);
+        }
+    }
+
 }

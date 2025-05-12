@@ -1,8 +1,11 @@
 package com.ipi.mesi_backend_rpg.controller;
 
-import com.ipi.mesi_backend_rpg.dto.TagDTO;
+import com.ipi.mesi_backend_rpg.dto.TagRequestDTO;
+import com.ipi.mesi_backend_rpg.dto.TagResponseDTO;
 import com.ipi.mesi_backend_rpg.service.TagService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,54 +14,51 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tags")
+@RequiredArgsConstructor
 public class TagController {
+    private final TagService tagService;
 
-    TagService tagService;
-
-    public TagController(TagService tagService) {
-        this.tagService = tagService;
-    }
-
-    @GetMapping
-    public ResponseEntity<List<TagDTO>> getAllTags() {
-        List<TagDTO> tags = tagService.getAllTags();
-        return new ResponseEntity<>(tags, HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<TagDTO> getTagById(@PathVariable Integer id) {
-        TagDTO tag = tagService.getTagById(id);
-        return new ResponseEntity<>(tag, HttpStatus.OK);
-    }
-
-    @GetMapping("/name/{name}")
-    public ResponseEntity<TagDTO> getTagByName(@PathVariable String name) {
-        TagDTO tag = tagService.getTagByName(name);
-        return new ResponseEntity<>(tag, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<TagResponseDTO> createTag(@Valid @RequestBody TagRequestDTO requestDTO) {
+        TagResponseDTO responseDTO = tagService.createTag(requestDTO);
+        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
     @GetMapping("/search/{query}")
-    public ResponseEntity<List<TagDTO>> searchTags(@PathVariable String query) {
-        List<TagDTO> tags = tagService.searchTags(query);
-        return new ResponseEntity<>(tags, HttpStatus.OK);
+    public ResponseEntity<List<TagResponseDTO>> searchTags(@PathVariable String query) {
+        List<TagResponseDTO> responseDTOs = tagService.searchTagsByName(query);
+        return ResponseEntity.ok(responseDTOs);
     }
 
-    @PostMapping
-    public ResponseEntity<TagDTO> createTag(@Valid @RequestBody TagDTO tagDTO) {
-        TagDTO tag = tagService.createTag(tagDTO);
-        return new ResponseEntity<>(tag, HttpStatus.CREATED);
+    @GetMapping("most-used")
+    public ResponseEntity<List<TagResponseDTO>> getMostUsedTags() {
+        List<TagResponseDTO> responseDTOs = tagService.getMostUsedTags();
+        return ResponseEntity.ok(responseDTOs);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTag(@PathVariable Integer id) {
-        tagService.deleteTag(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @GetMapping("/{id}")
+    public ResponseEntity<TagResponseDTO> getTagById(@PathVariable Long id) {
+        TagResponseDTO responseDTO = tagService.getTagById(id);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TagResponseDTO>> getAllTags() {
+        List<TagResponseDTO> tags = tagService.getAllTags();
+        return ResponseEntity.ok(tags);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TagDTO> updateTag(@PathVariable Integer id, @Valid @RequestBody TagDTO tagDTO) {
-        TagDTO updatedTag = tagService.updateTag(id, tagDTO);
-        return new ResponseEntity<>(updatedTag, HttpStatus.OK);
+    public ResponseEntity<TagResponseDTO> updateTag(
+            @PathVariable Long id,
+            @Valid @RequestBody TagRequestDTO requestDTO) {
+        TagResponseDTO responseDTO = tagService.updateTag(id, requestDTO);
+        return ResponseEntity.ok(responseDTO);
     }
-    
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
+        tagService.deleteTag(id);
+        return ResponseEntity.noContent().build();
+    }
 }

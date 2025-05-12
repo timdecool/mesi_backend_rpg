@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -45,7 +46,9 @@ public class Module {
     @ManyToOne(fetch = FetchType.LAZY)
     private User creator;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     private Boolean isTemplate;
@@ -96,7 +99,16 @@ public class Module {
     }
 
     public void addTag(Tag tag) {
-        this.getTags().add(tag);
+        if (this.tags == null) {
+            this.tags = new ArrayList<>();
+        }
+        this.tags.add(tag);
+        if (tag.getModules() == null) {
+            tag.setModules(new ArrayList<>());
+        }
+        if (!tag.getModules().contains(this)) {
+            tag.getModules().add(this);
+        }
     }
 
     public void removeTag(Tag tag) {

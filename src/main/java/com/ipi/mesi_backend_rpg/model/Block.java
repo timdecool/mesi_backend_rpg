@@ -6,6 +6,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Getter
@@ -26,7 +28,9 @@ public class Block {
     @ManyToOne(fetch = FetchType.LAZY)
     protected User creator;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     protected LocalDate createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     protected LocalDate updatedAt;
 
     public Block() {

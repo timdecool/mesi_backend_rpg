@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Getter
 @Setter
@@ -18,7 +20,9 @@ public class GameSystem {
 
     private Long id;
     private String name;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate updatedAt;
 
     @OneToMany(mappedBy = "gameSystem", fetch = FetchType.LAZY)
