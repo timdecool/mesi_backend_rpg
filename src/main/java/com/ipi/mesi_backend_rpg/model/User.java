@@ -1,14 +1,21 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -28,15 +35,19 @@ public class User {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore 
     private List<ModuleAccess> accesses;
 
     @OneToMany(mappedBy= "creator", fetch = FetchType.LAZY)
+    @JsonIgnore 
     private List<Module> createdModules;
 
     @OneToMany(mappedBy="creator", fetch = FetchType.LAZY)
+    @JsonIgnore 
     private List<ModuleVersion> createdModuleVersions;
 
     @OneToOne(mappedBy = "user")
+    @JsonIgnore 
     private UserProfile profile;
 
     public User(String username, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {

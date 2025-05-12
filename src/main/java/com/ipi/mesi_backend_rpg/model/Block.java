@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,6 +36,7 @@ public class Block {
     protected String type;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     protected User creator;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

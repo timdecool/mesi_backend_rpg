@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
@@ -36,6 +37,7 @@ public class ModuleVersion {
     private String language;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private User creator;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -48,6 +50,7 @@ public class ModuleVersion {
     private List<Block> blocks;
     
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private GameSystem gameSystem;
 
     public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem,
