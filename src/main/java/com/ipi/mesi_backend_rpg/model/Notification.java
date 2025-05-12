@@ -2,6 +2,7 @@ package com.ipi.mesi_backend_rpg.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -28,6 +29,7 @@ public class Notification {
 
     private String content;
 
+    @Column(name = "`read`")
     private boolean read;
 
     private LocalDateTime createdAt;
