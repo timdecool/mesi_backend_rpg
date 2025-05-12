@@ -1,11 +1,18 @@
 package com.ipi.mesi_backend_rpg.model;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -29,13 +36,14 @@ public class ModuleVersion {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "moduleVersion", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "moduleVersion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Block> blocks;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     private GameSystem gameSystem;
 
-    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem, String language) {
+    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem,
+            String language) {
         this();
         this.module = module;
         this.version = version;
