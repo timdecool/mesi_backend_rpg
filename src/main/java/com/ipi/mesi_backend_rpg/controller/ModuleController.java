@@ -44,6 +44,22 @@ public class ModuleController {
         return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
+    @GetMapping("/most-saved")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostSavedModules(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return new ResponseEntity<>(moduleService.getMostSavedModules(page, limit), HttpStatus.OK);
+    }
+
+    @GetMapping("/most-recent")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostRecentModules(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return new ResponseEntity<>(moduleService.getMostRecentModules(page, limit), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ModuleResponseDTO> createModule(@Valid @RequestBody ModuleRequestDTO moduleRequestDTO) {
         ModuleResponseDTO module = moduleService.createModule(moduleRequestDTO);
