@@ -22,4 +22,10 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     @Query("SELECT t FROM Tag t JOIN t.modules m WHERE m.id = :moduleId")
     List<Tag> findByModuleId(@Param("moduleId") Long moduleId);
 
+    /**
+     * Trouve tous les tags associés à un module spécifique
+     * @param moduleId L'identifiant du module
+     * @return La liste des tags associés au module
+     */
+    List<Tag> findByModulesId(Long moduleId);
 }

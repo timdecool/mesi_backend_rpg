@@ -61,4 +61,16 @@ public class TagController {
         tagService.deleteTag(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Récupère tous les tags associés à un module spécifique
+     * 
+     * @param moduleId L'identifiant du module
+     * @return Une liste de TagResponseDTO représentant les tags liés au module
+     */
+    @GetMapping("/module/{moduleId}")
+    public ResponseEntity<List<TagResponseDTO>> getTagsByModuleId(@PathVariable Long moduleId) {
+        List<TagResponseDTO> responseDTOs = tagService.getTagsByModuleId(moduleId);
+        return ResponseEntity.ok(responseDTOs);
+    }
 }

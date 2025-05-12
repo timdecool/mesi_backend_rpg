@@ -1,6 +1,7 @@
 package com.ipi.mesi_backend_rpg.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.ipi.mesi_backend_rpg.dto.TagRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.TagResponseDTO;
 import com.ipi.mesi_backend_rpg.mapper.TagMapper;
 import com.ipi.mesi_backend_rpg.model.Tag;
+import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.TagRepository;
 
@@ -86,6 +88,7 @@ public class TagService {
 
     /**
      * Recherche des tags par nom contenant la chaîne de caractères spécifiée
+     * 
      * @param query La chaîne de caractères à rechercher dans les noms de tags
      * @return Une liste de TagResponseDTO correspondant aux critères de recherche
      */
@@ -93,25 +96,49 @@ public class TagService {
     public List<TagResponseDTO> searchTagsByName(String query) {
         // Recherche insensible à la casse des tags dont le nom contient la requête
         List<Tag> tags = tagRepository.findByNameContainingIgnoreCase(query);
-        
+
         // Convertir les entités en DTOs de réponse
         return tags.stream()
-            .map(tagMapper::toResponseDTO)
-            .collect(Collectors.toList());
+                .map(tagMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
     /**
      * Récupère les tags les plus utilisés, triés par nombre de modules décroissant
+     * 
      * @return Une liste de TagResponseDTO représentant les tags les plus utilisés
      */
     @Transactional()
     public List<TagResponseDTO> getMostUsedTags() {
         // Récupérer les tags triés par nombre de modules décroissant
         List<Tag> mostUsedTags = tagRepository.findAllOrderByModuleCountDesc();
-        
+
         // Convertir les entités en DTOs de réponse
         return mostUsedTags.stream()
-            .map(tagMapper::toResponseDTO)
-            .collect(Collectors.toList());
+                .map(tagMapper::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Récupère tous les tags associés à un module spécifique
+     * 
+     * @param moduleId L'identifiant du module
+     * @return Une liste de TagResponseDTO représentant les tags liés au module
+     */
+    @Transactional()
+    public List<TagResponseDTO> getTagsByModuleId(Long moduleId) {
+        // Vérifier si le module existe
+        Optional<Module> module = moduleRepository.findById(moduleId);
+        if (module == null) {
+            throw new RuntimeException("Module not found with id: " + moduleId);
+        }
+
+        // Récupérer les tags associés au module
+        List<Tag> tags = tagRepository.findByModulesId(moduleId);
+
+        // Convertir les entités en DTOs de réponse
+        return tags.stream()
+                .map(tagMapper::toResponseDTO)
+                .collect(Collectors.toList());
     }
 }
