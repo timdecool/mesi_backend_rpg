@@ -73,4 +73,12 @@ public class TagController {
         List<TagResponseDTO> responseDTOs = tagService.getTagsByModuleId(moduleId);
         return ResponseEntity.ok(responseDTOs);
     }
+
+    @DeleteMapping("/{tagId}/modules/{moduleId}")
+    public ResponseEntity<TagResponseDTO> removeModuleFromTag(
+            @PathVariable Long tagId,
+            @PathVariable Long moduleId) {
+        TagResponseDTO updatedTag = tagService.removeModuleFromTag(tagId, moduleId);
+        return ResponseEntity.ok(updatedTag);
+    }
 }

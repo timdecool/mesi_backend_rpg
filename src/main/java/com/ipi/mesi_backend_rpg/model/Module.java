@@ -112,7 +112,9 @@ public class Module {
     }
 
     public void removeTag(Tag tag) {
-        this.getTags().remove(tag);
+        if (this.tags != null) {
+            this.tags.remove(tag);
+        }
     }
 
     public void addVersion(ModuleVersion version) {

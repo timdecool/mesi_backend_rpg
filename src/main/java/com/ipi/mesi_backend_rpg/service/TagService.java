@@ -1,10 +1,12 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.ipi.mesi_backend_rpg.dto.TagRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.TagResponseDTO;
@@ -26,13 +28,39 @@ public class TagService {
 
     @Transactional
     public TagResponseDTO createTag(TagRequestDTO tagDTO) {
-        // Utiliser tagDTO au lieu de requestDTO
-        Tag tag = tagMapper.toEntityFromRequest(tagDTO);
+        // Créer le nouveau tag
+        Tag tag = new Tag();
+        tag.setName(tagDTO.name());
 
-        // Sauvegarder l'entité
+        // Sauvegarder le tag
         Tag savedTag = tagRepository.save(tag);
 
-        // Retourner un TagDTO, pas un TagResponseDTO
+        // Associer aux modules si spécifiés
+        if (tagDTO.moduleIds() != null && !tagDTO.moduleIds().isEmpty()) {
+            List<Module> modules = moduleRepository.findAllById(tagDTO.moduleIds());
+
+            for (Module module : modules) {
+                // Ajouter le tag au module
+                if (module.getTags() == null) {
+                    module.setTags(new ArrayList<Tag>());
+                }
+                module.getTags().add(savedTag);
+
+                // Ajouter le module au tag
+                if (savedTag.getModules() == null) {
+                    savedTag.setModules(new ArrayList<Module>());
+                }
+                savedTag.getModules().add(module);
+
+                // Sauvegarder le module mis à jour
+                moduleRepository.save(module);
+            }
+        }
+
+        // Récupérer le tag mis à jour
+        savedTag = tagRepository.findById(savedTag.getId())
+                .orElseThrow(() -> new RuntimeException("Tag not found after save"));
+
         return tagMapper.toResponseDTO(savedTag);
     }
 
@@ -83,7 +111,25 @@ public class TagService {
 
     @Transactional
     public void deleteTag(Long id) {
-        tagRepository.deleteById(id);
+        Tag tag = tagRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Tag not found with id: " + id));
+
+        // Supprimer d'abord les associations avec les modules
+        if (tag.getModules() != null) {
+            // Créer une copie de la liste pour éviter ConcurrentModificationException
+            List<Module> modules = new ArrayList<Module>(tag.getModules());
+
+            // Supprimer le tag de chaque module
+            for (Module module : modules) {
+                module.removeTag(tag);
+            }
+
+            // Vider la liste des modules associés au tag
+            tag.getModules().clear();
+        }
+
+        // Maintenant, supprimer le tag
+        tagRepository.delete(tag);
     }
 
     /**
@@ -128,8 +174,7 @@ public class TagService {
     @Transactional()
     public List<TagResponseDTO> getTagsByModuleId(Long moduleId) {
         // Vérifier si le module existe
-        Optional<Module> module = moduleRepository.findById(moduleId);
-        if (module == null) {
+        if (!moduleRepository.existsById(moduleId)) {
             throw new RuntimeException("Module not found with id: " + moduleId);
         }
 
@@ -140,5 +185,35 @@ public class TagService {
         return tags.stream()
                 .map(tagMapper::toResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public TagResponseDTO removeModuleFromTag(Long tagId, Long moduleId) {
+        // Trouver le tag
+        Tag tag = tagRepository.findById(tagId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Tag not found with id: " + tagId));
+
+        // Trouver le module
+        Module module = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Module not found with id: " + moduleId));
+
+        // Vérifier si le module est associé au tag
+        if (tag.getModules() == null || !tag.getModules().contains(module)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Module is not associated with this tag");
+        }
+
+        // Supprimer l'association des deux côtés
+        tag.getModules().remove(module);
+        module.getTags().remove(tag);
+
+        // Sauvegarder les modifications
+        moduleRepository.save(module);
+        Tag updatedTag = tagRepository.save(tag);
+
+        // Retourner le tag mis à jour
+        return tagMapper.toResponseDTO(updatedTag);
     }
 }

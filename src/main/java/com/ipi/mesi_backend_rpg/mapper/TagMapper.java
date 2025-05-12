@@ -50,9 +50,10 @@ public class TagMapper {
         tag.setName(dto.name());
         
         if (dto.moduleIds() != null && !dto.moduleIds().isEmpty()) {
-            // Utilisez le bon type pour l'entité Module
             List<Module> modules = moduleRepository.findAllById(dto.moduleIds());
-            tag.setModules(modules);
+            for (Module module : modules) {
+                tag.addToModule(module);
+            }
         }
         return tag;
     }

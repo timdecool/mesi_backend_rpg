@@ -41,7 +41,9 @@ public class Tag {
         if (this.modules == null) {
             this.modules = new ArrayList<>();
         }
-        this.modules.add(module);
+        if (!this.modules.contains(module)) {
+            this.modules.add(module);
+        }
         if (module.getTags() == null) {
             module.setTags(new ArrayList<>());
         }
