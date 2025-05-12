@@ -15,7 +15,7 @@ import lombok.Setter;
 public class IntegratedModuleBlock extends Block {
 
     @ManyToOne
-    @JsonBackReference("module_module_block")
+    @JsonBackReference("module-blocks")
     private Module module;
     
     public IntegratedModuleBlock(ModuleVersion moduleVersion, String title, Integer blockOrder, String type, User creator, Module module) {

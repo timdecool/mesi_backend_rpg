@@ -1,6 +1,10 @@
 package com.ipi.mesi_backend_rpg.model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,7 +33,8 @@ public class Tag {
             CascadeType.PERSIST,
             CascadeType.MERGE
     }, mappedBy = "tags")
-    @JsonIgnore
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)  
     private List<Module> modules;
 
     public Tag(String name, List<Module> modules) {

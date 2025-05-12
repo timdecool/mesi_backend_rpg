@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -62,19 +65,24 @@ public class Module {
     })
     @JoinTable(name = "module_tag", joinColumns = { @JoinColumn(name = "module_id") }, inverseJoinColumns = {
             @JoinColumn(name = "tag_id") })
+    @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference("module-versions")
     private List<ModuleVersion> versions = new ArrayList<>();
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference("module_module_access")
+    @JsonManagedReference("module-accesses")
     private List<ModuleAccess> accesses = new ArrayList<>();
 
     @OneToMany(mappedBy = "module", fetch = FetchType.LAZY)
+    @JsonManagedReference("module-moduleBlocks")
     private List<IntegratedModuleBlock> moduleBlocks;
 
     @OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("module-savedModules")
     private List<UserSavedModule> savedModules = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
