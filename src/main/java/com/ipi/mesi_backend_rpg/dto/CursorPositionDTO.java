@@ -13,4 +13,5 @@ public class CursorPositionDTO {
     private String blockId;
     private Position position;
     private String userColor; // Pour distinguer les curseurs des différents utilisateurs
+    private String elementId;
 }
