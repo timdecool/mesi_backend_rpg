@@ -1,5 +1,7 @@
 package com.ipi.mesi_backend_rpg.configuration;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -16,6 +18,9 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.ipi.mesi_backend_rpg.model.ModuleAccess;
+import com.ipi.mesi_backend_rpg.model.User;
+import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,7 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
 
     private final FirebaseAuth firebaseAuth;
     private final UserRepository userRepository;
+    private final ModuleAccessRepository moduleAccessRepository;
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
@@ -66,8 +72,66 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
                         log.warn("Missing authentication token for WebSocket connection");
                         throw new IllegalArgumentException("Missing authentication token");
                     }
+                    if (accessor != null &&
+                            (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) ||
+                                    StompCommand.SEND.equals(accessor.getCommand()))) {
+
+                        String destination = accessor.getDestination();
+                        if (destination != null && destination.startsWith("/user/")) {
+                            // S'assurer que l'utilisateur ne souscrit qu'à ses propres notifications
+                            String userId = accessor.getUser().getName();
+                            if (!destination.contains("/user/" + userId + "/")) {
+                                log.warn("User {} attempting to subscribe to another user's notifications: {}",
+                                        userId, destination);
+                                throw new IllegalArgumentException("Unauthorized subscription");
+                            }
+                        }
+
+                        // Si le message concerne un module spécifique, vérifier les permissions
+                        if (destination != null && destination.contains("/module/")) {
+                            Long moduleId = extractModuleId(destination);
+                            String userId = accessor.getUser().getName();
+
+                            if (moduleId != null && userId != null) {
+                                Long userIdLong = Long.parseLong(userId);
+                                User user = userRepository.findById(userIdLong).orElse(null);
+
+                                if (user != null) {
+                                    // Vérifier si l'utilisateur a accès au module
+                                    boolean hasAccess = checkModuleAccess(user, moduleId);
+                                    if (!hasAccess) {
+                                        log.warn("User {} attempting to access module {} without permission",
+                                                userId, moduleId);
+                                        throw new IllegalArgumentException("Unauthorized module access");
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 return message;
+            }
+
+            private Long extractModuleId(String destination) {
+                // "/topic/module/123" -> 123
+                try {
+                    String[] parts = destination.split("/");
+                    for (int i = 0; i < parts.length; i++) {
+                        if ("module".equals(parts[i]) && i + 1 < parts.length) {
+                            return Long.parseLong(parts[i + 1]);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.debug("Failed to extract module ID from: {}", destination);
+                }
+                return null;
+            }
+
+            private boolean checkModuleAccess(User user, Long moduleId) {
+                // Vérifier si l'utilisateur a un ModuleAccess pour ce module
+                List<ModuleAccess> accesses = moduleAccessRepository.findAllByUser(user);
+                return accesses.stream()
+                        .anyMatch(access -> access.getModule().getId() == moduleId && access.isCanView());
             }
         });
     }

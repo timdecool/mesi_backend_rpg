@@ -26,7 +26,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Point d'entrée WebSocket avec fallback SockJS
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:4200") // Autoriser votre client Angular
+                .setAllowedOrigins("http://localhost:4200")
                 .withSockJS();
     }
 }

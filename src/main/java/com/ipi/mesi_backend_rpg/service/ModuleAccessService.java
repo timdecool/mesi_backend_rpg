@@ -24,6 +24,7 @@ import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+import com.ipi.mesi_backend_rpg.utils.SecurityUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class ModuleAccessService {
 
     private final NotificationService notificationService;
+    private final SecurityUtils securityUtils;
 
     private final ModuleAccessRepository moduleAccessRepository;
     private final ModuleAccessMapper moduleAccessMapper;
@@ -77,15 +79,14 @@ public class ModuleAccessService {
         moduleAccess = moduleAccessRepository.save(moduleAccess);
 
         // Ajout de la notification
-        User creator = module.getCreator();
-        String content = creator.getUsername() + " a partagé le module \"" + module.getTitle() + "\" avec vous";
+        User actor = securityUtils.getCurrentUser();
+        String content = actor.getUsername() + " a partagé le module \"" + module.getTitle() + "\" avec vous";
         notificationService.createNotification(
-            NotificationType.MODULE_SHARED,
-            content,
-            user,  // destinataire
-            creator, // expéditeur
-            module
-        );
+                NotificationType.MODULE_SHARED,
+                content,
+                user, // destinataire
+                actor, // expéditeur
+                module);
 
         return moduleAccessMapper.toDTO(moduleAccess);
     }
@@ -99,18 +100,18 @@ public class ModuleAccessService {
         }
         UserDTO userFromDto = accessDTO.user();
         if (userFromDto == null || userFromDto.id() == null) {
-            throw new IllegalArgumentException("User information (UserDTO with ID) is missing in ModuleAccessDTO for creation.");
+            throw new IllegalArgumentException(
+                    "User information (UserDTO with ID) is missing in ModuleAccessDTO for creation.");
         }
 
         ModuleAccessDTO dtoForMapper = new ModuleAccessDTO(
-            null, 
-            module.getId(), 
-            userFromDto,
-            accessDTO.canView(),
-            accessDTO.canEdit(),
-            accessDTO.canPublish(),
-            accessDTO.canInvite()
-        );
+                null,
+                module.getId(),
+                userFromDto,
+                accessDTO.canView(),
+                accessDTO.canEdit(),
+                accessDTO.canPublish(),
+                accessDTO.canInvite());
 
         ModuleAccess newAccessEntity = moduleAccessMapper.toEntity(dtoForMapper);
 
@@ -121,6 +122,21 @@ public class ModuleAccessService {
     public ModuleAccessDTO deleteModuleAccess(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                
+        Module module = moduleAccess.getModule();
+        User user = moduleAccess.getUser();
+        User actor = securityUtils.getCurrentUser();
+        
+        String content = String.format("Votre accès au module \"%s\" a été supprimé", module.getTitle());
+        
+        notificationService.createNotification(
+            NotificationType.ACCESS_RIGHTS_REMOVED,
+            content,
+            user,  // destinataire
+            actor, // expéditeur
+            module
+        );
+        
         moduleAccessRepository.delete(moduleAccess);
         return moduleAccessMapper.toDTO(moduleAccess);
     }
@@ -128,16 +144,63 @@ public class ModuleAccessService {
     public ModuleAccessDTO toggleAccessRight(Integer id, AccessRight accessRight) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "ModuleAccess not found with id: "));
+                        "ModuleAccess not found with id: " + id));
+
+        boolean oldValue = false;
+        boolean newValue = false;
+        String rightName = "";
 
         switch (accessRight) {
-            case VIEW -> moduleAccess.setCanView(!moduleAccess.isCanView());
-            case EDIT -> moduleAccess.setCanEdit(!moduleAccess.isCanEdit());
-            case PUBLISH -> moduleAccess.setCanPublish(!moduleAccess.isCanPublish());
-            case INVITE -> moduleAccess.setCanInvite(!moduleAccess.isCanInvite());
-            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Invalid right type: " + accessRight + "only accept VIEW, EDIT, PUBLISH, INVITE");
+            case VIEW:
+                oldValue = moduleAccess.isCanView();
+                moduleAccess.setCanView(!oldValue);
+                newValue = !oldValue;
+                rightName = "visualisation";
+                break;
+            case EDIT:
+                oldValue = moduleAccess.isCanEdit();
+                moduleAccess.setCanEdit(!oldValue);
+                newValue = !oldValue;
+                rightName = "modification";
+                break;
+            case PUBLISH:
+                oldValue = moduleAccess.isCanPublish();
+                moduleAccess.setCanPublish(!oldValue);
+                newValue = !oldValue;
+                rightName = "publication";
+                break;
+            case INVITE:
+                oldValue = moduleAccess.isCanInvite();
+                moduleAccess.setCanInvite(!oldValue);
+                newValue = !oldValue;
+                rightName = "invitation";
+                break;
+            default:
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Invalid right type: " + accessRight + " only accept VIEW, EDIT, PUBLISH, INVITE");
         }
+
+        // Créer une notification pour informer l'utilisateur du changement
+        Module module = moduleAccess.getModule();
+        User user = moduleAccess.getUser();
+
+        // Utiliser SecurityUtils pour obtenir l'utilisateur actuel
+        User actor = securityUtils.getCurrentUser();
+        if (actor == null) {
+            // Fallback si l'utilisateur n'est pas trouvé (e.g., opération système)
+            actor = module.getCreator();
+        }
+
+        String action = newValue ? "accordé" : "retiré";
+        String content = String.format("Le droit de %s pour le module \"%s\" vous a été %s",
+                rightName, module.getTitle(), action);
+
+        notificationService.createNotification(
+                NotificationType.ACCESS_RIGHTS_CHANGED,
+                content,
+                user, // destinataire
+                actor, // expéditeur (celui qui a modifié les droits)
+                module);
 
         ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
         return moduleAccessMapper.toDTO(savedAccess);
@@ -148,10 +211,58 @@ public class ModuleAccessService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "ModuleAccess not found with id: " + id));
 
+        // Sauvegarder les droits d'origine pour comparaison
+        boolean oldCanView = moduleAccess.isCanView();
+        boolean oldCanEdit = moduleAccess.isCanEdit();
+        boolean oldCanPublish = moduleAccess.isCanPublish();
+        boolean oldCanInvite = moduleAccess.isCanInvite();
+
+        // Mettre à jour les droits
         moduleAccess.setCanView(moduleAccessDTO.canView());
         moduleAccess.setCanEdit(moduleAccessDTO.canEdit());
         moduleAccess.setCanPublish(moduleAccessDTO.canPublish());
         moduleAccess.setCanInvite(moduleAccessDTO.canInvite());
+
+        // Si des droits ont changé, envoyer une notification
+        if (oldCanView != moduleAccessDTO.canView() || 
+            oldCanEdit != moduleAccessDTO.canEdit() || 
+            oldCanPublish != moduleAccessDTO.canPublish() || 
+            oldCanInvite != moduleAccessDTO.canInvite()) {
+            
+            Module module = moduleAccess.getModule();
+            User user = moduleAccess.getUser();
+            User actor = securityUtils.getCurrentUser();
+            
+            StringBuilder changes = new StringBuilder();
+            if (oldCanView != moduleAccessDTO.canView()) {
+                changes.append(moduleAccessDTO.canView() ? "visualisation (ajouté)" : "visualisation (retiré)").append(", ");
+            }
+            if (oldCanEdit != moduleAccessDTO.canEdit()) {
+                changes.append(moduleAccessDTO.canEdit() ? "modification (ajouté)" : "modification (retiré)").append(", ");
+            }
+            if (oldCanPublish != moduleAccessDTO.canPublish()) {
+                changes.append(moduleAccessDTO.canPublish() ? "publication (ajouté)" : "publication (retiré)").append(", ");
+            }
+            if (oldCanInvite != moduleAccessDTO.canInvite()) {
+                changes.append(moduleAccessDTO.canInvite() ? "invitation (ajouté)" : "invitation (retiré)").append(", ");
+            }
+            
+            // Supprimer la dernière virgule et espace
+            if (changes.length() > 2) {
+                changes.delete(changes.length() - 2, changes.length());
+            }
+            
+            String content = String.format("Vos droits d'accès au module \"%s\" ont été modifiés : %s", 
+                    module.getTitle(), changes.toString());
+            
+            notificationService.createNotification(
+                NotificationType.ACCESS_RIGHTS_CHANGED,
+                content,
+                user,  // destinataire
+                actor, // expéditeur
+                module
+            );
+        }
 
         ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
         return moduleAccessMapper.toDTO(savedAccess);
