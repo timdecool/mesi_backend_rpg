@@ -108,6 +108,35 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
                             }
                         }
                     }
+
+                    if (accessor != null &&
+                            (StompCommand.SUBSCRIBE.equals(accessor.getCommand()) ||
+                                    StompCommand.SEND.equals(accessor.getCommand()))) {
+
+                        String destination = accessor.getDestination();
+
+                        // Vérification spécifique pour les abonnements aux mises à jour d'accès module
+                        if (destination != null && destination.matches("/module/\\d+/access-updates")) {
+                            Long moduleId = extractModuleId(destination);
+                            String userId = accessor.getUser().getName();
+
+                            if (moduleId != null && userId != null) {
+                                Long userIdLong = Long.parseLong(userId);
+                                User user = userRepository.findById(userIdLong).orElse(null);
+
+                                if (user != null) {
+                                    boolean hasAccess = checkModuleAccess(user, moduleId);
+                                    if (!hasAccess) {
+                                        log.warn(
+                                                "User {} attempting to subscribe to module access updates for {} without permission",
+                                                userId, moduleId);
+                                        throw new IllegalArgumentException(
+                                                "Unauthorized module access updates subscription");
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 return message;
             }

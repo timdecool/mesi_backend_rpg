@@ -1,6 +1,7 @@
 package com.ipi.mesi_backend_rpg.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -37,6 +39,18 @@ public class ModuleAccessService {
     private final ModuleAccessMapper moduleAccessMapper;
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
+
+    private final SimpMessagingTemplate messagingTemplate;
+
+    private void broadcastModuleAccessUpdate(Module module, String action, ModuleAccessDTO accessDTO) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("action", action); // "created", "updated", "deleted"
+        update.put("moduleId", module.getId());
+        update.put("access", accessDTO);
+
+        // Envoyer la mise à jour à tous les abonnés au canal de ce module
+        messagingTemplate.convertAndSend("/module/" + module.getId() + "/access-updates", update);
+    }
 
     public ModuleAccessDTO getModuleAccessById(Integer id) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
@@ -69,13 +83,13 @@ public class ModuleAccessService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         User user2 = userRepository.findById(user2Id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         moduleAccess.setModule(module);
         moduleAccess.setUser(user);
-        moduleAccess.setCanEdit(true);
+        moduleAccess.setCanEdit(false);
         moduleAccess.setCanView(true);
-        moduleAccess.setCanPublish(true);
-        moduleAccess.setCanInvite(true);
+        moduleAccess.setCanPublish(false);
+        moduleAccess.setCanInvite(false);
         moduleAccess = moduleAccessRepository.save(moduleAccess);
 
         // Ajout de la notification
@@ -87,7 +101,9 @@ public class ModuleAccessService {
                 user2, // expéditeur
                 module);
 
-        return moduleAccessMapper.toDTO(moduleAccess);
+        ModuleAccessDTO createdAccess = moduleAccessMapper.toDTO(moduleAccess);
+        broadcastModuleAccessUpdate(module, "created", createdAccess);
+        return createdAccess;
     }
 
     public ModuleAccessDTO createModuleAccessFromDTO(ModuleAccessDTO accessDTO, Module module) {
@@ -121,24 +137,26 @@ public class ModuleAccessService {
     public ModuleAccessDTO deleteModuleAccess(Integer id, Long userId) {
         ModuleAccess moduleAccess = moduleAccessRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-                
+
         Module module = moduleAccess.getModule();
         User user = moduleAccess.getUser();
         User actor = userRepository.findById(userId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         String content = String.format("Votre accès au module \"%s\" a été supprimé", module.getTitle());
-        
+
         notificationService.createNotification(
-            NotificationType.ACCESS_RIGHTS_REMOVED,
-            content,
-            user,  // destinataire
-            actor, // expéditeur
-            module
-        );
-        
+                NotificationType.ACCESS_RIGHTS_REMOVED,
+                content,
+                user, // destinataire
+                actor, // expéditeur
+                module);
+
+        ModuleAccessDTO deletedAccess = moduleAccessMapper.toDTO(moduleAccess);
+        broadcastModuleAccessUpdate(moduleAccess.getModule(), "deleted", deletedAccess);
+
         moduleAccessRepository.delete(moduleAccess);
-        return moduleAccessMapper.toDTO(moduleAccess);
+        return deletedAccess;
     }
 
     public ModuleAccessDTO toggleAccessRight(Integer id, AccessRight accessRight, Long userId) {
@@ -186,7 +204,7 @@ public class ModuleAccessService {
 
         // Utiliser SecurityUtils pour obtenir l'utilisateur actuel
         User actor = userRepository.findById(userId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         if (actor == null) {
             // Fallback si l'utilisateur n'est pas trouvé (e.g., opération système)
             actor = module.getCreator();
@@ -204,7 +222,10 @@ public class ModuleAccessService {
                 module);
 
         ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
-        return moduleAccessMapper.toDTO(savedAccess);
+        ModuleAccessDTO updatedAccess = moduleAccessMapper.toDTO(savedAccess);
+
+        broadcastModuleAccessUpdate(moduleAccess.getModule(), "updated", updatedAccess);
+        return updatedAccess;
     }
 
     public ModuleAccessDTO updateModuleAccess(Integer id, ModuleAccessDTO moduleAccessDTO, Long userId) {
@@ -225,49 +246,55 @@ public class ModuleAccessService {
         moduleAccess.setCanInvite(moduleAccessDTO.canInvite());
 
         // Si des droits ont changé, envoyer une notification
-        if (oldCanView != moduleAccessDTO.canView() || 
-            oldCanEdit != moduleAccessDTO.canEdit() || 
-            oldCanPublish != moduleAccessDTO.canPublish() || 
-            oldCanInvite != moduleAccessDTO.canInvite()) {
-            
+        if (oldCanView != moduleAccessDTO.canView() ||
+                oldCanEdit != moduleAccessDTO.canEdit() ||
+                oldCanPublish != moduleAccessDTO.canPublish() ||
+                oldCanInvite != moduleAccessDTO.canInvite()) {
+
             Module module = moduleAccess.getModule();
             User user = moduleAccess.getUser();
             User actor = userRepository.findById(userId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-            
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
             StringBuilder changes = new StringBuilder();
             if (oldCanView != moduleAccessDTO.canView()) {
-                changes.append(moduleAccessDTO.canView() ? "visualisation (ajouté)" : "visualisation (retiré)").append(", ");
+                changes.append(moduleAccessDTO.canView() ? "visualisation (ajouté)" : "visualisation (retiré)")
+                        .append(", ");
             }
             if (oldCanEdit != moduleAccessDTO.canEdit()) {
-                changes.append(moduleAccessDTO.canEdit() ? "modification (ajouté)" : "modification (retiré)").append(", ");
+                changes.append(moduleAccessDTO.canEdit() ? "modification (ajouté)" : "modification (retiré)")
+                        .append(", ");
             }
             if (oldCanPublish != moduleAccessDTO.canPublish()) {
-                changes.append(moduleAccessDTO.canPublish() ? "publication (ajouté)" : "publication (retiré)").append(", ");
+                changes.append(moduleAccessDTO.canPublish() ? "publication (ajouté)" : "publication (retiré)")
+                        .append(", ");
             }
             if (oldCanInvite != moduleAccessDTO.canInvite()) {
-                changes.append(moduleAccessDTO.canInvite() ? "invitation (ajouté)" : "invitation (retiré)").append(", ");
+                changes.append(moduleAccessDTO.canInvite() ? "invitation (ajouté)" : "invitation (retiré)")
+                        .append(", ");
             }
-            
+
             // Supprimer la dernière virgule et espace
             if (changes.length() > 2) {
                 changes.delete(changes.length() - 2, changes.length());
             }
-            
-            String content = String.format("Vos droits d'accès au module \"%s\" ont été modifiés : %s", 
+
+            String content = String.format("Vos droits d'accès au module \"%s\" ont été modifiés : %s",
                     module.getTitle(), changes.toString());
-            
+
             notificationService.createNotification(
-                NotificationType.ACCESS_RIGHTS_CHANGED,
-                content,
-                user,  // destinataire
-                actor, // expéditeur
-                module
-            );
+                    NotificationType.ACCESS_RIGHTS_CHANGED,
+                    content,
+                    user, // destinataire
+                    actor, // expéditeur
+                    module);
         }
 
         ModuleAccess savedAccess = moduleAccessRepository.save(moduleAccess);
-        return moduleAccessMapper.toDTO(savedAccess);
+        ModuleAccessDTO updatedAccess = moduleAccessMapper.toDTO(savedAccess);
+        broadcastModuleAccessUpdate(moduleAccess.getModule(), "updated", updatedAccess);
+
+        return updatedAccess;
     }
 
     public void synchronizeModuleAccesses(Module module, List<ModuleAccessDTO> incomingAccessDTOs, Long userId) {
@@ -351,6 +378,20 @@ public class ModuleAccessService {
                                                                // conserver
                 }
             }
+
+            Map<String, Object> update = new HashMap<>();
+            update.put("action", "synchronized");
+            update.put("moduleId", module.getId());
+
+            // Récupérer la liste mise à jour des accès
+            List<ModuleAccessDTO> currentAccesses = moduleAccessRepository.findAllByModule(module)
+                    .stream()
+                    .map(moduleAccessMapper::toDTO)
+                    .collect(Collectors.toList());
+
+            update.put("accesses", currentAccesses);
+
+            messagingTemplate.convertAndSend("/module/" + module.getId() + "/access-updates", update);
         }
 
         // Traiter les SUPPRESSIONS
