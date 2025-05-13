@@ -42,8 +42,10 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                         .password("")
                         .authorities(getAuthorities(decodedToken))
                         .build();
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userDetails, token, userDetails.getAuthorities());
+                authentication.setDetails(decodedToken.getEmail());
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (FirebaseAuthException e) {
                 SecurityContextHolder.clearContext();
