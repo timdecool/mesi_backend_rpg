@@ -89,7 +89,7 @@ public class ModuleService {
     }
 
     // Méthode pour mettre à jour un module avec ses versions et accès
-    public ModuleResponseDTO updateModule(Long id, ModuleRequestDTO moduleRequestDTO) {
+    public ModuleResponseDTO updateModule(Long id, ModuleRequestDTO moduleRequestDTO, Long userId) {
         Module existingModule = moduleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
 
@@ -118,7 +118,7 @@ public class ModuleService {
 
         // 4. Mettre à jour les accès si fournis
         if (moduleRequestDTO.accesses() != null && !moduleRequestDTO.accesses().isEmpty()) {
-            moduleAccessService.synchronizeModuleAccesses(existingModule, moduleRequestDTO.accesses());
+            moduleAccessService.synchronizeModuleAccesses(existingModule, moduleRequestDTO.accesses(), userId);
         }
 
         moduleRepository.save(existingModule);
