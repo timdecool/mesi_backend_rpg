@@ -1,7 +1,14 @@
 package com.ipi.mesi_backend_rpg.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,10 +24,11 @@ public class ModuleAccess {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference("module_module_access")
+    @JsonBackReference("module-accesses")
     private Module module;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     private User user;
 
     private boolean canView;
