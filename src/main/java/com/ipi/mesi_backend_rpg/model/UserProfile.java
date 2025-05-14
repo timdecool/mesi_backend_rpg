@@ -8,6 +8,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Getter
 @Setter
@@ -19,7 +21,9 @@ public class UserProfile {
     private Long id;
 
     private String description;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate updatedAt;
 
     @OneToOne

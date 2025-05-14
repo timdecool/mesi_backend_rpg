@@ -19,6 +19,7 @@ import com.ipi.mesi_backend_rpg.mapper.ModuleAccessMapper;
 import com.ipi.mesi_backend_rpg.model.AccessRight;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleAccess;
+import com.ipi.mesi_backend_rpg.model.NotificationType;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
@@ -29,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ModuleAccessService {
+
+    private final NotificationService notificationService;
 
     private final ModuleAccessRepository moduleAccessRepository;
     private final ModuleAccessMapper moduleAccessMapper;
@@ -72,6 +75,18 @@ public class ModuleAccessService {
         moduleAccess.setCanPublish(true);
         moduleAccess.setCanInvite(true);
         moduleAccess = moduleAccessRepository.save(moduleAccess);
+
+        // Ajout de la notification
+        User creator = module.getCreator();
+        String content = creator.getUsername() + " a partagé le module \"" + module.getTitle() + "\" avec vous";
+        notificationService.createNotification(
+            NotificationType.MODULE_SHARED,
+            content,
+            user,  // destinataire
+            creator, // expéditeur
+            module
+        );
+
         return moduleAccessMapper.toDTO(moduleAccess);
     }
 

@@ -1,15 +1,25 @@
 package com.ipi.mesi_backend_rpg.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.service.ModuleService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/modules")
@@ -41,6 +51,22 @@ public class ModuleController {
             @RequestParam(defaultValue = "0") int page
             ) {
         return new ResponseEntity<>(moduleService.getMostCommentedModules(limit, page), HttpStatus.OK);
+    }
+
+    @GetMapping("/most-saved")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostSavedModules(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return new ResponseEntity<>(moduleService.getMostSavedModules(page, limit), HttpStatus.OK);
+    }
+
+    @GetMapping("/most-recent")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostRecentModules(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return new ResponseEntity<>(moduleService.getMostRecentModules(page, limit), HttpStatus.OK);
     }
 
     @PostMapping
