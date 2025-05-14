@@ -4,7 +4,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.cloud.StorageClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -22,6 +21,7 @@ FireBaseConfig {
             InputStream serviceAccount = new ClassPathResource("firebase-service-account.json").getInputStream();
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setProjectId("jdr-mesi")
                     .setStorageBucket("jdr-mesi.firebasestorage.app")
                     .build();
 
@@ -35,10 +35,4 @@ FireBaseConfig {
     public FirebaseAuth firebaseAuth() throws IOException {
         return FirebaseAuth.getInstance(firebaseApp());
     }
-
-    @Bean
-    public StorageClient storageClient() throws IOException {
-        return StorageClient.getInstance(firebaseApp());
-    }
-
 }
