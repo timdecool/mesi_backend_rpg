@@ -60,8 +60,7 @@ public class ModuleVersionMapper {
         ModuleVersion moduleVersion = new ModuleVersion();
         moduleVersion.setId(moduleVersionDTO.id());
         moduleVersion.setVersion(moduleVersionDTO.version());
-        moduleVersion.setCreator(userRepository.findById(moduleVersionDTO.creator().id()).orElseThrow(
-                () -> new IllegalArgumentException("Invalid user id: " + moduleVersionDTO.creator().id())));
+        moduleVersion.setCreator(null);
         moduleVersion.setCreatedAt(
                 moduleVersionDTO.createdAt() != null ? moduleVersionDTO.createdAt() : LocalDateTime.now());
         moduleVersion.setPublished(moduleVersionDTO.published());

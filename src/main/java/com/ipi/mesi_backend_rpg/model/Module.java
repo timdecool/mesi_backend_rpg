@@ -78,14 +78,8 @@ public class Module {
 
     public Module(String title, String description, User creator, LocalDateTime createdAt, LocalDateTime updatedAt,
             Boolean isTemplate, String type) {
-        this.title = title;
-        this.description = description;
+        this(title, description, createdAt, updatedAt, isTemplate, type);
         this.creator = creator;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.isTemplate = isTemplate;
-        this.type = type;
-
     }
 
     public Module(String title, String description, User creator, LocalDateTime createdAt, LocalDateTime updatedAt,
@@ -94,6 +88,14 @@ public class Module {
         this.picture = picture;
     }
 
+    public Module(String title, String description, LocalDateTime createdAt, LocalDateTime updatedAt, Boolean isTemplate, String type) {
+        this.title = title;
+        this.description = description;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.isTemplate = isTemplate;
+        this.type = type;
+    }
     public void addTag(Tag tag) {
         if (this.tags == null) {
             this.tags = new ArrayList<>();

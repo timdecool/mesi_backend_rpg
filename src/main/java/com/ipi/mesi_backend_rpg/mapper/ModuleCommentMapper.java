@@ -39,8 +39,6 @@ public class ModuleCommentMapper {
                 .orElseThrow(() -> new IllegalArgumentException("Module not found")));
         moduleComment.setModuleVersion(moduleVersionRepository.findById(moduleCommentDTO.moduleVersionId())
                 .orElseThrow(() -> new IllegalArgumentException("ModuleVersion not found")));
-        moduleComment.setUser(userRepository.findById(moduleCommentDTO.user().id())
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé")));
         moduleComment.setComment(moduleCommentDTO.comment());
         return moduleComment;
     }

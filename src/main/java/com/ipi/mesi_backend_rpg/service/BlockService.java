@@ -35,6 +35,7 @@ public class BlockService {
     private final BlockMapper blockMapper;
     private final ModuleVersionRepository moduleVersionRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public List<BlockDTO> getAllBlocksByModuleVersionId(Long moduleVersionId) {
         ModuleVersion moduleVersion = moduleVersionRepository.findById(moduleVersionId)
@@ -55,6 +56,7 @@ public class BlockService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module version not found"));
 
         Block block = blockMapper.toEntity(blockDTO);
+        block.setCreator(userService.getAuthenticatedUser());
         block.setCreatedAt(LocalDate.now());
         block.setUpdatedAt(LocalDate.now());
         blockRepository.save(block);
@@ -76,6 +78,7 @@ public class BlockService {
         Block updatedBlock = blockMapper.toEntity(blockDTO);
         updatedBlock.setId(existingBlock.getId());
         updatedBlock.setCreatedAt(existingBlock.getCreatedAt());
+        updatedBlock.setCreator(existingBlock.getCreator());
         updatedBlock.setUpdatedAt(LocalDate.now());
 
         blockRepository.save(updatedBlock);

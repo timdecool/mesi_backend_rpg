@@ -58,4 +58,14 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
         return authorities;
     }
+
+    public FirebaseToken getDecodedToken(HttpServletRequest request) throws FirebaseAuthException {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new RuntimeException("Missing or invalid Authorization header.");
+        }
+
+        String idToken = authHeader.substring(7);
+        return FirebaseAuth.getInstance().verifyIdToken(idToken);
+    }
 }
