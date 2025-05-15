@@ -52,7 +52,7 @@ public class MesiBackendRpgApplication {
             try {
                 User localUser = new User();
                 localUser.setUsername("john_doe");
-                localUser.setEmail("timothe.decool@edu.igensia.com");
+                localUser.setEmail("john.doe@example.com");
 
                 localUser.setCreatedAt(LocalDateTime.now());
                 localUser.setUpdatedAt(LocalDateTime.now());
