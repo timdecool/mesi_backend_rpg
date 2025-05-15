@@ -2,6 +2,7 @@ package com.ipi.mesi_backend_rpg.mapper;
 
 import java.time.LocalDateTime;
 
+import com.ipi.mesi_backend_rpg.service.ModuleRatingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +26,7 @@ public class ModuleMapper {
     private final UserRepository userRepository;
     private final ModuleAccessMapper moduleAccessMapper;
     private final PictureMapper pictureMapper;
+    private final ModuleRatingService moduleRatingService;
 
     public ModuleResponseDTO toDTO(Module module) {
         PictureDTO pictureDTO = null;
@@ -44,7 +46,9 @@ public class ModuleMapper {
                 module.getVersions().stream().map(moduleVersionMapper::toDTO).toList(),
                 module.getAccesses().stream().map(moduleAccessMapper::toDTO).toList(),
                 module.getTags().stream().map(tagMapper::toDTO).toList(),
-                pictureDTO);
+                pictureDTO,
+                moduleRatingService.findAggregatedRatingsByModule(module)
+                );
     }
 
     public Module toEntity(ModuleRequestDTO moduleRequestDTO) {

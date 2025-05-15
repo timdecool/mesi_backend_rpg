@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface ModuleRatingRepository extends JpaRepository<ModuleRating, Long> {
 
     ModuleRating findModuleRatingByModuleIdAndUserId(Long moduleId, Long userId);
-
+    ModuleRating findModuleRatingByModuleVersionIdAndUserId(Long moduleVersionId, Long userId);
     int  countByModuleId(Long moduleId);
     int countByModuleVersionId(Long moduleVersionId);
 
@@ -18,6 +18,4 @@ public interface ModuleRatingRepository extends JpaRepository<ModuleRating, Long
 
     @Query("SELECT AVG(r.rating) FROM ModuleRating r WHERE r.moduleVersion.id = :moduleVersionId")
     Float findAverageRatingByModuleVersionId(Long moduleVersionId);
-
-
 }

@@ -41,8 +41,6 @@ public class ModuleRatingMapper {
                 .orElseThrow(() -> new IllegalArgumentException("Module not found")));
         moduleRating.setModuleVersion(moduleVersionRepository.findById(moduleRatingDTO.moduleVersionId())
                 .orElseThrow(() -> new IllegalArgumentException("ModuleVersion not found")));
-        moduleRating.setUser(userRepository.findById(moduleRatingDTO.user().id())
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé")));
         moduleRating.setRating(moduleRatingDTO.rating());
         return moduleRating;
     }
