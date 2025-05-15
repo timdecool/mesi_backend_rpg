@@ -38,6 +38,12 @@ public class ModuleCommentService {
     public ModuleCommentDTO updateComment(ModuleCommentDTO moduleCommentDTO, Long id) {
         ModuleComment comment = moduleCommentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "comment not found"));
+
+        if(!comment.getUser().getId().equals(userService.getAuthenticatedUser().getId()))
+        {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the right to edit this comment.");
+        }
+
         ModuleComment newComment = moduleCommentMapper.toEntity(moduleCommentDTO);
 
         newComment.setId(comment.getId());
