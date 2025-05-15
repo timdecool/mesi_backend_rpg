@@ -44,6 +44,7 @@ public class ModuleService {
     private final UserRepository userRepository;
 
     private final UserSavedModuleRepository userSavedModuleRepository;
+    private final UserService userService;
 
     public List<ModuleResponseDTO> findAllModules() {
         return moduleRepository.findAll().stream().map(moduleMapper::toDTO).toList();
@@ -56,8 +57,7 @@ public class ModuleService {
 
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
         Module module = moduleMapper.toEntity(moduleRequestDTO);
-        User user = userRepository.findById(moduleRequestDTO.creator().id())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User (creator) not found"));
+        User user = userService.getAuthenticatedUser();
         module.setCreator(user);
 
         GameSystem gameSystem = gameSystemRepository.findById(1L)
