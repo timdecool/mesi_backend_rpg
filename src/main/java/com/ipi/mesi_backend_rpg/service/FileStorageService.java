@@ -55,7 +55,7 @@ public class FileStorageService {
         String publicUrl = String.format("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
                 bucketName,
                 objectName.replace("/", "%2F"));
-        
+
         FileMetaData metaData = new FileMetaData();
         metaData.setUniqueId(uniqueID);
         metaData.setObjectName(objectName);
@@ -65,7 +65,7 @@ public class FileStorageService {
 
         repo.save(metaData);
 
-        return uniqueID;
+        return publicUrl;
     }
 
     public FileMetaDataDTO retrieveFile(String fileId) {
