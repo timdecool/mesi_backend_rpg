@@ -20,6 +20,7 @@ public class ModuleCommentService {
 
     private final ModuleCommentRepository moduleCommentRepository;
     private final ModuleCommentMapper moduleCommentMapper;
+    private final UserService userService;
 
     public ModuleCommentDTO findById(Long id) {
         ModuleComment moduleComment = moduleCommentRepository.findById(id)
@@ -29,6 +30,7 @@ public class ModuleCommentService {
 
     public ModuleCommentDTO createComment(ModuleCommentDTO moduleCommentDTO) {
         ModuleComment moduleComment = moduleCommentMapper.toEntity(moduleCommentDTO);
+        moduleComment.setUser(userService.getAuthenticatedUser());
         ModuleComment saved = moduleCommentRepository.save(moduleComment);
         return moduleCommentMapper.toDTO(saved);
     }
@@ -42,6 +44,7 @@ public class ModuleCommentService {
         newComment.setCreatedAt(comment.getCreatedAt());
         newComment.setModule(comment.getModule());
         newComment.setModuleVersion(comment.getModuleVersion());
+        newComment.setUser(comment.getUser());
         ModuleComment savedComment = moduleCommentRepository.save(newComment);
         return moduleCommentMapper.toDTO(savedComment);
     }
