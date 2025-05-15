@@ -52,8 +52,10 @@ public class FileStorageService {
                 .build();
 
         Blob blob = storage.create(blobInfo, file.getBytes());
-        String publicUrl = blob.getMediaLink();
-
+        String publicUrl = String.format("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
+                bucketName,
+                objectName.replace("/", "%2F"));
+        
         FileMetaData metaData = new FileMetaData();
         metaData.setUniqueId(uniqueID);
         metaData.setObjectName(objectName);
@@ -62,7 +64,6 @@ public class FileStorageService {
         metaData.setPublicUrl(publicUrl);
 
         repo.save(metaData);
-
 
         return uniqueID;
     }
