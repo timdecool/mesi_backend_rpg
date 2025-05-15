@@ -16,21 +16,18 @@ public class FileMetaData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    @Column(name = "unique_id", nullable = false)
+    private Long id;
     private String uniqueId;
-
-    @Column(name = "object_name", nullable = false)
     private String objectName;
-
-    @Column(name = "upload_date", nullable = false)
     private LocalDateTime uploadDate;
+    private String contentType;
+    private String publicUrl;
 
-    public FileMetaData(Integer id, String uniqueId, String objectName, LocalDateTime uploadDate) {
-        this.id = id;
+    public FileMetaData(String uniqueId, String objectName, LocalDateTime uploadDate, String contentType, String publicUrl) {
         this.uniqueId = uniqueId;
         this.objectName = objectName;
         this.uploadDate = uploadDate;
+        this.contentType = contentType;
+        this.publicUrl = publicUrl;
     }
 }
