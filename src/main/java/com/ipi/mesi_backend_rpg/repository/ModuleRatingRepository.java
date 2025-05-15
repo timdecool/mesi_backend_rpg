@@ -13,10 +13,10 @@ public interface ModuleRatingRepository extends JpaRepository<ModuleRating, Long
     int  countByModuleId(Long moduleId);
     int countByModuleVersionId(Long moduleVersionId);
 
-    @Query("SELECT AVG(r.rating) FROM ModuleRating r WHERE r.module.id == :moduleId")
+    @Query("SELECT AVG(r.rating) FROM ModuleRating r WHERE r.module.id = :moduleId")
     Float findAverageRatingByModuleId(Long moduleId);
 
-    @Query("SELECT AVG(r.rating) FROM ModuleRating r WHERE r.moduleVersion.id == :moduleVersionId")
+    @Query("SELECT AVG(r.rating) FROM ModuleRating r WHERE r.moduleVersion.id = :moduleVersionId")
     Float findAverageRatingByModuleVersionId(Long moduleVersionId);
 
 

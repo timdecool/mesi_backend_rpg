@@ -1,28 +1,22 @@
 package com.ipi.mesi_backend_rpg.controller;
 
 import com.ipi.mesi_backend_rpg.dto.AggregatedRatingsDTO;
-import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleRatingDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
-import com.ipi.mesi_backend_rpg.service.ModuleCommentService;
 import com.ipi.mesi_backend_rpg.service.ModuleRatingService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/rating")
 public class ModuleRatingController {
 
-    private final ModuleCommentService moduleCommentService;
     private final ModuleRatingService moduleRatingService;
 
-    public ModuleRatingController(ModuleCommentService moduleCommentService, ModuleRatingService moduleRatingService) {
-        this.moduleCommentService = moduleCommentService;
+    public ModuleRatingController(ModuleRatingService moduleRatingService) {
         this.moduleRatingService = moduleRatingService;
     }
 
