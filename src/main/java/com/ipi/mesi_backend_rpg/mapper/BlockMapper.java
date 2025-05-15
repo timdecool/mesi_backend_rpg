@@ -95,8 +95,7 @@ public class BlockMapper {
                     paragraphBlockDTO.getTitle(),
                     paragraphBlockDTO.getBlockOrder(),
                     "paragraph",
-                    userRepository.findById(paragraphBlockDTO.getCreator().id())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid user id")),
+                    null,
                     paragraphBlockDTO.getParagraph(),
                     paragraphBlockDTO.getStyle()
             );
@@ -108,7 +107,7 @@ public class BlockMapper {
                     integratedModuleBlockDTO.getTitle(),
                     integratedModuleBlockDTO.getBlockOrder(),
                     "block",
-                    userRepository.findById(integratedModuleBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user id: " + integratedModuleBlockDTO.getCreator().id())),
+                    null,
                     moduleRepository.findById(integratedModuleBlockDTO.getModuleId()).orElse(null)
             );
         }
@@ -119,7 +118,7 @@ public class BlockMapper {
                     statBlockDTO.getTitle(),
                     statBlockDTO.getBlockOrder(),
                     "stat",
-                    userRepository.findById(statBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user : " + statBlockDTO.getCreator().id())),
+                    null,
                     statBlockDTO.getStatRules(),
                     statBlockDTO.getStatValues()
             );
@@ -133,8 +132,9 @@ public class BlockMapper {
                     musicBlockDTO.getTitle(),
                     musicBlockDTO.getBlockOrder(),
                     "music",
-                    userRepository.findById(musicBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user : " + musicBlockDTO.getCreator().id()))
+                    null
             );
+
         }
 
         if (blockDTO instanceof PictureBlockDTO pictureBlockDTO) {
@@ -145,7 +145,7 @@ public class BlockMapper {
                     pictureBlockDTO.getTitle(),
                     pictureBlockDTO.getBlockOrder(),
                     "picture",
-                    userRepository.findById(pictureBlockDTO.getCreator().id()).orElseThrow(() -> new IllegalArgumentException("Invalid user: " + pictureBlockDTO.getCreator().id()))
+                    null
             );
         }
 

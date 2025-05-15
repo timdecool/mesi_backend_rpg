@@ -25,7 +25,6 @@ public abstract class BlockDTO {
     private String title;
     @NotNull
     private Integer blockOrder;
-    @NotNull
     private UserDTO creator;
     @NotNull
     private String type;
