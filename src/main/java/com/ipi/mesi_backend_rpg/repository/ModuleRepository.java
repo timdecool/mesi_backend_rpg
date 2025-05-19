@@ -1,7 +1,5 @@
 package com.ipi.mesi_backend_rpg.repository;
 
-import com.ipi.mesi_backend_rpg.model.Module;
-
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
