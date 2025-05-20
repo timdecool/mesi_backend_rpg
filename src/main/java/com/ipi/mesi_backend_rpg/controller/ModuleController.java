@@ -45,6 +45,14 @@ public class ModuleController {
         return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
+    @GetMapping("/most-commented")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostCommentedModules(
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(defaultValue = "0") int page
+            ) {
+        return new ResponseEntity<>(moduleService.getMostCommentedModules(limit, page), HttpStatus.OK);
+    }
+
     @GetMapping("/most-saved")
     public ResponseEntity<List<ModuleResponseDTO>> getMostSavedModules(
             @RequestParam(defaultValue = "0") int page,
@@ -73,6 +81,7 @@ public class ModuleController {
             @PathVariable Long id,
             @PathVariable("currentUser-id") Long currentUserID
     ) {
+        feat/moduleAccessSocket
         ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO, currentUserID);
         return new ResponseEntity<>(module, HttpStatus.OK);
     }

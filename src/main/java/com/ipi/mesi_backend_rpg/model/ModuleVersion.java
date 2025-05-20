@@ -48,13 +48,15 @@ public class ModuleVersion {
     @OneToMany(mappedBy = "moduleVersion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("version-blocks")
     private List<Block> blocks;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private GameSystem gameSystem;
 
-    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem,
-            String language) {
+    @OneToMany(mappedBy = "moduleVersion", orphanRemoval = true)
+    private List<ModuleComment> comments;
+
+    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem, String language) {
         this();
         this.module = module;
         this.version = version;
