@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -33,7 +31,6 @@ public class FileStorageService {
     private final Storage storage;
     private final FileMetaDataRepository repo;
     private final FileMetaDataMapper fileMetaDataMapper;
-    private static final Logger logger = Logger.getLogger(FileStorageService.class.getName());
 
     @Value("${app.file.storage.enabled:true}")
     private boolean fileStorageEnabled;
@@ -49,7 +46,6 @@ public class FileStorageService {
             // 1. Essayer d'abord le classpath (méthode originale)
             ClassPathResource resource = new ClassPathResource("firebase-service-account.json");
             serviceAccount = resource.getInputStream();
-            logger.info("Firebase credentials loaded from classpath");
         } catch (IOException e) {
             // 2. Essayer la propriété système
             String firebasePath = System.getProperty("firebase.service.account.path");
@@ -57,7 +53,6 @@ public class FileStorageService {
                 File file = new File(firebasePath);
                 if (file.exists()) {
                     serviceAccount = new FileInputStream(file);
-                    logger.log(Level.INFO, "Firebase credentials loaded from system property path: {0}", firebasePath);
                 }
             }
             
@@ -73,7 +68,6 @@ public class FileStorageService {
                     File file = new File(path);
                     if (file.exists()) {
                         serviceAccount = new FileInputStream(file);
-                        logger.log(Level.INFO, "Firebase credentials loaded from path: {0}", path);
                         break;
                     }
                 }
@@ -81,8 +75,6 @@ public class FileStorageService {
             
             // 4. En dernier recours, utiliser un fichier vide
             if (serviceAccount == null) {
-                logger.warning("No Firebase credentials found, using empty configuration");
-                // Créer un service Firebase vide (attention, cela peut causer des problèmes d'API)
                 serviceAccount = new ByteArrayInputStream("{}".getBytes());
             }
         }
