@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -56,7 +57,7 @@ public class FileStorageService {
                 File file = new File(firebasePath);
                 if (file.exists()) {
                     serviceAccount = new FileInputStream(file);
-                    logger.info("Firebase credentials loaded from system property path: " + firebasePath);
+                    logger.log(Level.INFO, "Firebase credentials loaded from system property path: {0}", firebasePath);
                 }
             }
             
@@ -72,7 +73,7 @@ public class FileStorageService {
                     File file = new File(path);
                     if (file.exists()) {
                         serviceAccount = new FileInputStream(file);
-                        logger.info("Firebase credentials loaded from path: " + path);
+                        logger.log(Level.INFO, "Firebase credentials loaded from path: {0}", path);
                         break;
                     }
                 }
