@@ -19,6 +19,8 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     mysql-server \
     procps \
+    unzip \
+    zip \
     netcat-openbsd \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/run/mysqld \
@@ -55,8 +57,10 @@ RUN apt-get update && \
 # Configuration de l'application
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+COPY entrypoint.sh /app/entrypoint.sh.orig
+RUN cat /app/entrypoint.sh.orig | tr -d '\r' > /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh && \
+    rm /app/entrypoint.sh.orig
 
 # Volume pour les données MySQL
 VOLUME /var/lib/mysql
