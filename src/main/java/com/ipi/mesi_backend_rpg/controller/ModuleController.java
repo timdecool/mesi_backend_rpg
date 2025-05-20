@@ -81,7 +81,7 @@ public class ModuleController {
             @PathVariable Long id
     ) {
         ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO);
-        return new ResponseEntity<ModuleResponseDTO>(module, HttpStatus.OK);
+        return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
