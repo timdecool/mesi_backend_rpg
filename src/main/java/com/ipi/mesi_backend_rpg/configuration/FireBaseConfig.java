@@ -30,6 +30,8 @@ public class FireBaseConfig {
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setProjectId("jdr-mesi")
+                    .setStorageBucket("jdr-mesi.firebasestorage.app")
                     .build();
 
             return FirebaseApp.initializeApp(options);

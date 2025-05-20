@@ -1,13 +1,12 @@
 package com.ipi.mesi_backend_rpg.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 @Getter
@@ -25,6 +24,7 @@ public class Picture {
     private LocalDateTime createdAt;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
+    
 
     public Picture(String title, String src) {
         this.title = title;

@@ -39,27 +39,29 @@ public class ModuleAccessController {
         return new ResponseEntity<>(moduleAccess, HttpStatus.OK);
     }
 
-    @PostMapping("/module/{module-id}/user/{user-id}")
-    public ResponseEntity<ModuleAccessDTO> createModuleAccess(@PathVariable("module-id") Long moduleId, @PathVariable("user-id") Long userId) {
-        ModuleAccessDTO createdModuleAccess = moduleAccessService.createModuleAccess(moduleId, userId);
+    @PostMapping("/module/{module-id}/user/{user-id}/currentUser/{currentUser-id}")
+    public ResponseEntity<ModuleAccessDTO> createModuleAccess(@PathVariable("module-id") Long moduleId,
+            @PathVariable("user-id") Long userId, @PathVariable("currentUser-id") Long currentUserId) {
+        ModuleAccessDTO createdModuleAccess = moduleAccessService.createModuleAccess(moduleId, userId, currentUserId);
 
         return new ResponseEntity<>(createdModuleAccess, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ModuleAccessDTO> deleteModuleAccess(@PathVariable Integer id) {
-        ModuleAccessDTO deletedModuleAccess = moduleAccessService.deleteModuleAccess(id);
+    @DeleteMapping("/{id}/currentUser/{user-id}")
+    public ResponseEntity<ModuleAccessDTO> deleteModuleAccess(@PathVariable Integer id,
+            @PathVariable("user-id") Long userId) {
+        ModuleAccessDTO deletedModuleAccess = moduleAccessService.deleteModuleAccess(id, userId);
         return new ResponseEntity<>(deletedModuleAccess, HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/{id}/rights/{accessRight}")
+    @PatchMapping("/{id}/rights/{accessRight}/currentUser/{user-id}")
     public ResponseEntity<ModuleAccessDTO> toggleAccessRight(
             @PathVariable Integer id,
-            @PathVariable AccessRight accessRight) {
+            @PathVariable AccessRight accessRight,
+            @PathVariable("user-id") Long userId) {
 
-        ModuleAccessDTO updatedAccess = moduleAccessService.toggleAccessRight(id, accessRight);
+        ModuleAccessDTO updatedAccess = moduleAccessService.toggleAccessRight(id, accessRight, userId);
         return ResponseEntity.ok(updatedAccess);
     }
-
 
 }
