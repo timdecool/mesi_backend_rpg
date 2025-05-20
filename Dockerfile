@@ -19,8 +19,6 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     mysql-server \
     procps \
-    unzip \
-    zip \
     netcat-openbsd \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /var/run/mysqld \
