@@ -75,13 +75,15 @@ public class ModuleController {
         return new ResponseEntity<>(module, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/currentUser/{currentUser-id}")
     public ResponseEntity<ModuleResponseDTO> updateModule(
             @Valid @RequestBody ModuleRequestDTO moduleRequestDTO,
-            @PathVariable Long id
+            @PathVariable Long id,
+            @PathVariable("currentUser-id") Long currentUserID
     ) {
-        ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO);
-        return new ResponseEntity<ModuleResponseDTO>(module, HttpStatus.OK);
+        feat/moduleAccessSocket
+        ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO, currentUserID);
+        return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
