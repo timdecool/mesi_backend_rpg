@@ -7,6 +7,8 @@ target/
 src/main/resources/application.properties
 src/main/resources/application-prod.properties
 src/main/resources/firebase-service-account.json
+entrypoint.sh
+./entrypoint.sh
 
 ### STS ###
 .apt_generated
