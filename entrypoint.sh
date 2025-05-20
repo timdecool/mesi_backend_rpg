@@ -66,6 +66,10 @@ mdp=${ADMIN_PASSWORD:-password}
 anthropic.model=claude-3-7-sonnet-20250219
 spring.websocket.enabled=true
 anthropic.api.key=${ANTHROPIC_API_KEY:-default_key}
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+spring.servlet.multipart.enabled=true
+spring.servlet.multipart.file-size-threshold=2MB
 EOF
 }
 
