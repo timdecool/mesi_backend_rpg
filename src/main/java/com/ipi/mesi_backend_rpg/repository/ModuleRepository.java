@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ipi.mesi_backend_rpg.model.Module;
 
+
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, Long> {
 
