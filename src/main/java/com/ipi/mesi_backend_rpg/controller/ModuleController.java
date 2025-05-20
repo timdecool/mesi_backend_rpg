@@ -81,7 +81,6 @@ public class ModuleController {
             @PathVariable Long id,
             @PathVariable("currentUser-id") Long currentUserID
     ) {
-        feat/moduleAccessSocket
         ModuleResponseDTO module = moduleService.updateModule(id, moduleRequestDTO, currentUserID);
         return new ResponseEntity<>(module, HttpStatus.OK);
     }
