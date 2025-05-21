@@ -93,7 +93,7 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
                             String userId = accessor.getUser().getName();
 
                             if (moduleId != null && userId != null) {
-                                Long userIdLong = Long.parseLong(userId);
+                                Long userIdLong = Long.valueOf(userId);
                                 User user = userRepository.findById(userIdLong).orElse(null);
 
                                 if (user != null) {
@@ -121,7 +121,7 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
                             String userId = accessor.getUser().getName();
 
                             if (moduleId != null && userId != null) {
-                                Long userIdLong = Long.parseLong(userId);
+                                Long userIdLong = Long.valueOf(userId);
                                 User user = userRepository.findById(userIdLong).orElse(null);
 
                                 if (user != null) {
@@ -147,7 +147,7 @@ public class WebSocketSecurityConfig implements WebSocketMessageBrokerConfigurer
                     String[] parts = destination.split("/");
                     for (int i = 0; i < parts.length; i++) {
                         if ("module".equals(parts[i]) && i + 1 < parts.length) {
-                            return Long.parseLong(parts[i + 1]);
+                            return Long.valueOf(parts[i + 1]);
                         }
                     }
                 } catch (Exception e) {
