@@ -1,31 +1,27 @@
 package com.ipi.mesi_backend_rpg.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
+import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
+import com.ipi.mesi_backend_rpg.dto.ModuleResponseSummaryDTO;
+import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
+import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
+import com.ipi.mesi_backend_rpg.model.*;
+import com.ipi.mesi_backend_rpg.model.Module;
+import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
+import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+import com.ipi.mesi_backend_rpg.repository.UserRepository;
+import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
-import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
-import com.ipi.mesi_backend_rpg.mapper.ModuleMapper;
-import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
-import com.ipi.mesi_backend_rpg.model.GameSystem;
-import com.ipi.mesi_backend_rpg.model.Module;
-import com.ipi.mesi_backend_rpg.model.ModuleAccess;
-import com.ipi.mesi_backend_rpg.model.ModuleVersion;
-import com.ipi.mesi_backend_rpg.model.User;
-import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
-import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
-import com.ipi.mesi_backend_rpg.repository.UserRepository;
-import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
-
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +29,6 @@ public class ModuleService {
 
     private final ModuleRepository moduleRepository;
     private final ModuleMapper moduleMapper;
-
     private final PictureMapper pictureMapper;
 
     private final ModuleVersionService moduleVersionService;
@@ -54,6 +49,11 @@ public class ModuleService {
         return module.map(moduleMapper::toDTO).orElse(null);
     }
 
+    public ModuleResponseSummaryDTO findModuleSummaryById(Long id) {
+        Optional<Module> module = moduleRepository.findById(id);
+        return module.map(moduleMapper::toSummaryDTO).orElse(null);
+    }
+
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
         Module module = moduleMapper.toEntity(moduleRequestDTO);
         User user = userRepository.findById(moduleRequestDTO.creator().id())
@@ -68,7 +68,7 @@ public class ModuleService {
         initialModuleVersion.setVersion(1);
         initialModuleVersion.setCreator(user);
         initialModuleVersion.setPublished(false);
-        initialModuleVersion.setGameSystem(gameSystem); 
+        initialModuleVersion.setGameSystem(gameSystem);
         initialModuleVersion.setLanguage("");
         initialModuleVersion.setModule(module);
         module.addVersion(initialModuleVersion);
@@ -113,7 +113,7 @@ public class ModuleService {
 
         // 3. Mettre à jour les versions si fournies
         if (moduleRequestDTO.versions() != null && !moduleRequestDTO.versions().isEmpty()) {
-            moduleVersionService.synchronizeModuleVersion(moduleRequestDTO.versions(),existingModule);
+            moduleVersionService.synchronizeModuleVersion(moduleRequestDTO.versions(), existingModule);
         }
 
         // 4. Mettre à jour les accès si fournis
