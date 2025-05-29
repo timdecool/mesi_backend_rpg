@@ -1,12 +1,18 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
+import com.ipi.mesi_backend_rpg.configuration.FirebaseAuthenticationFilter;
 import com.ipi.mesi_backend_rpg.dto.UserDTO;
 import com.ipi.mesi_backend_rpg.mapper.UserMapper;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -18,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
 
     public UserDTO createUser(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
@@ -82,4 +89,14 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    public User getAuthenticatedUser() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                    .currentRequestAttributes()).getRequest();
+            FirebaseToken token = firebaseAuthenticationFilter.getDecodedToken(request);
+            return userRepository.findByEmail(token.getEmail()).orElseThrow();
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException("Invalid Firebase token", e);
+        }
+    }
 }

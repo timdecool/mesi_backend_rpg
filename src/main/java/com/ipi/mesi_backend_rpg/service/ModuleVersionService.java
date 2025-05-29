@@ -30,6 +30,7 @@ public class ModuleVersionService {
 
     private final BlockService blockService;
     private final BlockMapper blockMapper;
+    private final UserService userService;
 
     public ModuleVersionDTO findById(Long id) {
         ModuleVersion moduleVersion = moduleVersionRepository.findById(id)
@@ -40,6 +41,7 @@ public class ModuleVersionService {
     public ModuleVersionDTO createVersion(Module module, ModuleVersionDTO moduleVersionDTO) {
         ModuleVersion version = moduleVersionMapper.toEntity(moduleVersionDTO);
         version.setModule(module);
+        version.setCreator(userService.getAuthenticatedUser());
         ModuleVersion savedVersion = moduleVersionRepository.save(version);
         return moduleVersionMapper.toDTO(savedVersion);
     }
@@ -50,6 +52,7 @@ public class ModuleVersionService {
         ModuleVersion newVersion = moduleVersionMapper.toEntity(moduleVersionDTO);
         newVersion.setId(version.getId());
         newVersion.setModule(version.getModule());
+        newVersion.setCreator(version.getCreator());
         newVersion.setCreatedAt(version.getCreatedAt());
 
         if (newVersion.getBlocks() != null && !newVersion.getBlocks().isEmpty()) {

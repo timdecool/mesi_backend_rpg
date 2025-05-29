@@ -62,30 +62,11 @@ public class ModuleMapper {
     }
 
     public Module toEntity(ModuleRequestDTO moduleRequestDTO) {
-        // Check if creator data is provided
-        if (moduleRequestDTO.creator() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator information is required");
-        }
-
-        // Check if creator ID is provided
-        if (moduleRequestDTO.creator().id() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Creator ID is required");
-        }
-
-        // Log the ID we're looking for to help with debugging
-        Long creatorId = moduleRequestDTO.creator().id();
-        System.out.println("Looking for user with ID: " + creatorId);
-
-        // Try to find the user
-        User creator = userRepository.findById(creatorId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "User not found with ID: " + creatorId));
 
         // Create the module with the found user
         Module module = new Module(
                 moduleRequestDTO.title(),
                 moduleRequestDTO.description(),
-                creator,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
                 moduleRequestDTO.isTemplate(),
