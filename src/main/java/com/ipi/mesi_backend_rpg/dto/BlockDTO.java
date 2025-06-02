@@ -1,5 +1,7 @@
 package com.ipi.mesi_backend_rpg.dto;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +31,8 @@ public abstract class BlockDTO {
     private UserDTO creator;
     @NotNull
     private String type;
+    private Long entityVersion;
+    private LocalDateTime lastModified;
 
     public BlockDTO(Long id, Long moduleVersionId, String title, Integer blockOrder, UserDTO creator) {
         this.id = id;

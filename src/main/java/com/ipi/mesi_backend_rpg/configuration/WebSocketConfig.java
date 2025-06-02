@@ -13,7 +13,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         // Préfixe pour les topics auxquels les clients peuvent s'abonner
-        config.enableSimpleBroker("/topic", "/queue", "/user", "/module");
+        config.enableSimpleBroker("/topic", "/queue", "/user", "/module", "/locks");
 
         // Préfixe pour les endpoints que les clients peuvent appeler
         config.setApplicationDestinationPrefixes("/app");
@@ -26,6 +26,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Point d'entrée WebSocket avec fallback SockJS
         registry.addEndpoint("/ws")
+                .setAllowedOrigins("http://localhost:4200", "https://jdr-cli.vercel.app")
+                .withSockJS();
+                
+        registry.addEndpoint("/ws/locks")
                 .setAllowedOrigins("http://localhost:4200", "https://jdr-cli.vercel.app")
                 .withSockJS();
     }

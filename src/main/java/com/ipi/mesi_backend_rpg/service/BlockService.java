@@ -14,6 +14,8 @@ import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -69,17 +71,30 @@ public class BlockService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and body do not match");
         }
 
-        // Vérifier que la version du module existe
-        moduleVersionRepository.findById(blockDTO.getModuleVersionId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module version not found"));
+        if (blockDTO.getEntityVersion() != null &&
+                !existingBlock.getVersion().equals(blockDTO.getEntityVersion())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Le bloc a été modifié par un autre utilisateur. " +
+                            "Veuillez recharger la page et réessayer.");
+        }
 
-        Block updatedBlock = blockMapper.toEntity(blockDTO);
-        updatedBlock.setId(existingBlock.getId());
-        updatedBlock.setCreatedAt(existingBlock.getCreatedAt());
-        updatedBlock.setUpdatedAt(LocalDate.now());
+        try {
+            moduleVersionRepository.findById(blockDTO.getModuleVersionId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module version not found"));
 
-        blockRepository.save(updatedBlock);
-        return blockMapper.toDTO(updatedBlock);
+            Block updatedBlock = blockMapper.toEntity(blockDTO);
+            updatedBlock.setId(existingBlock.getId());
+            updatedBlock.setCreatedAt(existingBlock.getCreatedAt());
+            updatedBlock.setUpdatedAt(LocalDate.now());
+
+            blockRepository.save(updatedBlock);
+            return blockMapper.toDTO(updatedBlock);
+
+        } catch (OptimisticLockingFailureException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Conflit de modification détecté. Le bloc a été modifié par un autre utilisateur " +
+                            "pendant votre édition. Veuillez recharger et réessayer.");
+        }
     }
 
     public void deleteBlock(Long id) {
@@ -137,7 +152,8 @@ public class BlockService {
                     // toujours être le cas si currentDbBlocksMap est bien peuplé)
                     if (!existingBlock.getModuleVersion().getId().equals(targetModuleVersionId)) {
                         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, // Incohérence de données
-                                "Block avec l'ID " + dto.getId() + " trouvé mais n'appartient pas a cette version de module"
+                                "Block avec l'ID " + dto.getId()
+                                        + " trouvé mais n'appartient pas a cette version de module"
                                         + targetModuleVersionId + ".");
                     }
                     updateBlock(dto.getId(), dto);

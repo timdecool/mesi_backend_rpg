@@ -17,6 +17,8 @@ public record ModuleVersionDTO(
         Boolean published,
         Long gameSystemId,
         String language,
-        List<BlockDTO> blocks
+        List<BlockDTO> blocks,
+        Long entityVersion,
+        LocalDateTime lastModified
 ) {
 }

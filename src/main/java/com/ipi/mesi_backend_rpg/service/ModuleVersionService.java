@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -47,18 +48,34 @@ public class ModuleVersionService {
     public ModuleVersionDTO updateVersion(ModuleVersionDTO moduleVersionDTO, Long id) {
         ModuleVersion version = moduleVersionRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found"));
-        ModuleVersion newVersion = moduleVersionMapper.toEntity(moduleVersionDTO);
-        newVersion.setId(version.getId());
-        newVersion.setModule(version.getModule());
-        newVersion.setCreatedAt(version.getCreatedAt());
-
-        if (newVersion.getBlocks() != null && !newVersion.getBlocks().isEmpty()) {
-            blockService.synchronizeBlocks(newVersion.getId(),
-                    newVersion.getBlocks().stream().map(blockMapper::toDTO).collect(Collectors.toList()));
+        
+        // ⭐ VÉRIFICATION DE VERSION
+        if (moduleVersionDTO.entityVersion() != null && 
+            version.getVersion() != moduleVersionDTO.entityVersion()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, 
+                "La version a été modifiée par un autre utilisateur. " +
+                "Veuillez recharger la page et réessayer.");
         }
+        
+        try {
+            ModuleVersion newVersion = moduleVersionMapper.toEntity(moduleVersionDTO);
+            newVersion.setId(version.getId());
+            newVersion.setModule(version.getModule());
+            newVersion.setCreatedAt(version.getCreatedAt());
 
-        ModuleVersion savedVersion = moduleVersionRepository.save(newVersion);
-        return moduleVersionMapper.toDTO(savedVersion);
+            if (newVersion.getBlocks() != null && !newVersion.getBlocks().isEmpty()) {
+                blockService.synchronizeBlocks(newVersion.getId(),
+                        newVersion.getBlocks().stream().map(blockMapper::toDTO).collect(Collectors.toList()));
+            }
+
+            ModuleVersion savedVersion = moduleVersionRepository.save(newVersion);
+            return moduleVersionMapper.toDTO(savedVersion);
+            
+        } catch (OptimisticLockingFailureException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, 
+                "Conflit de modification détecté. Un autre utilisateur a modifié cette version " +
+                "pendant votre édition. Veuillez recharger la page et réappliquer vos modifications.");
+        }
     }
 
     public void deleteVersion(Long id) {

@@ -22,9 +22,10 @@ public class BlockMapper {
 
     
     public BlockDTO toDTO(Block block) {
+        BlockDTO dto;
 
         if (block instanceof ParagraphBlock paragraphBlock) {
-            return new ParagraphBlockDTO(
+            dto = new ParagraphBlockDTO(
                     paragraphBlock.getParagraph(),
                     paragraphBlock.getStyle(),
                     paragraphBlock.getId(),
@@ -33,11 +34,8 @@ public class BlockMapper {
                     paragraphBlock.getBlockOrder(),
                     userMapper.toDTO(paragraphBlock.getCreator())
             );
-        }
-        //TODO: ajouter type de bloc ici
-
-        if (block instanceof IntegratedModuleBlock integratedModuleBlock) {
-            return new IntegratedModuleBlockDTO(
+        }else if (block instanceof IntegratedModuleBlock integratedModuleBlock) {
+            dto = new IntegratedModuleBlockDTO(
                     integratedModuleBlock.getModule().getId(),
                     integratedModuleBlock.getId(),
                     integratedModuleBlock.getModuleVersion().getId(),
@@ -45,10 +43,8 @@ public class BlockMapper {
                     integratedModuleBlock.getBlockOrder(),
                     userMapper.toDTO(integratedModuleBlock.getCreator())
             );
-        }
-
-        if (block instanceof StatBlock statBlock) {
-            return new StatBlockDTO(
+        } else if (block instanceof StatBlock statBlock) {
+            dto = new StatBlockDTO(
                     statBlock.getId(),
                     statBlock.getModuleVersion().getId(),
                     statBlock.getTitle(),
@@ -57,10 +53,8 @@ public class BlockMapper {
                     statBlock.getStatRules(),
                     statBlock.getStatValues()
             );
-        }
-
-        if (block instanceof MusicBlock musicBlock) {
-            return new MusicBlockDTO(
+        } else if (block instanceof MusicBlock musicBlock) {
+            dto = new MusicBlockDTO(
                     musicBlock.getLabel(),
                     musicBlock.getSrc(),
                     musicBlock.getId(),
@@ -69,10 +63,8 @@ public class BlockMapper {
                     musicBlock.getBlockOrder(),
                     userMapper.toDTO(musicBlock.getCreator())
             );
-        }
-
-        if (block instanceof PictureBlock pictureBlock) {
-            return new PictureBlockDTO(
+        } else if (block instanceof PictureBlock pictureBlock) {
+            dto = new PictureBlockDTO(
                     pictureBlock.getLabel(),
                     pictureMapper.toDTO(pictureBlock.getPicture()),
                     pictureBlock.getId(),
@@ -81,9 +73,14 @@ public class BlockMapper {
                     pictureBlock.getBlockOrder(),
                     userMapper.toDTO(pictureBlock.getCreator())
             );
+        } else {
+            throw new IllegalArgumentException("Unknown block type");
         }
 
-        throw new IllegalArgumentException("Unknown block type");
+        dto.setEntityVersion(block.getVersion());
+        dto.setLastModified(block.getLastModified());
+        
+        return dto;
     }
 
     public Block toEntity(BlockDTO blockDTO) {

@@ -16,6 +16,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +25,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ModuleVersion {
+
+    @Version
+    private Long lversion;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +49,8 @@ public class ModuleVersion {
     private LocalDateTime createdAt;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
+
+    private LocalDateTime lastModified;
 
     @OneToMany(mappedBy = "moduleVersion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference("version-blocks")
@@ -69,5 +76,11 @@ public class ModuleVersion {
     public ModuleVersion() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
     }
 }

@@ -1,6 +1,7 @@
 package com.ipi.mesi_backend_rpg.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -14,6 +15,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +25,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Block {
+
+    @Version
+    private Long version;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,6 +50,8 @@ public class Block {
     @JsonFormat(pattern = "yyyy-MM-dd")
     protected LocalDate updatedAt;
 
+    private LocalDateTime lastModified;
+
     public Block() {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
@@ -56,5 +64,11 @@ public class Block {
         this.blockOrder = blockOrder;
         this.type = type;
         this.creator = creator;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDate.now();
+        this.lastModified = LocalDateTime.now();
     }
 }
