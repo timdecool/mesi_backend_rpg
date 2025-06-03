@@ -8,6 +8,7 @@ import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
 import com.ipi.mesi_backend_rpg.model.*;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
+import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,7 @@ public class ModuleService {
     private final ModuleVersionService moduleVersionService;
 
     private final ModuleAccessService moduleAccessService;
+    private final ModuleAccessRepository moduleAccessRepository;
 
     private final GameSystemRepository gameSystemRepository;
 
