@@ -1,15 +1,14 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
-import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
-import com.ipi.mesi_backend_rpg.model.ModuleComment;
-import com.ipi.mesi_backend_rpg.repository.*;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
+import com.ipi.mesi_backend_rpg.model.ModuleComment;
+import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
+import com.ipi.mesi_backend_rpg.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

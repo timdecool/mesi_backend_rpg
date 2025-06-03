@@ -9,12 +9,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
+import com.ipi.mesi_backend_rpg.dto.ModuleResponseSummaryDTO;
 import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +55,21 @@ public class ModuleMapper {
                 pictureDTO,
                 moduleRatingService.findAggregatedRatingsByModule(module)
                 );
+    }
+
+    public ModuleResponseSummaryDTO toSummaryDTO(Module module) {
+        PictureDTO pictureDTO = null;
+        if (module.getPicture() != null) {
+            pictureDTO = pictureMapper.toDTO(module.getPicture());
+        }
+
+        return new ModuleResponseSummaryDTO(
+                module.getId(),
+                module.getTitle(),
+                module.getDescription(),
+                userMapper.toDTO(module.getCreator()),
+                module.getVersions().stream().map(moduleVersionMapper::toDTO).toList(),
+                pictureDTO);
     }
 
     public Module toEntity(ModuleRequestDTO moduleRequestDTO) {
