@@ -6,7 +6,9 @@ import com.ipi.mesi_backend_rpg.dto.MusicBlockDTO;
 import com.ipi.mesi_backend_rpg.dto.ParagraphBlockDTO;
 import com.ipi.mesi_backend_rpg.dto.PictureBlockDTO;
 import com.ipi.mesi_backend_rpg.dto.StatBlockDTO;
+import com.ipi.mesi_backend_rpg.dto.UserDTO;
 import com.ipi.mesi_backend_rpg.mapper.BlockMapper;
+import com.ipi.mesi_backend_rpg.mapper.UserMapper;
 import com.ipi.mesi_backend_rpg.model.Block;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.BlockRepository;
@@ -36,6 +38,7 @@ public class BlockService {
     private final ModuleVersionRepository moduleVersionRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final UserMapper userMapper;
 
     public List<BlockDTO> getAllBlocksByModuleVersionId(Long moduleVersionId) {
         ModuleVersion moduleVersion = moduleVersionRepository.findById(moduleVersionId)
@@ -154,20 +157,25 @@ public class BlockService {
                 // creator sont corrects
                 BlockDTO dtoForCreate;
                 if (dto instanceof ParagraphBlockDTO pDto) {
+                    UserDTO creator = creatorDto != null ? creatorDto : userMapper.toDTO(userService.getAuthenticatedUser());
                     dtoForCreate = new ParagraphBlockDTO(pDto.getParagraph(), pDto.getStyle(), null,
-                            targetModuleVersionId, pDto.getTitle(), pDto.getBlockOrder(), creatorDto);
+                            targetModuleVersionId, pDto.getTitle(), pDto.getBlockOrder(), creator);
                 } else if (dto instanceof MusicBlockDTO mDto) {
+                    UserDTO creator = creatorDto != null ? creatorDto : userMapper.toDTO(userService.getAuthenticatedUser());
                     dtoForCreate = new MusicBlockDTO(mDto.getLabel(), mDto.getSrc(), null, targetModuleVersionId,
-                            mDto.getTitle(), mDto.getBlockOrder(), creatorDto);
+                            mDto.getTitle(), mDto.getBlockOrder(), creator);
                 } else if (dto instanceof StatBlockDTO sDto) {
+                    UserDTO creator = creatorDto != null ? creatorDto : userMapper.toDTO(userService.getAuthenticatedUser());
                     dtoForCreate = new StatBlockDTO(null, targetModuleVersionId, sDto.getTitle(), sDto.getBlockOrder(),
-                            creatorDto, sDto.getStatRules(), sDto.getStatValues());
+                    creator, sDto.getStatRules(), sDto.getStatValues());
                 } else if (dto instanceof IntegratedModuleBlockDTO iDto) {
+                    UserDTO creator = creatorDto != null ? creatorDto : userMapper.toDTO(userService.getAuthenticatedUser());
                     dtoForCreate = new IntegratedModuleBlockDTO(iDto.getModuleId(), null, targetModuleVersionId,
-                            iDto.getTitle(), iDto.getBlockOrder(), creatorDto);
+                            iDto.getTitle(), iDto.getBlockOrder(), creator);
                 } else if (dto instanceof PictureBlockDTO picDto) {
+                    UserDTO creator = creatorDto != null ? creatorDto : userMapper.toDTO(userService.getAuthenticatedUser());
                     dtoForCreate = new PictureBlockDTO(picDto.getLabel(), picDto.getPicture(), null,
-                            targetModuleVersionId, picDto.getTitle(), picDto.getBlockOrder(), creatorDto);
+                            targetModuleVersionId, picDto.getTitle(), picDto.getBlockOrder(), creator);
                 }
                 // Ajoutez d'autres types de blocs ici
                 else {

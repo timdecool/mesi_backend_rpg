@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public record   UserDTO(
         Long id,
 
-        // @NotNull @NotBlank(message = "username should not be empty")
+        @NotNull
         String username,
 
         @NotNull @NotBlank(message = "email should not be empty")

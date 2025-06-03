@@ -1,6 +1,8 @@
 package com.ipi.mesi_backend_rpg.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Lob;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,6 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ParagraphBlock extends Block {
 
+    @Lob
+    @Column(columnDefinition="TEXT")
     private String paragraph;
     private String style;
 

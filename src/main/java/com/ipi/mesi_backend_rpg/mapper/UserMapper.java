@@ -8,13 +8,15 @@ import org.springframework.stereotype.Service;
 public class UserMapper {
 
     public UserDTO toDTO(User user) {
+        if (user == null) {
+            return null;
+        }
         return new UserDTO(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getCreatedAt(),
-                user.getUpdatedAt()
-        );
+                user.getUpdatedAt());
     }
 
     public User toEntity(UserDTO userDTO) {

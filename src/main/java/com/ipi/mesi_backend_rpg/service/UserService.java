@@ -33,15 +33,17 @@ public class UserService {
     }
 
     public UserDTO getUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
 
         return userMapper.toDTO(user);
     }
 
     public UserDTO getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no use found for email " + email));
-    
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no use found for email " + email));
+
         return userMapper.toDTO(user);
     }
 
@@ -52,34 +54,40 @@ public class UserService {
     }
 
     public UserDTO updateUser(Long id, UserDTO userDTO) {
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
 
-        if (!existingUser.getId().equals(userDTO.id())) {
+        if (userDTO.id() != null && !userDTO.id().equals(id)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and body do not match");
         }
 
-        User updatedUser = userMapper.toEntity(userDTO);
-        updatedUser.setId(id);
-        userRepository.save(updatedUser);
-        return userMapper.toDTO(updatedUser);
+        existingUser.setUsername(userDTO.username());
+        existingUser.setEmail(userDTO.email());
+
+        existingUser.setUpdatedAt(java.time.LocalDateTime.now());
+        User savedUser = userRepository.save(existingUser);
+
+        return userMapper.toDTO(savedUser);
     }
 
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "no user found"));
         userRepository.delete(user);
     }
 
     public List<UserDTO> searchUsersByUsername(String query) {
         List<User> users = userRepository.findFirst20ByUsernameContainingIgnoreCase(query);
         if (users.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found with username containing: " + query);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "No users found with username containing: " + query);
         }
         return users.stream()
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public List<UserDTO> searchUsersByEmail(String query) { 
+    public List<UserDTO> searchUsersByEmail(String query) {
         List<User> users = userRepository.findFirst20ByEmailContainingIgnoreCase(query);
         if (users.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found with email containing: " + query);
