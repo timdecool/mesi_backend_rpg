@@ -181,4 +181,4 @@ public class MergeConfiguration {
             throw new IllegalArgumentException("Le seuil de similarité des blocs doit être entre 0.0 et 1.0");
         }
     }
-}
+}   

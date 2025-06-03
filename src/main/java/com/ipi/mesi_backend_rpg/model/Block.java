@@ -1,3 +1,5 @@
+// mesi_backend_rpg/src/main/java/com/ipi/mesi_backend_rpg/model/Block.java
+
 package com.ipi.mesi_backend_rpg.model;
 
 import java.time.LocalDate;
@@ -27,7 +29,7 @@ import lombok.Setter;
 public class Block {
 
     @Version
-    private Long version;
+    private Long version = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

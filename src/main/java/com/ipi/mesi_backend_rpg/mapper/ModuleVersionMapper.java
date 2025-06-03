@@ -43,7 +43,9 @@ public class ModuleVersionMapper {
                                 moduleVersion.isPublished(),
                                 moduleVersion.getGameSystem().getId(),
                                 moduleVersion.getLanguage(),
-                                blockDTOs, moduleVersion.getLversion(), moduleVersion.getLastModified());
+                                blockDTOs,
+                                moduleVersion.getLversion(), // ✅ Utiliser lversion pour entityVersion
+                                moduleVersion.getLastModified());
         }
 
         public ModuleVersion toEntity(ModuleVersionDTO moduleVersionDTO) {
@@ -60,6 +62,12 @@ public class ModuleVersionMapper {
 
                 ModuleVersion moduleVersion = new ModuleVersion();
                 moduleVersion.setId(moduleVersionDTO.id());
+
+                // ✅ Gérer correctement la version JPA
+                if (moduleVersionDTO.entityVersion() != null) {
+                        moduleVersion.setLversion(moduleVersionDTO.entityVersion());
+                }
+
                 moduleVersion.setVersion(moduleVersionDTO.version());
                 moduleVersion.setCreator(userRepository.findById(moduleVersionDTO.creator().id()).orElseThrow(
                                 () -> new IllegalArgumentException(

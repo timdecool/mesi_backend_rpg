@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Version;
 import lombok.Getter;
@@ -27,7 +28,7 @@ import lombok.Setter;
 public class ModuleVersion {
 
     @Version
-    private Long lversion;
+    private Long lversion = 0L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,7 +64,8 @@ public class ModuleVersion {
     @OneToMany(mappedBy = "moduleVersion", orphanRemoval = true)
     private List<ModuleComment> comments;
 
-    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem, String language) {
+    public ModuleVersion(Module module, int version, User creator, boolean published, GameSystem gameSystem,
+            String language) {
         this();
         this.module = module;
         this.version = version;
@@ -76,6 +78,21 @@ public class ModuleVersion {
     public ModuleVersion() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        // ✅ FIX: S'assurer que lversion est initialisé
+        if (this.lversion == null) {
+            this.lversion = 0L;
+        }
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        this.lastModified = LocalDateTime.now();
+        // ✅ FIX: Vérification supplémentaire à la création
+        if (this.lversion == null) {
+            this.lversion = 0L;
+        }
     }
 
     @PreUpdate

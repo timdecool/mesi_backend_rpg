@@ -26,112 +26,137 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ConflictDetectionService {
-    
+
     private final UserRepository userRepository;
-    
-    /**
-     * Détecte les conflits entre une version utilisateur et la version actuelle en BD
-     */
-    public ConflictDTO detectModuleVersionConflicts(ModuleVersionDTO userVersion, 
-                                                    ModuleVersionDTO currentVersion,
-                                                    Long userId) {
-        if (userVersion.entityVersion().equals(currentVersion.entityVersion())) {
-            return null; // Pas de conflit
-        }
-        
-        ConflictDTO conflict = new ConflictDTO();
-        conflict.setConflictId(UUID.randomUUID().toString());
-        conflict.setResourceType(ResourceType.MODULE_VERSION);
-        conflict.setResourceId(currentVersion.id());
-        conflict.setType(ConflictType.VERSION_CONFLICT);
-        conflict.setDescription("Conflit détecté sur la version du module");
-        
-        // Informations sur les versions
-        conflict.setOriginalVersion(userVersion.entityVersion());
-        conflict.setCurrentVersion(currentVersion.entityVersion());
-        conflict.setUserVersion(userVersion.entityVersion());
-        
-        // Informations utilisateur
-        conflict.setCurrentUserId(userId);
-        setUserInfo(conflict, userId, currentVersion.creator().id());
-        conflict.setConflictCreatedAt(LocalDateTime.now());
-        
-        // Détection des conflits par champ
-        List<FieldConflictDTO> fieldConflicts = detectFieldConflicts(userVersion, currentVersion);
-        conflict.setFieldConflicts(fieldConflicts);
-        
-        // Détection des conflits de blocs
-        List<FieldConflictDTO> blockConflicts = detectBlockConflicts(userVersion.blocks(), currentVersion.blocks());
-        fieldConflicts.addAll(blockConflicts);
-        
-        conflict.setStatus(ConflictDTO.ConflictStatus.DETECTED);
-        
-        log.info("Conflit détecté pour ModuleVersion {}: {} conflits de champs", 
-                currentVersion.id(), fieldConflicts.size());
-        
-        return conflict;
-    }
-    
+
     /**
      * Détecte les conflits entre deux blocs
      */
     public ConflictDTO detectBlockConflicts(BlockDTO userBlock, BlockDTO currentBlock, Long userId) {
-        if (Objects.equals(userBlock.getEntityVersion(), currentBlock.getEntityVersion())) {
+        // ✅ Vérification de nullité pour entityVersion
+        Long userEntityVersion = userBlock.getEntityVersion();
+        Long currentEntityVersion = currentBlock.getEntityVersion();
+
+        // Si l'une des versions est null, considérer qu'il n'y a pas de conflit
+        if (userEntityVersion == null || currentEntityVersion == null) {
+            log.debug("EntityVersion null détectée pour Block - userVersion: {}, currentVersion: {}",
+                    userEntityVersion, currentEntityVersion);
+            return null; // Pas de conflit si une version est null
+        }
+
+        if (Objects.equals(userEntityVersion, currentEntityVersion)) {
             return null; // Pas de conflit
         }
-        
+
         ConflictDTO conflict = new ConflictDTO();
         conflict.setConflictId(UUID.randomUUID().toString());
         conflict.setResourceType(ResourceType.BLOCK);
         conflict.setResourceId(currentBlock.getId());
         conflict.setType(ConflictType.FIELD_CONFLICT);
         conflict.setDescription("Conflit détecté sur le bloc");
-        
+
         // Informations sur les versions
-        conflict.setOriginalVersion(userBlock.getEntityVersion());
-        conflict.setCurrentVersion(currentBlock.getEntityVersion());
-        conflict.setUserVersion(userBlock.getEntityVersion());
-        
+        conflict.setOriginalVersion(userEntityVersion);
+        conflict.setCurrentVersion(currentEntityVersion);
+        conflict.setUserVersion(userEntityVersion);
+
         // Informations utilisateur
         conflict.setCurrentUserId(userId);
         setUserInfo(conflict, userId, currentBlock.getCreator().id());
         conflict.setConflictCreatedAt(LocalDateTime.now());
-        
+
         // Détection des conflits par champ
         List<FieldConflictDTO> fieldConflicts = detectBlockFieldConflicts(userBlock, currentBlock);
         conflict.setFieldConflicts(fieldConflicts);
-        
+
         conflict.setStatus(ConflictDTO.ConflictStatus.DETECTED);
-        
+
         return conflict;
     }
-    
+
+    /**
+     * Détecte les conflits entre une version utilisateur et la version actuelle en
+     * BD
+     */
+    public ConflictDTO detectModuleVersionConflicts(ModuleVersionDTO userVersion,
+            ModuleVersionDTO currentVersion,
+            Long userId) {
+        // ✅ Vérification de nullité pour entityVersion
+        Long userEntityVersion = userVersion.entityVersion();
+        Long currentEntityVersion = currentVersion.entityVersion();
+
+        // Si l'une des versions est null, considérer qu'il n'y a pas de conflit
+        // (cela peut arriver lors de la création d'une nouvelle version)
+        if (userEntityVersion == null || currentEntityVersion == null) {
+            log.debug("EntityVersion null détectée - userVersion: {}, currentVersion: {}",
+                    userEntityVersion, currentEntityVersion);
+            return null; // Pas de conflit si une version est null
+        }
+
+        // ✅ Utiliser Objects.equals pour une comparaison sûre
+        if (Objects.equals(userEntityVersion, currentEntityVersion)) {
+            return null; // Pas de conflit
+        }
+
+        ConflictDTO conflict = new ConflictDTO();
+        conflict.setConflictId(UUID.randomUUID().toString());
+        conflict.setResourceType(ResourceType.MODULE_VERSION);
+        conflict.setResourceId(currentVersion.id());
+        conflict.setType(ConflictType.VERSION_CONFLICT);
+        conflict.setDescription("Conflit détecté sur la version du module");
+
+        // Informations sur les versions
+        conflict.setOriginalVersion(userEntityVersion);
+        conflict.setCurrentVersion(currentEntityVersion);
+        conflict.setUserVersion(userEntityVersion);
+
+        // Informations utilisateur
+        conflict.setCurrentUserId(userId);
+        setUserInfo(conflict, userId, currentVersion.creator().id());
+        conflict.setConflictCreatedAt(LocalDateTime.now());
+
+        // Détection des conflits par champ
+        List<FieldConflictDTO> fieldConflicts = detectFieldConflicts(userVersion, currentVersion);
+        conflict.setFieldConflicts(fieldConflicts);
+
+        // Détection des conflits de blocs
+        List<FieldConflictDTO> blockConflicts = detectBlockConflicts(userVersion.blocks(), currentVersion.blocks());
+        fieldConflicts.addAll(blockConflicts);
+
+        conflict.setStatus(ConflictDTO.ConflictStatus.DETECTED);
+
+        log.info("Conflit détecté pour ModuleVersion {}: {} conflits de champs",
+                currentVersion.id(), fieldConflicts.size());
+
+        return conflict;
+    }
+
     /**
      * Détecte les conflits entre les champs de deux DTOs génériques
      */
     private List<FieldConflictDTO> detectFieldConflicts(Object userObject, Object currentObject) {
         List<FieldConflictDTO> conflicts = new ArrayList<>();
-        
+
         if (userObject == null || currentObject == null) {
             return conflicts;
         }
-        
+
         Class<?> clazz = userObject.getClass();
         Field[] fields = clazz.getDeclaredFields();
-        
+
         for (Field field : fields) {
             // Ignorer certains champs
             if (shouldIgnoreField(field.getName())) {
                 continue;
             }
-            
+
             try {
                 field.setAccessible(true);
                 Object userValue = field.get(userObject);
                 Object currentValue = field.get(currentObject);
-                
+
                 if (!Objects.equals(userValue, currentValue)) {
-                    FieldConflictDTO fieldConflict = createFieldConflict(field.getName(), 
+                    FieldConflictDTO fieldConflict = createFieldConflict(field.getName(),
                             null, currentValue, userValue);
                     conflicts.add(fieldConflict);
                 }
@@ -139,19 +164,19 @@ public class ConflictDetectionService {
                 log.warn("Impossible d'accéder au champ {} pour la détection de conflit", field.getName());
             }
         }
-        
+
         return conflicts;
     }
-    
+
     /**
      * Détecte les conflits spécifiques aux blocs
      */
     private List<FieldConflictDTO> detectBlockFieldConflicts(BlockDTO userBlock, BlockDTO currentBlock) {
         List<FieldConflictDTO> conflicts = new ArrayList<>();
-        
+
         // Conflits de base
         conflicts.addAll(detectFieldConflicts(userBlock, currentBlock));
-        
+
         // Conflits spécifiques selon le type de bloc
         String blockType = userBlock.getType();
         switch (blockType) {
@@ -166,31 +191,33 @@ public class ConflictDetectionService {
                 break;
             // Ajouter d'autres types selon vos besoins
         }
-        
+
         return conflicts;
     }
-    
+
     /**
      * Détecte les conflits dans les listes de blocs (ordre, suppressions, ajouts)
      */
     private List<FieldConflictDTO> detectBlockConflicts(List<BlockDTO> userBlocks, List<BlockDTO> currentBlocks) {
         List<FieldConflictDTO> conflicts = new ArrayList<>();
-        
-        if (userBlocks == null) userBlocks = new ArrayList<>();
-        if (currentBlocks == null) currentBlocks = new ArrayList<>();
-        
+
+        if (userBlocks == null)
+            userBlocks = new ArrayList<>();
+        if (currentBlocks == null)
+            currentBlocks = new ArrayList<>();
+
         // Créer des maps pour faciliter la comparaison
         Map<Long, BlockDTO> userBlockMap = new HashMap<>();
         Map<Long, BlockDTO> currentBlockMap = new HashMap<>();
-        
+
         userBlocks.stream()
                 .filter(b -> b.getId() != null)
                 .forEach(b -> userBlockMap.put(b.getId(), b));
-        
+
         currentBlocks.stream()
                 .filter(b -> b.getId() != null)
                 .forEach(b -> currentBlockMap.put(b.getId(), b));
-        
+
         // Détecter les conflits d'ordre
         if (userBlocks.size() != currentBlocks.size() || hasOrderChanged(userBlocks, currentBlocks)) {
             FieldConflictDTO orderConflict = new FieldConflictDTO();
@@ -203,10 +230,10 @@ public class ConflictDetectionService {
             orderConflict.setDescription("L'ordre des blocs a été modifié");
             conflicts.add(orderConflict);
         }
-        
+
         return conflicts;
     }
-    
+
     /**
      * Méthodes spécialisées pour les différents types de blocs
      */
@@ -214,22 +241,22 @@ public class ConflictDetectionService {
         // Implémentation spécifique pour les blocs de paragraphe
         return new ArrayList<>();
     }
-    
+
     private List<FieldConflictDTO> detectStatBlockConflicts(BlockDTO userBlock, BlockDTO currentBlock) {
         // Implémentation spécifique pour les blocs de statistiques
         return new ArrayList<>();
     }
-    
+
     private List<FieldConflictDTO> detectMusicBlockConflicts(BlockDTO userBlock, BlockDTO currentBlock) {
         // Implémentation spécifique pour les blocs musicaux
         return new ArrayList<>();
     }
-    
+
     /**
      * Méthodes utilitaires
      */
-    private FieldConflictDTO createFieldConflict(String fieldName, Object originalValue, 
-                                                Object currentValue, Object userValue) {
+    private FieldConflictDTO createFieldConflict(String fieldName, Object originalValue,
+            Object currentValue, Object userValue) {
         FieldConflictDTO conflict = new FieldConflictDTO();
         conflict.setFieldName(fieldName);
         conflict.setFieldDisplayName(getDisplayName(fieldName));
@@ -240,71 +267,74 @@ public class ConflictDetectionService {
         conflict.setFieldType(getFieldType(userValue));
         conflict.setCanAutoResolve(canAutoResolve(fieldName, currentValue, userValue));
         conflict.setDescription(generateConflictDescription(fieldName, currentValue, userValue));
-        
+
         return conflict;
     }
-    
+
     private void setUserInfo(ConflictDTO conflict, Long currentUserId, Long conflictingUserId) {
-        userRepository.findById(currentUserId).ifPresent(user -> 
-                conflict.setCurrentUsername(user.getUsername()));
+        userRepository.findById(currentUserId).ifPresent(user -> conflict.setCurrentUsername(user.getUsername()));
         userRepository.findById(conflictingUserId).ifPresent(user -> {
             conflict.setConflictingUserId(conflictingUserId);
             conflict.setConflictingUsername(user.getUsername());
         });
     }
-    
+
     private boolean shouldIgnoreField(String fieldName) {
-        return fieldName.equals("id") || 
-               fieldName.equals("createdAt") || 
-               fieldName.equals("updatedAt") ||
-               fieldName.equals("entityVersion") ||
-               fieldName.equals("lastModified");
+        return fieldName.equals("id") ||
+                fieldName.equals("createdAt") ||
+                fieldName.equals("updatedAt") ||
+                fieldName.equals("entityVersion") ||
+                fieldName.equals("lastModified");
     }
-    
+
     private String getDisplayName(String fieldName) {
         Map<String, String> displayNames = Map.of(
-            "title", "Titre",
-            "description", "Description",
-            "paragraph", "Contenu",
-            "blockOrder", "Ordre du bloc",
-            "published", "Statut de publication"
-        );
+                "title", "Titre",
+                "description", "Description",
+                "paragraph", "Contenu",
+                "blockOrder", "Ordre du bloc",
+                "published", "Statut de publication");
         return displayNames.getOrDefault(fieldName, fieldName);
     }
-    
+
     private String getFieldType(Object value) {
-        if (value == null) return "null";
-        if (value instanceof String) return "text";
-        if (value instanceof Number) return "number";
-        if (value instanceof Boolean) return "boolean";
+        if (value == null)
+            return "null";
+        if (value instanceof String)
+            return "text";
+        if (value instanceof Number)
+            return "number";
+        if (value instanceof Boolean)
+            return "boolean";
         return "object";
     }
-    
+
     private boolean canAutoResolve(String fieldName, Object currentValue, Object userValue) {
         // Logique simple : les champs numériques et booléens peuvent être auto-résolus
         return userValue instanceof Number || userValue instanceof Boolean;
     }
-    
+
     private String generateConflictDescription(String fieldName, Object currentValue, Object userValue) {
-        return String.format("Le champ '%s' a été modifié. Valeur actuelle: '%s', votre valeur: '%s'", 
+        return String.format("Le champ '%s' a été modifié. Valeur actuelle: '%s', votre valeur: '%s'",
                 getDisplayName(fieldName), currentValue, userValue);
     }
-    
+
     private boolean hasOrderChanged(List<BlockDTO> userBlocks, List<BlockDTO> currentBlocks) {
-        if (userBlocks.size() != currentBlocks.size()) return true;
-        
+        if (userBlocks.size() != currentBlocks.size())
+            return true;
+
         for (int i = 0; i < userBlocks.size(); i++) {
             BlockDTO userBlock = userBlocks.get(i);
             BlockDTO currentBlock = currentBlocks.get(i);
-            
-            if (userBlock.getId() != null && currentBlock.getId() != null && 
-                !userBlock.getId().equals(currentBlock.getId())) {
+
+            if (userBlock.getId() != null && currentBlock.getId() != null &&
+                    !userBlock.getId().equals(currentBlock.getId())) {
                 return true;
             }
         }
         return false;
     }
-    
+
     private List<Long> extractBlockOrder(List<BlockDTO> blocks) {
         return blocks.stream()
                 .map(BlockDTO::getId)
