@@ -20,6 +20,7 @@ public class ModuleCommentService {
 
     private final ModuleCommentRepository moduleCommentRepository;
     private final ModuleCommentMapper moduleCommentMapper;
+    private final UserService userService;
 
     public ModuleCommentDTO findById(Long id) {
         ModuleComment moduleComment = moduleCommentRepository.findById(id)
@@ -29,6 +30,7 @@ public class ModuleCommentService {
 
     public ModuleCommentDTO createComment(ModuleCommentDTO moduleCommentDTO) {
         ModuleComment moduleComment = moduleCommentMapper.toEntity(moduleCommentDTO);
+        moduleComment.setUser(userService.getAuthenticatedUser());
         ModuleComment saved = moduleCommentRepository.save(moduleComment);
         return moduleCommentMapper.toDTO(saved);
     }
@@ -36,12 +38,19 @@ public class ModuleCommentService {
     public ModuleCommentDTO updateComment(ModuleCommentDTO moduleCommentDTO, Long id) {
         ModuleComment comment = moduleCommentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "comment not found"));
+
+        if(!comment.getUser().getId().equals(userService.getAuthenticatedUser().getId()))
+        {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the right to edit this comment.");
+        }
+
         ModuleComment newComment = moduleCommentMapper.toEntity(moduleCommentDTO);
 
         newComment.setId(comment.getId());
         newComment.setCreatedAt(comment.getCreatedAt());
         newComment.setModule(comment.getModule());
         newComment.setModuleVersion(comment.getModuleVersion());
+        newComment.setUser(comment.getUser());
         ModuleComment savedComment = moduleCommentRepository.save(newComment);
         return moduleCommentMapper.toDTO(savedComment);
     }
