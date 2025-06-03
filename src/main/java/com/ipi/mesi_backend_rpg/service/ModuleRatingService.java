@@ -29,6 +29,10 @@ public class ModuleRatingService {
     public AggregatedRatingsDTO createRating(ModuleRatingDTO moduleRatingDTO) {
 
         ModuleRating moduleRating = moduleRatingMapper.toEntity(moduleRatingDTO);
+        if(moduleRating.getRating() < 0 || moduleRating.getRating() > 5) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "rating is out of range");
+        }
+
         User user = userService.getAuthenticatedUser();
         if(moduleRatingRepository.findModuleRatingByModuleVersionIdAndUserId(moduleRating.getModuleVersion().getId(), user.getId()) != null) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "not authorized");
@@ -48,6 +52,9 @@ public class ModuleRatingService {
         }
 
         ModuleRating newRating = moduleRatingMapper.toEntity(moduleRatingDTO);
+        if(newRating.getRating() < 0 || newRating.getRating() > 5) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "rating is out of range");
+        }
 
         newRating.setId(rating.getId());
         newRating.setCreatedAt(rating.getCreatedAt());
