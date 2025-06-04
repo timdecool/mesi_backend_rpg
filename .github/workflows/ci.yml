@@ -39,6 +39,10 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      # Fix permissions pour mvnw
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw
+
       - name: Create config files
         run: |
           mkdir -p src/main/resources
@@ -65,9 +69,9 @@ jobs:
           spring.servlet.multipart.file-size-threshold=2MB
           EOF
           
-          # Utiliser le vrai fichier Firebase depuis les secrets ou un fichier de test
-          if [ -n "\${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
-            echo '\${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > src/main/resources/firebase-service-account.json
+          # Fix de la condition pour Firebase
+          if [[ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]]; then
+            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > src/main/resources/firebase-service-account.json
           else
             cat > src/main/resources/firebase-service-account.json << 'FIREBASE_EOF'
           {
