@@ -6,6 +6,8 @@ import com.ipi.mesi_backend_rpg.configuration.FirebaseAuthenticationFilter;
 import com.ipi.mesi_backend_rpg.dto.UserDTO;
 import com.ipi.mesi_backend_rpg.mapper.UserMapper;
 import com.ipi.mesi_backend_rpg.model.User;
+import com.ipi.mesi_backend_rpg.model.UserFolder;
+import com.ipi.mesi_backend_rpg.repository.UserFolderRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +27,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
+    private final UserFolderRepository userFolderRepository;
 
     public UserDTO createUser(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         userRepository.save(user);
+        UserFolder userDefaultFolder = new UserFolder(
+                user.getId(),
+                "Mes Modules",
+                null
+        );
+        userFolderRepository.save(userDefaultFolder);
+
         return userMapper.toDTO(user);
     }
 
