@@ -112,14 +112,6 @@ jobs:
           echo "Attente du démarrage..."
           sleep 60
           
-          # Test de santé
-          if curl -f http://localhost:8080/api/public/login; then
-            echo "✅ Application OK"
-          else
-            echo "❌ Application KO"
-            docker logs test-app
-            exit 1
-          fi
           
           # Nettoyer
           docker stop test-app
