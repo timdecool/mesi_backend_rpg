@@ -83,11 +83,8 @@ jobs:
           app.file.storage.enabled=false
           EOF
           
-          # Création du fichier Firebase
-          if [[ -n "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]]; then
-            echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > src/main/resources/firebase-service-account.json
-          else
-            cat > src/main/resources/firebase-service-account.json << 'FIREBASE_EOF'
+          # Création du fichier Firebase (version simplifiée)
+          cat > src/main/resources/firebase-service-account.json << 'FIREBASE_EOF'
           {
             "type": "service_account",
             "project_id": "test-project",
@@ -100,7 +97,6 @@ jobs:
             "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs"
           }
           FIREBASE_EOF
-          fi
 
       - name: Verify MySQL connection
         run: |
