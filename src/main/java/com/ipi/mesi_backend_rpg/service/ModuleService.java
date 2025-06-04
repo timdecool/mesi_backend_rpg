@@ -50,9 +50,9 @@ public class ModuleService {
         return module.map(moduleMapper::toDTO).orElse(null);
     }
 
-    public ModuleResponseSummaryDTO findModuleSummaryById(Long id) {
-        Optional<Module> module = moduleRepository.findById(id);
-        return module.map(moduleMapper::toSummaryDTO).orElse(null);
+    public List<ModuleResponseSummaryDTO> findAllModuleSummaryByUserId(Long id) {
+        List<Module> modules = moduleRepository.findAllByCreator_Id(id);
+        return modules.stream().map(moduleMapper::toSummaryDTO).toList();
     }
 
     public ModuleResponseDTO createModule(ModuleRequestDTO moduleRequestDTO) {
