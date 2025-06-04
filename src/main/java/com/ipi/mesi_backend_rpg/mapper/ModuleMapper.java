@@ -1,5 +1,12 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
+import java.time.LocalDateTime;
+
+import com.ipi.mesi_backend_rpg.service.ModuleRatingService;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseSummaryDTO;
@@ -7,6 +14,7 @@ import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,6 +32,7 @@ public class ModuleMapper {
     private final UserRepository userRepository;
     private final ModuleAccessMapper moduleAccessMapper;
     private final PictureMapper pictureMapper;
+    private final ModuleRatingService moduleRatingService;
 
     public ModuleResponseDTO toDTO(Module module) {
         PictureDTO pictureDTO = null;
@@ -43,7 +52,9 @@ public class ModuleMapper {
                 module.getVersions().stream().map(moduleVersionMapper::toDTO).toList(),
                 module.getAccesses().stream().map(moduleAccessMapper::toDTO).toList(),
                 module.getTags().stream().map(tagMapper::toDTO).toList(),
-                pictureDTO);
+                pictureDTO,
+                moduleRatingService.findAggregatedRatingsByModule(module)
+                );
     }
 
     public ModuleResponseSummaryDTO toSummaryDTO(Module module) {

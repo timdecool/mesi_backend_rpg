@@ -19,6 +19,7 @@ public record ModuleResponseDTO(
         List<ModuleVersionDTO> versions,
         List<ModuleAccessDTO> accesses,
         List<TagDTO> tags,
-        PictureDTO picture
+        PictureDTO picture,
+        AggregatedRatingsDTO ratings
 ) {
 }
