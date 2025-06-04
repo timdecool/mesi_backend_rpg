@@ -6,7 +6,6 @@ import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
 import com.ipi.mesi_backend_rpg.model.ModuleComment;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
-import com.ipi.mesi_backend_rpg.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ModuleCommentMapper {
 
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ModuleRepository moduleRepository;
     private final ModuleVersionRepository moduleVersionRepository;

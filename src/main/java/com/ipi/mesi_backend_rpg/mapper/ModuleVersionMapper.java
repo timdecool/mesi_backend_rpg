@@ -6,7 +6,6 @@ import com.ipi.mesi_backend_rpg.model.Block;
 import com.ipi.mesi_backend_rpg.model.GameSystem;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
-import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 public class ModuleVersionMapper {
 
     private final GameSystemRepository gameSystemRepository;
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final BlockMapper blockMapper;
 

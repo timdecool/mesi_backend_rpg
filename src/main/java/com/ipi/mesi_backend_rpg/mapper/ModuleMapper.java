@@ -3,24 +3,14 @@ package com.ipi.mesi_backend_rpg.mapper;
 import java.time.LocalDateTime;
 
 import com.ipi.mesi_backend_rpg.service.ModuleRatingService;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.ipi.mesi_backend_rpg.dto.ModuleRequestDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleResponseSummaryDTO;
 import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.model.Module;
-import com.ipi.mesi_backend_rpg.model.User;
-import com.ipi.mesi_backend_rpg.repository.UserRepository;
-
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +19,6 @@ public class ModuleMapper {
     private final ModuleVersionMapper moduleVersionMapper;
     private final UserMapper userMapper;
     private final TagMapper tagMapper;
-    private final UserRepository userRepository;
     private final ModuleAccessMapper moduleAccessMapper;
     private final PictureMapper pictureMapper;
     private final ModuleRatingService moduleRatingService;
