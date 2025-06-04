@@ -32,14 +32,13 @@ public class UserService {
     public UserDTO createUser(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         userRepository.save(user);
-
         UserFolder userDefaultFolder = new UserFolder(
                 user.getId(),
                 "Mes Modules",
                 null
         );
+        userFolderRepository.save(userDefaultFolder);
 
-        UserFolder savedFolder = userFolderRepository.save(userDefaultFolder);
         return userMapper.toDTO(user);
     }
 
