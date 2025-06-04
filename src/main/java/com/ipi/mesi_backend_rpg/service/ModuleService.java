@@ -8,6 +8,7 @@ import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
 import com.ipi.mesi_backend_rpg.model.*;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
+import com.ipi.mesi_backend_rpg.repository.ModuleAccessRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
 import jakarta.transaction.Transactional;
@@ -33,6 +34,7 @@ public class ModuleService {
     private final ModuleVersionService moduleVersionService;
 
     private final ModuleAccessService moduleAccessService;
+    private final ModuleAccessRepository moduleAccessRepository;
 
     private final GameSystemRepository gameSystemRepository;
 
@@ -90,6 +92,13 @@ public class ModuleService {
     public ModuleResponseDTO updateModule(Long id, ModuleRequestDTO moduleRequestDTO, Long userId) {
         Module existingModule = moduleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
+
+        User user = userService.getAuthenticatedUser();
+        ModuleAccess access = moduleAccessRepository.findModuleAccessBymoduleAndUser(existingModule, user);
+
+        if (!access.isCanEdit()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can't edit module");
+        }
 
         // 1. Mettre à jour les propriétés de base du module
         existingModule.setTitle(moduleRequestDTO.title());
