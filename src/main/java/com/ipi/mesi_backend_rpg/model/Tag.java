@@ -5,13 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -30,6 +24,7 @@ public class Tag {
 
     @NotNull(message = "tag name mandatory")
     @NotBlank(message = "tag name empty")
+    @Column(unique = true, nullable = false)
     private String name;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {
