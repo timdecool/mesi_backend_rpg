@@ -93,6 +93,13 @@ public class ModuleService {
         Module existingModule = moduleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
 
+        User user = userService.getAuthenticatedUser();
+        ModuleAccess access = moduleAccessRepository.findModuleAccessBymoduleAndUser(existingModule, user);
+
+        if (!access.isCanEdit()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Can't edit module");
+        }
+
         // 1. Mettre à jour les propriétés de base du module
         existingModule.setTitle(moduleRequestDTO.title());
         existingModule.setDescription(moduleRequestDTO.description());
