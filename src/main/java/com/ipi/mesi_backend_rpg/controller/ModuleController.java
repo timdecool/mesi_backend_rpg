@@ -38,12 +38,9 @@ public class ModuleController {
     }
 
     @GetMapping("/summary/{id}")
-    public ResponseEntity<ModuleResponseSummaryDTO> getModuleSummaryById(@PathVariable(name = "id", required = false) Long id) {
-        ModuleResponseSummaryDTO module = moduleService.findModuleSummaryById(id);
-        if (module == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found");
-        }
-        return new ResponseEntity<>(module, HttpStatus.OK);
+    public ResponseEntity<List<ModuleResponseSummaryDTO>> getModuleSummaryById(@PathVariable(name = "id", required = false) Long id) {
+        List<ModuleResponseSummaryDTO> modules = moduleService.findAllModuleSummaryByUserId(id);
+        return new ResponseEntity<>(modules, HttpStatus.OK);
     }
 
     @GetMapping("/most-commented")
