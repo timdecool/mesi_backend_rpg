@@ -129,6 +129,7 @@ public class ModuleService {
     @Transactional
     public void deleteModule(Long id) {
         userSavedModuleRepository.deleteByModule_Id(id);
+        moduleRepository.deleteById(id);
     }
 
     public List<ModuleResponseDTO> searchModules(String query) {
