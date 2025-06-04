@@ -9,7 +9,6 @@ import com.ipi.mesi_backend_rpg.model.*;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.repository.GameSystemRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
-import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import com.ipi.mesi_backend_rpg.repository.UserSavedModuleRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ public class ModuleService {
     private final ModuleAccessService moduleAccessService;
 
     private final GameSystemRepository gameSystemRepository;
-    private final UserRepository userRepository;
 
     private final UserSavedModuleRepository userSavedModuleRepository;
     private final UserService userService;
