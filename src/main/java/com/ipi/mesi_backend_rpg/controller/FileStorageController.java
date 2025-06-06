@@ -4,6 +4,7 @@ import com.ipi.mesi_backend_rpg.dto.FileMetaDataDTO;
 import com.ipi.mesi_backend_rpg.service.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,7 @@ public class FileStorageController {
 
     private final FileStorageService fileStorageService;
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = "multipart/form-data", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> uploadFile(@RequestParam MultipartFile file) throws IOException {
         String fileId = fileStorageService.uploadFile(file);
         return new ResponseEntity<>(fileId, HttpStatus.CREATED);

@@ -58,6 +58,11 @@ public class BlockService {
         moduleVersionRepository.findById(blockDTO.getModuleVersionId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module version not found"));
 
+        // Si le blockDTO a un ID, c'est en fait une mise à jour
+        if (blockDTO.getId() != null) {
+            return updateBlock(blockDTO.getId(), blockDTO);
+        }
+
         Block block = blockMapper.toEntity(blockDTO);
         block.setCreator(userService.getAuthenticatedUser());
         block.setCreatedAt(LocalDate.now());
@@ -110,11 +115,12 @@ public class BlockService {
         Map<Long, Block> currentDbBlocksMap = blockRepository.findAllByModuleVersion(moduleVersion).stream()
                 .collect(Collectors.toMap(Block::getId, Function.identity()));
 
-        // 2. Ensemble des IDs des DTOs entrants qui ont un ID non nul (pour identifier
+        // 2. Ensemble des IDs des DTOs entrants qui ont un ID non nul ET valide (pour identifier
         // les mises à jour et les suppressions)
         Set<Long> incomingDtoNonNullIds = dtosToProcess.stream()
                 .map(BlockDTO::getId)
                 .filter(Objects::nonNull)
+                .filter(this::isValidDatabaseId)
                 .collect(Collectors.toSet());
 
         // Traiter les créations et les mises à jour
@@ -136,7 +142,7 @@ public class BlockService {
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                             "Le créateur du module avec l'id" + creatorDto.id() + " est introuvable."));
 
-            if (dto.getId() != null) { // Le DTO suggère une MISE À JOUR
+            if (dto.getId() != null && isValidDatabaseId(dto.getId())) { // Le DTO suggère une MISE À JOUR
                 Block existingBlock = currentDbBlocksMap.get(dto.getId());
                 if (existingBlock != null) {
                     // S'assurer que le bloc existant appartient bien à la version cible (devrait
@@ -152,7 +158,7 @@ public class BlockService {
                             "Block avec l'ID " + dto.getId() + "n'a pas été trouver pour la version de ce module"
                                     + targetModuleVersionId + ".");
                 }
-            } else { // Le DTO suggère une CRÉATION (id est null)
+            } else { // Le DTO suggère une CRÉATION (id est null ou temporaire)
                 // Préparer un DTO pour la création, en s'assurant que moduleVersionId et
                 // creator sont corrects
                 BlockDTO dtoForCreate;
@@ -204,5 +210,15 @@ public class BlockService {
                 createBlock(blockDTO);
             }
         }
+    }
+
+    /**
+     * Vérifie si un ID est un vrai ID de base de données ou un ID temporaire généré côté client
+     * Les IDs temporaires sont généralement de très gros nombres (timestamp en millisecondes)
+     */
+    private boolean isValidDatabaseId(Long id) {
+        // Les IDs de base de données sont généralement plus petits
+        // Les IDs temporaires JavaScript sont souvent des timestamps (> 1 trillion)
+        return id != null && id > 0 && id < 1_000_000_000_000L;
     }
 }

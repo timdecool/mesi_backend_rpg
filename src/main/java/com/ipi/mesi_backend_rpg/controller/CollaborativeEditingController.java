@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import com.ipi.mesi_backend_rpg.dto.CursorPositionDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleUpdateDTO;
 import com.ipi.mesi_backend_rpg.service.CollaborativeEditingService;
+import com.ipi.mesi_backend_rpg.service.StatisticsService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +19,7 @@ public class CollaborativeEditingController {
 
     private final CollaborativeEditingService collaborativeEditingService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final StatisticsService statisticsService;
 
     @MessageMapping("/module/{moduleId}/update")
     public void handleModuleUpdate(@DestinationVariable Long moduleId, @Payload ModuleUpdateDTO update) {
@@ -35,5 +37,15 @@ public class CollaborativeEditingController {
             // Diffuser la position à tous les autres clients connectés
             messagingTemplate.convertAndSend("/module/" + moduleId + "/cursors", cursorPosition);
         }
+    }
+
+    @MessageMapping("/user/connect")
+    public void handleUserConnect(@Payload String userId) {
+        statisticsService.addActiveUser(userId);
+    }
+
+    @MessageMapping("/user/disconnect")
+    public void handleUserDisconnect(@Payload String userId) {
+        statisticsService.removeActiveUser(userId);
     }
 }

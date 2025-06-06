@@ -14,6 +14,8 @@ public record UserProfileDTO(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate updatedAt,
 
-        PictureDTO picture
+        PictureDTO picture,
+        Long modulesCreated,
+        Long subscribersCount
 ) {
 }

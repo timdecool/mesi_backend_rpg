@@ -55,4 +55,22 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
     List<Module> findMostCommentedModules(Pageable pageable);
 
     List<Module> findAllByCreator_Id(Long creatorId);
+
+    @Query("""
+            SELECT COUNT(DISTINCT m) FROM Module m
+            WHERE EXISTS (
+                SELECT mv FROM ModuleVersion mv
+                WHERE mv.module = m AND mv.published = true
+            )
+            """)
+    long countSharedModules();
+
+    long countByCreator_Id(Long creatorId);
+
+    @Query("""
+            SELECT COUNT(DISTINCT usm.userId) FROM UserSavedModule usm
+            JOIN usm.module m
+            WHERE m.creator.id = :creatorId
+            """)
+    long countSubscribersByCreatorId(@Param("creatorId") Long creatorId);
 }

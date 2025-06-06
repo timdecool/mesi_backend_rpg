@@ -83,7 +83,7 @@ public class BlockMapper {
     public Block toEntity(BlockDTO blockDTO) {
 
         if (blockDTO instanceof ParagraphBlockDTO paragraphBlockDTO) {
-            return new ParagraphBlock(
+            ParagraphBlock paragraphBlock = new ParagraphBlock(
                     moduleVersionRepository.findById(paragraphBlockDTO.getModuleVersionId())
                             .orElseThrow(() -> new IllegalArgumentException("Invalid moduleVersion id")),
                     paragraphBlockDTO.getTitle(),
@@ -92,10 +92,16 @@ public class BlockMapper {
                     userRepository.findById(paragraphBlockDTO.getCreator().id()).orElse(null),
                     paragraphBlockDTO.getParagraph(),
                     paragraphBlockDTO.getStyle());
+            
+            // Définir l'ID si fourni dans le DTO et qu'il s'agit d'un vrai ID de base de données
+            if (paragraphBlockDTO.getId() != null && isValidDatabaseId(paragraphBlockDTO.getId())) {
+                paragraphBlock.setId(paragraphBlockDTO.getId());
+            }
+            return paragraphBlock;
         }
 
         if (blockDTO instanceof IntegratedModuleBlockDTO integratedModuleBlockDTO) {
-            return new IntegratedModuleBlock(
+            IntegratedModuleBlock integratedModuleBlock = new IntegratedModuleBlock(
                     moduleVersionRepository.findById(integratedModuleBlockDTO.getModuleVersionId())
                             .orElseThrow(() -> new IllegalArgumentException(
                                     "Invalid module version id: " + integratedModuleBlockDTO.getModuleVersionId())),
@@ -104,10 +110,16 @@ public class BlockMapper {
                     "block",
                     userRepository.findById(integratedModuleBlockDTO.getCreator().id()).orElse(null),
                     moduleRepository.findById(integratedModuleBlockDTO.getModuleId()).orElse(null));
+            
+            // Définir l'ID si fourni dans le DTO et qu'il s'agit d'un vrai ID de base de données
+            if (integratedModuleBlockDTO.getId() != null && isValidDatabaseId(integratedModuleBlockDTO.getId())) {
+                integratedModuleBlock.setId(integratedModuleBlockDTO.getId());
+            }
+            return integratedModuleBlock;
         }
 
         if (blockDTO instanceof StatBlockDTO statBlockDTO) {
-            return new StatBlock(
+            StatBlock statBlock = new StatBlock(
                     moduleVersionRepository.findById(statBlockDTO.getModuleVersionId())
                             .orElseThrow(() -> new IllegalArgumentException(
                                     "Invalid module version id: " + statBlockDTO.getModuleVersionId())),
@@ -117,10 +129,16 @@ public class BlockMapper {
                     userRepository.findById(statBlockDTO.getCreator().id()).orElse(null),
                     statBlockDTO.getStatRules(),
                     statBlockDTO.getStatValues());
+            
+            // Définir l'ID si fourni dans le DTO et qu'il s'agit d'un vrai ID de base de données
+            if (statBlockDTO.getId() != null && isValidDatabaseId(statBlockDTO.getId())) {
+                statBlock.setId(statBlockDTO.getId());
+            }
+            return statBlock;
         }
 
         if (blockDTO instanceof MusicBlockDTO musicBlockDTO) {
-            return new MusicBlock(
+            MusicBlock musicBlock = new MusicBlock(
                     musicBlockDTO.getLabel(),
                     musicBlockDTO.getSrc(),
                     moduleVersionRepository.findById(musicBlockDTO.getModuleVersionId())
@@ -130,11 +148,16 @@ public class BlockMapper {
                     musicBlockDTO.getBlockOrder(),
                     "music",
                     userRepository.findById(musicBlockDTO.getCreator().id()).orElse(null));
-
+            
+            // Définir l'ID si fourni dans le DTO et qu'il s'agit d'un vrai ID de base de données
+            if (musicBlockDTO.getId() != null && isValidDatabaseId(musicBlockDTO.getId())) {
+                musicBlock.setId(musicBlockDTO.getId());
+            }
+            return musicBlock;
         }
 
         if (blockDTO instanceof PictureBlockDTO pictureBlockDTO) {
-            return new PictureBlock(
+            PictureBlock pictureBlock = new PictureBlock(
                     pictureBlockDTO.getLabel(),
                     pictureMapper.toEntity(pictureBlockDTO.getPicture()),
                     moduleVersionRepository.findById(pictureBlockDTO.getModuleVersionId())
@@ -144,8 +167,21 @@ public class BlockMapper {
                     pictureBlockDTO.getBlockOrder(),
                     "picture",
                     userRepository.findById(pictureBlockDTO.getCreator().id()).orElse(null));
+            
+            // Définir l'ID si fourni dans le DTO et qu'il s'agit d'un vrai ID de base de données
+            if (pictureBlockDTO.getId() != null && isValidDatabaseId(pictureBlockDTO.getId())) {
+                pictureBlock.setId(pictureBlockDTO.getId());
+            }
+            return pictureBlock;
         }
 
         throw new IllegalArgumentException("Unknown block type");
+    }
+
+    /**
+     * Vérifie si un ID est un vrai ID de base de données ou un ID temporaire généré côté client
+     */
+    private boolean isValidDatabaseId(Long id) {
+        return id != null && id > 0 && id < 1_000_000_000_000L;
     }
 }

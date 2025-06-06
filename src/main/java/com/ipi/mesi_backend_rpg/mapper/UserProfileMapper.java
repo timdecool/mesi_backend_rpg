@@ -3,6 +3,7 @@ package com.ipi.mesi_backend_rpg.mapper;
 import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.dto.UserProfileDTO;
 import com.ipi.mesi_backend_rpg.model.UserProfile;
+import com.ipi.mesi_backend_rpg.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class UserProfileMapper {
 
     private final PictureMapper pictureMapper;
+    private final StatisticsService statisticsService;
 
     public UserProfileDTO toDTO(UserProfile userProfile) {
 
@@ -19,12 +21,22 @@ public class UserProfileMapper {
             pictureDTO = pictureMapper.toDTO(userProfile.getPicture());
         }
 
+        Long modulesCreated = 0L;
+        Long subscribersCount = 0L;
+        
+        if (userProfile.getUser() != null) {
+            modulesCreated = statisticsService.getModulesCreatedByUser(userProfile.getUser().getId());
+            subscribersCount = statisticsService.getSubscribersCountForUser(userProfile.getUser().getId());
+        }
+
         return new UserProfileDTO(
                 userProfile.getId(),
                 userProfile.getDescription(),
                 userProfile.getCreatedAt(),
                 userProfile.getUpdatedAt(),
-                pictureDTO
+                pictureDTO,
+                modulesCreated,
+                subscribersCount
         );
     }
 

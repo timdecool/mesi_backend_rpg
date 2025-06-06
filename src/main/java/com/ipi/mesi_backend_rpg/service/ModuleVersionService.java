@@ -31,6 +31,7 @@ public class ModuleVersionService {
     private final BlockService blockService;
     private final BlockMapper blockMapper;
     private final UserService userService;
+    private final StatisticsService statisticsService;
 
     public ModuleVersionDTO findById(Long id) {
         ModuleVersion moduleVersion = moduleVersionRepository.findById(id)
@@ -43,6 +44,12 @@ public class ModuleVersionService {
         version.setModule(module);
         version.setCreator(userService.getAuthenticatedUser());
         ModuleVersion savedVersion = moduleVersionRepository.save(version);
+        
+        // Trigger statistics update if version was published
+        if (savedVersion.isPublished()) {
+            statisticsService.broadcastStatistics();
+        }
+        
         return moduleVersionMapper.toDTO(savedVersion);
     }
 
@@ -61,6 +68,12 @@ public class ModuleVersionService {
         }
 
         ModuleVersion savedVersion = moduleVersionRepository.save(newVersion);
+        
+        // Trigger statistics update if version was published
+        if (newVersion.isPublished()) {
+            statisticsService.broadcastStatistics();
+        }
+        
         return moduleVersionMapper.toDTO(savedVersion);
     }
 

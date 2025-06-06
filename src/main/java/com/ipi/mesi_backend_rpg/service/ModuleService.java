@@ -37,6 +37,8 @@ public class ModuleService {
     private final GameSystemRepository gameSystemRepository;
 
     private final UserSavedModuleRepository userSavedModuleRepository;
+    
+    private final StatisticsService statisticsService;
     private final UserService userService;
 
     public List<ModuleResponseDTO> findAllModules() {
@@ -82,6 +84,9 @@ public class ModuleService {
         module.addAccess(initialModuleAccess);
 
         Module savedModule = moduleRepository.save(module);
+        
+        // Trigger statistics update
+        statisticsService.broadcastStatistics();
 
         return moduleMapper.toDTO(savedModule);
     }
