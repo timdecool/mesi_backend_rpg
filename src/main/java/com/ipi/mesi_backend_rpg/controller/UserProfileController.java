@@ -2,7 +2,9 @@ package com.ipi.mesi_backend_rpg.controller;
 
 
 import com.ipi.mesi_backend_rpg.dto.UserProfileDTO;
+import com.ipi.mesi_backend_rpg.dto.UserSubscriptionDTO;
 import com.ipi.mesi_backend_rpg.service.UserProfileService;
+import com.ipi.mesi_backend_rpg.service.UserSubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,7 @@ import java.util.List;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+    private final UserSubscriptionService userSubscriptionService;
     
     @PostMapping
     public ResponseEntity<UserProfileDTO> createUserProfile(@Valid @RequestBody UserProfileDTO userProfileDTO) {
@@ -53,6 +56,54 @@ public class UserProfileController {
         UserProfileDTO userProfileDTO = userProfileService.findById(id);
         userProfileService.delete(id);
         return new ResponseEntity<>(userProfileDTO, HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping("/user/{userId}/toggle-privacy")
+    public ResponseEntity<UserProfileDTO> toggleProfilePrivacy(@PathVariable Long userId) {
+        UserProfileDTO userProfileDTO = userProfileService.togglePrivacy(userId);
+        return new ResponseEntity<>(userProfileDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{userId}/subscribe")
+    public ResponseEntity<UserSubscriptionDTO> subscribeToUser(@PathVariable Long userId) {
+        UserSubscriptionDTO subscription = userSubscriptionService.subscribe(userId);
+        return new ResponseEntity<>(subscription, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/user/{userId}/unsubscribe")
+    public ResponseEntity<Void> unsubscribeFromUser(@PathVariable Long userId) {
+        userSubscriptionService.unsubscribe(userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/user/{userId}/subscriptions")
+    public ResponseEntity<List<UserSubscriptionDTO>> getUserSubscriptions(@PathVariable Long userId) {
+        List<UserSubscriptionDTO> subscriptions = userSubscriptionService.getSubscriptions(userId);
+        return new ResponseEntity<>(subscriptions, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/subscribers")
+    public ResponseEntity<List<UserSubscriptionDTO>> getUserSubscribers(@PathVariable Long userId) {
+        List<UserSubscriptionDTO> subscribers = userSubscriptionService.getSubscribers(userId);
+        return new ResponseEntity<>(subscribers, HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{userId}/views/increment")
+    public ResponseEntity<UserProfileDTO> incrementProfileViews(@PathVariable Long userId) {
+        UserProfileDTO userProfileDTO = userProfileService.incrementViews(userId);
+        return new ResponseEntity<>(userProfileDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{userId}/views/decrement")
+    public ResponseEntity<UserProfileDTO> decrementProfileViews(@PathVariable Long userId) {
+        UserProfileDTO userProfileDTO = userProfileService.decrementViews(userId);
+        return new ResponseEntity<>(userProfileDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{userId}/views")
+    public ResponseEntity<Long> getProfileViews(@PathVariable Long userId) {
+        Long views = userProfileService.getProfileViews(userId);
+        return new ResponseEntity<>(views, HttpStatus.OK);
     }
 
 }

@@ -14,6 +14,11 @@ public record UserProfileDTO(
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate updatedAt,
 
+        Boolean isPublic,
+        Long profileViews,
+        Long subscriberCount,
+        Boolean isSubscribedByCurrentUser,
+
         PictureDTO picture
 ) {
 }

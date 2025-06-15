@@ -117,4 +117,15 @@ public class UserService {
             throw new RuntimeException("Invalid Firebase token", e);
         }
     }
+
+    public User getAuthenticatedUserOrNull() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+                    .currentRequestAttributes()).getRequest();
+            FirebaseToken token = firebaseAuthenticationFilter.getDecodedToken(request);
+            return userRepository.findByEmail(token.getEmail()).orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

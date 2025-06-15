@@ -78,11 +78,14 @@ public class ModuleRatingService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "module not found");
         }
 
-        User user = userService.getAuthenticatedUser();
-        ModuleRating moduleRating = moduleRatingRepository.findModuleRatingByModuleIdAndUserId(module.getId(), user.getId());
+        User user = userService.getAuthenticatedUserOrNull();
         ModuleRatingDTO moduleRatingDTO = null;
-        if (moduleRating != null) {
-            moduleRatingDTO = moduleRatingMapper.toDTO(moduleRating);
+        
+        if (user != null) {
+            ModuleRating moduleRating = moduleRatingRepository.findModuleRatingByModuleIdAndUserId(module.getId(), user.getId());
+            if (moduleRating != null) {
+                moduleRatingDTO = moduleRatingMapper.toDTO(moduleRating);
+            }
         }
 
         return new AggregatedRatingsDTO(
@@ -99,16 +102,22 @@ public class ModuleRatingService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "module version not found");
         }
 
-        User user = userService.getAuthenticatedUser();
-        ModuleRating moduleRating = moduleRatingRepository.findModuleRatingByModuleVersionIdAndUserId(moduleVersion.getId(), user.getId());
-
+        User user = userService.getAuthenticatedUserOrNull();
+        ModuleRatingDTO moduleRatingDTO = null;
+        
+        if (user != null) {
+            ModuleRating moduleRating = moduleRatingRepository.findModuleRatingByModuleVersionIdAndUserId(moduleVersion.getId(), user.getId());
+            if (moduleRating != null) {
+                moduleRatingDTO = moduleRatingMapper.toDTO(moduleRating);
+            }
+        }
 
         return new AggregatedRatingsDTO(
                 moduleRatingRepository.countByModuleId(moduleVersion.getModule().getId()),
                 moduleRatingRepository.countByModuleVersionId(moduleVersion.getId()),
                 moduleRatingRepository.findAverageRatingByModuleId(moduleVersion.getModule().getId()),
                 moduleRatingRepository.findAverageRatingByModuleVersionId(moduleVersion.getId()),
-                null
+                moduleRatingDTO
         );
     }
 

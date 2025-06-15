@@ -23,6 +23,12 @@ public class UserProfile {
     private LocalDate createdAt;
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate updatedAt;
+    
+    @Column(name = "is_public", nullable = false)
+    private Boolean isPublic = true;
+    
+    @Column(name = "profile_views", nullable = false)
+    private Long profileViews = 0L;
 
     @OneToOne
     private User user;
@@ -34,6 +40,8 @@ public class UserProfile {
         this.description = description;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.isPublic = true;
+        this.profileViews = 0L;
     }
 
 }
