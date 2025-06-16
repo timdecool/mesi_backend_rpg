@@ -31,7 +31,9 @@ public class ModuleCommentMapper {
 
     public ModuleComment toEntity(ModuleCommentDTO moduleCommentDTO) {
         ModuleComment moduleComment = new ModuleComment();
-        moduleComment.setId(moduleCommentDTO.id());
+        if(moduleCommentDTO.id() != null) {
+            moduleComment.setId(moduleCommentDTO.id());
+        }
         moduleComment.setModule(moduleRepository.findById(moduleCommentDTO.moduleId())
                 .orElseThrow(() -> new IllegalArgumentException("Module not found")));
         moduleComment.setModuleVersion(moduleVersionRepository.findById(moduleCommentDTO.moduleVersionId())

@@ -6,6 +6,8 @@ import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleComment;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
 import com.ipi.mesi_backend_rpg.repository.ModuleCommentRepository;
+import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
+import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,8 @@ public class ModuleCommentService {
     private final ModuleCommentRepository moduleCommentRepository;
     private final ModuleCommentMapper moduleCommentMapper;
     private final UserService userService;
+    private final ModuleRepository moduleRepository;
+    private final ModuleVersionRepository moduleVersionRepository;
 
     public ModuleCommentDTO findById(Long id) {
         ModuleComment moduleComment = moduleCommentRepository.findById(id)
@@ -29,7 +33,12 @@ public class ModuleCommentService {
     }
 
     public ModuleCommentDTO createComment(ModuleCommentDTO moduleCommentDTO) {
-        ModuleComment moduleComment = moduleCommentMapper.toEntity(moduleCommentDTO);
+        ModuleComment moduleComment = new ModuleComment();
+        moduleComment.setModule(moduleRepository.findById(moduleCommentDTO.moduleId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found")));
+        moduleComment.setModuleVersion(moduleVersionRepository.findById(moduleCommentDTO.moduleVersionId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ModuleVersion not found")));
+        moduleComment.setComment(moduleCommentDTO.comment());
         moduleComment.setUser(userService.getAuthenticatedUser());
         ModuleComment saved = moduleCommentRepository.save(moduleComment);
         return moduleCommentMapper.toDTO(saved);
@@ -44,14 +53,9 @@ public class ModuleCommentService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not have the right to edit this comment.");
         }
 
-        ModuleComment newComment = moduleCommentMapper.toEntity(moduleCommentDTO);
-
-        newComment.setId(comment.getId());
-        newComment.setCreatedAt(comment.getCreatedAt());
-        newComment.setModule(comment.getModule());
-        newComment.setModuleVersion(comment.getModuleVersion());
-        newComment.setUser(comment.getUser());
-        ModuleComment savedComment = moduleCommentRepository.save(newComment);
+        comment.setComment(moduleCommentDTO.comment());
+        comment.setUpdatedAt(java.time.LocalDateTime.now());
+        ModuleComment savedComment = moduleCommentRepository.save(comment);
         return moduleCommentMapper.toDTO(savedComment);
     }
 

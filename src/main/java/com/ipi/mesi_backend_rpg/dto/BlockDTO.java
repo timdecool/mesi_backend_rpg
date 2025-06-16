@@ -9,10 +9,11 @@ import lombok.Setter;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true, include = JsonTypeInfo.As.PROPERTY)
 @JsonSubTypes({
-    @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
-    @JsonSubTypes.Type(value = MusicBlockDTO.class, name = "music"),
-    @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stat"),
-    @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module")
+        @JsonSubTypes.Type(value = ParagraphBlockDTO.class, name = "paragraph"),
+        @JsonSubTypes.Type(value = MusicBlockDTO.class, name = "music"),
+        @JsonSubTypes.Type(value = StatBlockDTO.class, name = "stat"),
+        @JsonSubTypes.Type(value = IntegratedModuleBlockDTO.class, name = "module"),
+        @JsonSubTypes.Type(value = PictureBlockDTO.class, name = "picture")
 })
 @Setter
 @Getter
