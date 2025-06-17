@@ -7,8 +7,11 @@ import com.ipi.mesi_backend_rpg.dto.UserDTO;
 import com.ipi.mesi_backend_rpg.mapper.UserMapper;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.model.UserFolder;
+import com.ipi.mesi_backend_rpg.model.UserProfile;
 import com.ipi.mesi_backend_rpg.repository.UserFolderRepository;
+import com.ipi.mesi_backend_rpg.repository.UserProfileRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +32,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final FirebaseAuthenticationFilter firebaseAuthenticationFilter;
     private final UserFolderRepository userFolderRepository;
+    private final UserProfileRepository userProfileRepository;
 
     public UserDTO createUser(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
@@ -38,6 +43,14 @@ public class UserService {
                 null
         );
         userFolderRepository.save(userDefaultFolder);
+
+        UserProfile userProfile = new UserProfile(
+                "Default profile description",
+                LocalDate.now(),
+                LocalDate.now()
+        );
+        userProfile.setUser(user);
+        userProfileRepository.save(userProfile);
 
         return userMapper.toDTO(user);
     }

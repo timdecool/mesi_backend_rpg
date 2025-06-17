@@ -1,14 +1,11 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
 import com.ipi.mesi_backend_rpg.dto.AggregatedRatingsDTO;
-import com.ipi.mesi_backend_rpg.dto.ModuleCommentDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleRatingDTO;
-import com.ipi.mesi_backend_rpg.model.ModuleComment;
 import com.ipi.mesi_backend_rpg.model.ModuleRating;
 import com.ipi.mesi_backend_rpg.repository.ModuleRatingRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
-import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ModuleRatingMapper {
 
-    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ModuleRepository moduleRepository;
     private final ModuleVersionRepository moduleVersionRepository;

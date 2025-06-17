@@ -1,9 +1,13 @@
 package com.ipi.mesi_backend_rpg.service;
 
+import com.ipi.mesi_backend_rpg.dto.PictureDTO;
 import com.ipi.mesi_backend_rpg.dto.UserProfileDTO;
+import com.ipi.mesi_backend_rpg.mapper.PictureMapper;
 import com.ipi.mesi_backend_rpg.mapper.UserProfileMapper;
+import com.ipi.mesi_backend_rpg.model.Picture;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.model.UserProfile;
+import com.ipi.mesi_backend_rpg.repository.PictureRepository;
 import com.ipi.mesi_backend_rpg.repository.UserProfileRepository;
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,16 +16,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserProfileService {
 
-    private final UserProfileRepository userProfileRepository;
+      private final UserProfileRepository userProfileRepository;
     private final UserProfileMapper userProfileMapper;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final PictureMapper pictureMapper;
+    private final PictureRepository pictureRepository;
+
 
 
     public UserProfileDTO create(UserProfileDTO userProfileDTO) {
@@ -30,13 +38,42 @@ public class UserProfileService {
         return userProfileMapper.toDTO(userProfile);
     }
 
+    @Transactional
     public UserProfileDTO update(Long id, UserProfileDTO userProfileDTO) {
-        UserProfile userProfile = userProfileRepository.findById(userProfileDTO.id()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "userProfile not found"));
+        UserProfile userProfile = userProfileRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "userProfile not found"));
         if (!id.equals(userProfile.getId())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ID in path and body do not match");
         }
-        userProfileRepository.save(userProfile);
-        return userProfileMapper.toDTO(userProfile);
+
+        // Mettre à jour les champs du profil
+        userProfile.setDescription(userProfileDTO.description());
+        userProfile.setUpdatedAt(LocalDate.now());
+        if (userProfileDTO.isPublic() != null) {
+            userProfile.setIsPublic(userProfileDTO.isPublic());
+        }
+
+        // Gérer la photo de profil
+        PictureDTO pictureDTO = userProfileDTO.picture();
+        Picture existingPicture = userProfile.getPicture();
+
+        if (pictureDTO != null) {
+            if (existingPicture != null) {
+                // Mettre à jour l'image existante
+                existingPicture.setTitle(pictureDTO.title());
+                existingPicture.setSrc(pictureDTO.src());
+                existingPicture.setUpdatedAt(java.time.LocalDateTime.now());
+                pictureRepository.save(existingPicture);
+            } else {
+                // Créer une nouvelle image
+                userProfile.setPicture(pictureMapper.toEntity(pictureDTO));
+            }
+        } else {
+            // Supprimer l'image si elle n'est pas fournie dans le DTO
+            userProfile.setPicture(null);
+        }
+
+        UserProfile savedProfile = userProfileRepository.save(userProfile);
+        return userProfileMapper.toDTO(savedProfile);
     }
 
     public UserProfileDTO delete(Long id) {

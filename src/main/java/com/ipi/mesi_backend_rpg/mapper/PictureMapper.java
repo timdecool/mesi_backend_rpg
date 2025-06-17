@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class PictureMapper {
 
-    public PictureDTO toDTO(Picture picture) {
+     public PictureDTO toDTO(Picture picture) {
         return new PictureDTO(
                 picture.getId(),
                 picture.getTitle(),
@@ -17,13 +17,11 @@ public class PictureMapper {
         );
     }
 
-    public Picture toEntity(PictureDTO dto) {
-        Picture picture = new Picture(
+     public Picture toEntity(PictureDTO dto) {
+        return new Picture(
                 dto.title(),
                 dto.src()
         );
-        picture.setId(dto.id());
-        return picture;
     }
 
 }
