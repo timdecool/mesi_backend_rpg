@@ -5,7 +5,7 @@ import com.ipi.mesi_backend_rpg.model.*;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
-import com.ipi.mesi_backend_rpg.repository.PictureRepository;
+import com.ipi.mesi_backend_rpg.repository.PictureRepository; // Import PictureRepository
 import com.ipi.mesi_backend_rpg.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class BlockMapper {
     private final UserRepository userRepository;
     private final ModuleVersionRepository moduleVersionRepository;
     private final PictureMapper pictureMapper;
-    private final PictureRepository pictureRepository;
+    private final PictureRepository pictureRepository; // Ensure this is injected
 
     public BlockDTO toDTO(Block block) {
         if (block instanceof ParagraphBlock paragraphBlock) {
@@ -109,9 +109,11 @@ public class BlockMapper {
                             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Picture not found with id: " + pictureDTO.getPicture().id()));
                     picture.setTitle(pictureDTO.getPicture().title());
                     picture.setSrc(pictureDTO.getPicture().src());
+                    // Note: No explicit save here, as 'picture' is a managed entity and changes will be flushed by the transaction.
                 } else {
                     // C'est une nouvelle image
                     picture = pictureMapper.toEntity(pictureDTO.getPicture());
+                    picture = pictureRepository.save(picture); // THIS LINE SHOULD REMAIN
                 }
                 pictureBlock.setPicture(picture);
             } else {
@@ -185,8 +187,9 @@ public class BlockMapper {
                     picture = pictureRepository.findById(pictureBlockDTO.getPicture().id())
                             .orElseThrow(() -> new IllegalArgumentException("Invalid picture id: " + pictureBlockDTO.getPicture().id()));
                 } else {
-                    // Sinon, c'est une nouvelle image
+                    // Sinon, c'est une nouvelle image, elle doit être persistée
                     picture = pictureMapper.toEntity(pictureBlockDTO.getPicture());
+                    picture = pictureRepository.save(picture); // RE-ADD THIS LINE: Persist the new Picture
                 }
             }
             

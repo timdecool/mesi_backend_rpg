@@ -12,7 +12,7 @@ import lombok.Setter;
 public class PictureBlock extends Block {
     private String label;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     private Picture picture;
 
     public PictureBlock(String label, Picture picture, ModuleVersion moduleVersion, String title, Integer blockOrder, String type, User creator) {
