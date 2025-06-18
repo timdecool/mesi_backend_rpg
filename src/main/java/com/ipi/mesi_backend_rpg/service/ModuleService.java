@@ -156,4 +156,9 @@ public class ModuleService {
         return moduleRepository.findMostCommentedModules(PageRequest.of(page, limit))
                 .stream().map(moduleMapper::toDTO).collect(Collectors.toList());
     }
+
+    public List<ModuleResponseDTO> getMostRatedModules(int page, int limit) {
+        return moduleRepository.findMostRatedModules(PageRequest.of(page, limit))
+                .stream().map(moduleMapper::toDTO).collect(Collectors.toList());
+    }
 }

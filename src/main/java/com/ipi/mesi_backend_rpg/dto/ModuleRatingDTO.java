@@ -1,12 +1,14 @@
 package com.ipi.mesi_backend_rpg.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public record ModuleRatingDTO(
         Long id,
+        @NotNull
         Long moduleId,
         Long moduleVersionId,
         UserDTO user,

@@ -22,6 +22,7 @@ public class UserSubscriptionService {
     private final UserRepository userRepository;
     private final UserSubscriptionMapper userSubscriptionMapper;
     private final UserService userService;
+    private final NotificationService notificationService; // Inject NotificationService
 
     @Transactional
     public UserSubscriptionDTO subscribe(Long subscribedToUserId) {
@@ -39,6 +40,17 @@ public class UserSubscriptionService {
 
         UserSubscription subscription = new UserSubscription(subscriber, subscribedTo);
         UserSubscription saved = userSubscriptionRepository.save(subscription);
+
+        // Notify the subscribedTo user
+        String content = subscriber.getUsername() + " s'est abonné à votre profil.";
+        notificationService.createNotification(
+                com.ipi.mesi_backend_rpg.model.NotificationType.MODULE_LIKE, // Using MODULE_LIKE as a generic "interaction" for now, consider adding a new type
+                content,
+                subscribedTo, // Recipient: the user being subscribed to
+                subscriber,   // Sender: the user who subscribed
+                null          // No specific module associated with a profile subscription
+        );
+
         return userSubscriptionMapper.toDTO(saved);
     }
 

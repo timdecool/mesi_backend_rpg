@@ -3,13 +3,20 @@ package com.ipi.mesi_backend_rpg.service;
 import com.ipi.mesi_backend_rpg.dto.AggregatedRatingsDTO;
 import com.ipi.mesi_backend_rpg.dto.ModuleRatingDTO;
 import com.ipi.mesi_backend_rpg.mapper.ModuleRatingMapper;
-import com.ipi.mesi_backend_rpg.model.*;
+import com.ipi.mesi_backend_rpg.model.ModuleRating;
 import com.ipi.mesi_backend_rpg.model.Module;
+import com.ipi.mesi_backend_rpg.model.ModuleVersion;
+import com.ipi.mesi_backend_rpg.model.NotificationType;
+import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.repository.ModuleRatingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -19,6 +26,7 @@ public class ModuleRatingService {
     private final ModuleRatingRepository moduleRatingRepository;
     private final ModuleRatingMapper moduleRatingMapper;
     private final UserService userService;
+    private final NotificationService notificationService; 
 
     public AggregatedRatingsDTO createRating(ModuleRatingDTO moduleRatingDTO) {
 
@@ -34,6 +42,17 @@ public class ModuleRatingService {
 
         moduleRating.setUser(user);
         ModuleRating saved = moduleRatingRepository.save(moduleRating);
+
+        // Notify the module creator when a new rating is added
+        String content = saved.getUser().getUsername() + " a ajouté une note de " + saved.getRating() + "/5 à votre module \"" + saved.getModule().getTitle() + "\".";
+        notificationService.createNotification(
+                NotificationType.REVIEW_ADDED, // Using REVIEW_ADDED as the notification type
+                content,
+                saved.getModule().getCreator(), // Recipient: The creator of the module
+                saved.getUser(), // Sender: The user who added the rating
+                saved.getModule() // Associated module
+        );
+
         return moduleRatingMapper.toAggregated(moduleRatingMapper.toDTO(saved));
     }
 
@@ -115,4 +134,15 @@ public class ModuleRatingService {
         );
     }
 
+    public Map<Long, List<ModuleRatingDTO>> findAllRatingsByModule(Module module) {
+        if (module == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found");
+        }
+
+        List<ModuleRating> allRatings = moduleRatingRepository.findAllByModule(module);
+        
+        return allRatings.stream()
+                .map(moduleRatingMapper::toDTO)
+                .collect(Collectors.groupingBy(ModuleRatingDTO::moduleVersionId));
+    }
 }

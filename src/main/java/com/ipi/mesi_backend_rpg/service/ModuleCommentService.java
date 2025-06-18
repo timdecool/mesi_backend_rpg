@@ -5,10 +5,12 @@ import com.ipi.mesi_backend_rpg.mapper.ModuleCommentMapper;
 import com.ipi.mesi_backend_rpg.model.Module;
 import com.ipi.mesi_backend_rpg.model.ModuleComment;
 import com.ipi.mesi_backend_rpg.model.ModuleVersion;
+import com.ipi.mesi_backend_rpg.model.NotificationType;
 import com.ipi.mesi_backend_rpg.repository.ModuleCommentRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
 import com.ipi.mesi_backend_rpg.repository.ModuleVersionRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ public class ModuleCommentService {
     private final UserService userService;
     private final ModuleRepository moduleRepository;
     private final ModuleVersionRepository moduleVersionRepository;
+    private final NotificationService notificationService;
 
     public ModuleCommentDTO findById(Long id) {
         ModuleComment moduleComment = moduleCommentRepository.findById(id)
@@ -34,13 +37,25 @@ public class ModuleCommentService {
 
     public ModuleCommentDTO createComment(ModuleCommentDTO moduleCommentDTO) {
         ModuleComment moduleComment = new ModuleComment();
-        moduleComment.setModule(moduleRepository.findById(moduleCommentDTO.moduleId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found")));
+        Module module = moduleRepository.findById(moduleCommentDTO.moduleId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
+        moduleComment.setModule(module);
         moduleComment.setModuleVersion(moduleVersionRepository.findById(moduleCommentDTO.moduleVersionId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ModuleVersion not found")));
         moduleComment.setComment(moduleCommentDTO.comment());
         moduleComment.setUser(userService.getAuthenticatedUser());
         ModuleComment saved = moduleCommentRepository.save(moduleComment);
+
+        // Notify the module creator
+        String content = moduleComment.getUser().getUsername() + " a commenté votre module \"" + module.getTitle() + "\".";
+        notificationService.createNotification(
+                NotificationType.MODULE_COMMENT,
+                content,
+                module.getCreator(), // Recipient: the creator of the module
+                moduleComment.getUser(), // Sender: the user who commented
+                module // Module associated with the comment
+        );
+
         return moduleCommentMapper.toDTO(saved);
     }
 

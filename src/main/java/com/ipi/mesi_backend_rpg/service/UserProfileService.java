@@ -180,6 +180,4 @@ public class UserProfileService {
 
         return userProfile.getProfileViews();
     }
-
-
 }

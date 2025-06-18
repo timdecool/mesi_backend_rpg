@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.ipi.mesi_backend_rpg.configuration.FirebaseAuthenticationFilter;
 import com.ipi.mesi_backend_rpg.dto.UserDTO;
+import com.ipi.mesi_backend_rpg.exeptions.EmailAlreadyExistsException;
 import com.ipi.mesi_backend_rpg.mapper.UserMapper;
 import com.ipi.mesi_backend_rpg.model.User;
 import com.ipi.mesi_backend_rpg.model.UserFolder;
@@ -35,6 +36,9 @@ public class UserService {
     private final UserProfileRepository userProfileRepository;
 
     public UserDTO createUser(UserDTO userDTO) {
+        if (userRepository.findByEmail(userDTO.email()).isPresent()) {
+            throw new EmailAlreadyExistsException("L'adresse e-mail " + userDTO.email() + " est déjà utilisée.");
+        }
         User user = userMapper.toEntity(userDTO);
         userRepository.save(user);
         UserFolder userDefaultFolder = new UserFolder(

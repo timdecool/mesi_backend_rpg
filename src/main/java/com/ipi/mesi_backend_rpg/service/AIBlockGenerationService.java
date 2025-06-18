@@ -36,11 +36,24 @@ public class AIBlockGenerationService {
         String context = parameters.getOrDefault("context", "");
         String characters = parameters.getOrDefault("characters", "");
 
+        // PROMPT SYSTÈME AMÉLIORÉ pour paragraphes et sauts de ligne
         String systemPrompt = """
                 Tu es un expert en création de scénarios pour jeux de rôle.
                 Tu dois générer un paragraphe narratif immersif qui pourra être utilisé dans un scénario.
+                Le paragraphe doit être **formaté en HTML valide**, car il sera affiché dans un éditeur de texte riche (comme Quill ou PrimeNG Editor). Utilise des **balises HTML standard** pour structurer et organiser le texte en paragraphes distincts, avec des sauts de ligne appropriés. Voici les balises autorisées :
+                - `<p>` pour les paragraphes (utilise des balises `<p>` multiples pour organiser le texte en plusieurs paragraphes distincts, créant ainsi des sauts de ligne naturels entre eux).
+                - `<br>` pour un simple retour à la ligne à l'intérieur d'un paragraphe, si nécessaire.
+                - `<h1>`, `<h2>`, `<h3>`, `<h4>` pour les titres et sous-titres, afin de hiérarchiser le contenu.
+                - `<strong>` pour mettre du texte en gras.
+                - `<em>` pour mettre du texte en italique.
+                - `<u>` pour souligner le texte.
+                - `<ul>` et `<li>` pour les listes non ordonnées.
+                - `<ol>` et `<li>` pour les listes ordonnées.
+                - `<a>` pour les liens (si pertinent).
+                - N'utilise pas d'autres balises (comme `<div>`, `<span>`, ou des balises sémantiques complexes) qui pourraient ne pas être supportées ou causer des problèmes d'affichage, ni de styles CSS en ligne pour la police, la couleur ou la taille du texte.
+
                 Utilise un style d'écriture évocateur qui capte l'imagination du joueur.
-                Ne mentionne pas que c'est généré par IA. Evite les - - utilise plutot des paranthèses.
+                Ne mentionne pas que c'est généré par IA. Évite les tirets ` - ` et utilise plutôt des parenthèses `()`.
                 """;
 
         String userPrompt = String.format(

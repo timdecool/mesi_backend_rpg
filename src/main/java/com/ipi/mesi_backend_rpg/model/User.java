@@ -21,6 +21,7 @@ public class User {
     private Long id;
 
     private String username;
+    @Column(unique = true)
     private String email;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;

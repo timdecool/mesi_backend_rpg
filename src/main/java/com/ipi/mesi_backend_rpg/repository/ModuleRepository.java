@@ -23,7 +23,7 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
      *
      * @param query    La chaîne de caractères à rechercher.
      * @param pageable L'objet Pageable pour limiter le nombre de résultats (par
-     *                 exemple, les 30 premiers).
+     * exemple, les 30 premiers).
      * @return Une liste de modules correspondants.
      */
     @Query("SELECT m FROM Module m WHERE LOWER(m.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(m.description) LIKE LOWER(CONCAT('%', :query, '%'))")
@@ -55,4 +55,16 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
     List<Module> findMostCommentedModules(Pageable pageable);
 
     List<Module> findAllByCreator_Id(Long creatorId);
+
+    @Query("""
+            SELECT m FROM Module m
+            JOIN ModuleRating mr ON mr.module = m
+            WHERE EXISTS (
+                SELECT mv FROM ModuleVersion mv
+                WHERE mv.module = m AND mv.published = true
+            )
+            GROUP BY m
+            ORDER BY AVG(mr.rating) DESC
+            """)
+    List<Module> findMostRatedModules(Pageable pageable);
 }

@@ -67,6 +67,15 @@ public class ModuleController {
         return new ResponseEntity<>(moduleService.getMostRecentModules(page, limit), HttpStatus.OK);
     }
 
+    // Nouvelle route pour récupérer les modules les mieux notés
+    @GetMapping("/most-rated")
+    public ResponseEntity<List<ModuleResponseDTO>> getMostRatedModules(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        return new ResponseEntity<>(moduleService.getMostRatedModules(page, limit), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ModuleResponseDTO> createModule(@Valid @RequestBody ModuleRequestDTO moduleRequestDTO) {
         ModuleResponseDTO module = moduleService.createModule(moduleRequestDTO);

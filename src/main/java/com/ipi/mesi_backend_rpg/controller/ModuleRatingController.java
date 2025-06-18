@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/ratings")
 public class ModuleRatingController {
@@ -61,4 +64,10 @@ public class ModuleRatingController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/module/{moduleId}/all")
+    public ResponseEntity<Map<Long, List<ModuleRatingDTO>>> getAllModuleRatingsGroupedByVersion(
+            @PathVariable("moduleId") Module module) {
+        Map<Long, List<ModuleRatingDTO>> allRatings = moduleRatingService.findAllRatingsByModule(module);
+        return new ResponseEntity<>(allRatings, HttpStatus.OK);
+    }
 }

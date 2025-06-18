@@ -1,8 +1,11 @@
+// mesi_backend_rpg/src/main/java/com/ipi/mesi_backend_rpg/configuration/FirebaseAuthenticationFilter.java
 package com.ipi.mesi_backend_rpg.configuration;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.ipi.mesi_backend_rpg.exeptions.InvalidCredentialsException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +22,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Component
 public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
@@ -48,7 +52,9 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (FirebaseAuthException e) {
+                // Plutôt que de simplement vider le contexte, vous pouvez lancer une exception personnalisée
                 SecurityContextHolder.clearContext();
+                throw new InvalidCredentialsException("Token d'authentification invalide ou expiré."); // Ou 'e.getMessage()' si vous préférez
             }
         }
         filterChain.doFilter(request, response);
