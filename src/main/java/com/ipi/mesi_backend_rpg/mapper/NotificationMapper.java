@@ -17,6 +17,14 @@ public class NotificationMapper {
             senderUsername = notification.getSender().getUsername();
         }
         
+        Long moduleId = null;
+        String moduleTitle = null;
+        
+        if (notification.getModule() != null) {
+            moduleId = notification.getModule().getId();
+            moduleTitle = notification.getModule().getTitle();
+        }
+        
         return new NotificationDTO(
             notification.getId(),
             notification.getType(),
@@ -26,8 +34,8 @@ public class NotificationMapper {
             notification.getRecipient().getId(),
             senderId,
             senderUsername,
-            notification.getModule().getId(),
-            notification.getModule().getTitle()
+            moduleId,
+            moduleTitle
         );
     }
 }
