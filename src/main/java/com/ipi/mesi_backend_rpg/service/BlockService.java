@@ -90,69 +90,67 @@ public class BlockService {
         blockRepository.delete(block);
     }
 
-   @Transactional
-public void synchronizeBlocks(Long targetModuleVersionId, List<BlockDTO> incomingBlockDTOs) {
-    if (targetModuleVersionId == null) {
-        throw new IllegalArgumentException("Target ModuleVersionId cannot be null.");
-    }
-    ModuleVersion moduleVersion = moduleVersionRepository.findById(targetModuleVersionId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Target ModuleVersion with id " + targetModuleVersionId + " not found."));
-
-    List<BlockDTO> dtosToProcess = (incomingBlockDTOs == null) ? new ArrayList<>() : incomingBlockDTOs;
-
-    // Map of current blocks in the DB by their ID
-    Map<Long, Block> currentDbBlocksMap = blockRepository.findAllByModuleVersion(moduleVersion).stream()
-            .collect(Collectors.toMap(Block::getId, Function.identity())); //
-
-    // Set of IDs from the incoming DTOs that represent existing blocks (have an ID)
-    Set<Long> incomingDtoIds = dtosToProcess.stream()
-            .map(BlockDTO::getId)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toSet());
-
-    List<Block> blocksToSave = new ArrayList<>();
-
-    for (BlockDTO dto : dtosToProcess) {
-        if (dto.getId() != null) {
-            // This DTO represents an existing block
-            Block existingBlock = currentDbBlocksMap.get(dto.getId());
-            if (existingBlock != null) {
-                // Update the existing block
-                blockMapper.updateBlockFromDTO(dto, existingBlock);
-                existingBlock.setUpdatedAt(LocalDate.now());
-                blocksToSave.add(existingBlock);
-            } else {
-                // This is an incoming DTO with an ID that doesn't exist in the DB for this version.
-                // This indicates a potential data inconsistency or an attempt to update a non-existent block.
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Block with ID " + dto.getId() + " not found in DB for module version "
-                                + targetModuleVersionId + " during synchronization.");
-            }
-        } else {
-            // This DTO represents a new block
-            Block newBlock = blockMapper.toEntity(dto);
-            newBlock.setModuleVersion(moduleVersion); // Ensure it's linked to the correct version
-            newBlock.setCreator(userService.getAuthenticatedUser());
-            newBlock.setCreatedAt(LocalDate.now());
-            newBlock.setUpdatedAt(LocalDate.now());
-            blocksToSave.add(newBlock);
+    @Transactional // This transaction will manage all changes
+    public void synchronizeBlocks(Long targetModuleVersionId, List<BlockDTO> incomingBlockDTOs) {
+        if (targetModuleVersionId == null) {
+            throw new IllegalArgumentException("Target ModuleVersionId cannot be null.");
         }
+
+        ModuleVersion moduleVersion = moduleVersionRepository.findById(targetModuleVersionId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Target ModuleVersion with id " + targetModuleVersionId + " not found."));
+
+        List<BlockDTO> dtosToProcess = (incomingBlockDTOs == null) ? new ArrayList<>() : incomingBlockDTOs;
+
+        // Create a mutable copy of the existing blocks from the ModuleVersion entity
+        // IMPORTANT: Ensure moduleVersion.getBlocks() is initialized before calling stream()
+        List<Block> currentBlocksInDb = new ArrayList<>(moduleVersion.getBlocks());
+
+        // Map existing blocks by ID for efficient lookup during updates
+        Map<Long, Block> currentDbBlocksMap = currentBlocksInDb.stream()
+                .filter(Objects::nonNull) // Filter out any null elements if they exist (shouldn't if data is clean)
+                .collect(Collectors.toMap(Block::getId, Function.identity()));
+
+        // Prepare a list to hold the blocks for the updated moduleVersion.blocks collection
+        List<Block> newBlocksCollection = new ArrayList<>();
+
+        for (BlockDTO dto : dtosToProcess) {
+            if (dto.getId() != null) {
+                // This DTO represents an existing block - attempt to update
+                Block existingBlock = currentDbBlocksMap.get(dto.getId());
+                if (existingBlock != null) {
+                    // Update the existing block entity
+                    blockMapper.updateBlockFromDTO(dto, existingBlock);
+                    existingBlock.setUpdatedAt(LocalDate.now());
+                    newBlocksCollection.add(existingBlock); // Add the updated entity to the new collection
+                } else {
+                    // DTO with an ID that doesn't exist in DB for this version (error)
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "Block with ID " + dto.getId() + " not found in DB for module version "
+                                    + targetModuleVersionId + " during synchronization.");
+                }
+            } else {
+                // This DTO represents a new block - create and add
+                Block newBlock = blockMapper.toEntity(dto); // Creates a transient new Block
+                newBlock.setModuleVersion(moduleVersion); // Link to the current module version
+                newBlock.setCreator(userService.getAuthenticatedUser()); // Set creator
+                newBlock.setCreatedAt(LocalDate.now());
+                newBlock.setUpdatedAt(LocalDate.now());
+                newBlocksCollection.add(newBlock); // Add the new transient entity to the new collection
+            }
+        }
+
+        // Now, update the actual collection on the managed ModuleVersion entity.
+        // Hibernate's orphanRemoval=true on ModuleVersion.blocks will handle deletions
+        // for blocks present in currentBlocksInDb but not in newBlocksCollection.
+        moduleVersion.getBlocks().clear(); // Clear existing collection
+        moduleVersion.getBlocks().addAll(newBlocksCollection); // Add all updated/new blocks
+
+        // No need to explicitly save blocksToSave or call deleteBlock here.
+        // The ModuleVersion entity is already managed. When the transaction commits,
+        // Hibernate will detect changes to its 'blocks' collection and apply them.
+        // This includes deleting "orphaned" blocks.
     }
-
-    // Identify blocks in the database that are no longer in the incoming DTOs (to be deleted)
-    Set<Long> dbIdsToDelete = currentDbBlocksMap.keySet().stream()
-            .filter(dbId -> !incomingDtoIds.contains(dbId))
-            .collect(Collectors.toSet());
-
-    // Perform deletions
-    for (Long idToDelete : dbIdsToDelete) {
-        deleteBlock(idToDelete);
-    }
-
-    // Save all created/updated blocks in a batch (Hibernate will manage inserts/updates)
-    blockRepository.saveAll(blocksToSave);
-}
 
     public void createOrUpdateBlocks(List<BlockDTO> blockDTOs) {
         for (BlockDTO blockDTO : blockDTOs) {
