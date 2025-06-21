@@ -28,12 +28,20 @@ public class TagService {
 
     @Transactional
     public TagResponseDTO createTag(TagRequestDTO tagDTO) {
-        // Créer le nouveau tag
-        Tag tag = new Tag();
-        tag.setName(tagDTO.name());
-
-        // Sauvegarder le tag
-        Tag savedTag = tagRepository.save(tag);
+        // Vérifier si un tag avec ce nom existe déjà
+        Tag existingTag = tagRepository.findByName(tagDTO.name());
+        Tag savedTag;
+        
+        if (existingTag != null) {
+            // Utiliser le tag existant
+            savedTag = existingTag;
+        } else {
+            // Créer le nouveau tag
+            Tag tag = new Tag();
+            tag.setName(tagDTO.name());
+            // Sauvegarder le tag
+            savedTag = tagRepository.save(tag);
+        }
 
         // Associer aux modules si spécifiés
         if (tagDTO.moduleIds() != null && !tagDTO.moduleIds().isEmpty()) {
@@ -66,11 +74,19 @@ public class TagService {
 
     @Transactional
     public TagResponseDTO createTagFromRequest(TagRequestDTO requestDTO) {
-        // Convertir le DTO en entité
-        Tag tag = tagMapper.toEntityFromRequest(requestDTO);
-
-        // Sauvegarder l'entité
-        Tag savedTag = tagRepository.save(tag);
+        // Vérifier si un tag avec ce nom existe déjà
+        Tag existingTag = tagRepository.findByName(requestDTO.name());
+        Tag savedTag;
+        
+        if (existingTag != null) {
+            // Utiliser le tag existant
+            savedTag = existingTag;
+        } else {
+            // Convertir le DTO en entité
+            Tag tag = tagMapper.toEntityFromRequest(requestDTO);
+            // Sauvegarder l'entité
+            savedTag = tagRepository.save(tag);
+        }
 
         // Convertir l'entité sauvegardée en DTO de réponse
         return tagMapper.toResponseDTO(savedTag);
@@ -96,6 +112,15 @@ public class TagService {
         Tag tag = tagRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tag not found with id: " + id));
 
+        // Vérifier si le nouveau nom existe déjà (sauf pour le tag courant)
+        if (!tag.getName().equals(requestDTO.name())) {
+            Tag existingTag = tagRepository.findByName(requestDTO.name());
+            if (existingTag != null && !existingTag.getId().equals(id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, 
+                    "A tag with the name '" + requestDTO.name() + "' already exists");
+            }
+        }
+        
         // Mettre à jour le nom
         tag.setName(requestDTO.name());
 

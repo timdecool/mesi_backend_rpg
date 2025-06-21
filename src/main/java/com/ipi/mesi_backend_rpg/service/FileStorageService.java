@@ -104,6 +104,7 @@ public class FileStorageService {
                 .setContentType(file.getContentType())
                 .build();
 
+        @SuppressWarnings("unused")
         Blob blob = storage.create(blobInfo, file.getBytes());
         String publicUrl = String.format("https://firebasestorage.googleapis.com/v0/b/%s/o/%s?alt=media",
                 bucketName,
