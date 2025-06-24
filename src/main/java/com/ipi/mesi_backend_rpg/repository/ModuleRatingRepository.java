@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ModuleRatingRepository extends JpaRepository<ModuleRating, Long> {
 
+    @Query("SELECT r FROM ModuleRating r WHERE r.module.id = :moduleId AND r.user.id = :userId ORDER BY r.updatedAt DESC LIMIT 1")
     ModuleRating findModuleRatingByModuleIdAndUserId(Long moduleId, Long userId);
     ModuleRating findModuleRatingByModuleVersionIdAndUserId(Long moduleVersionId, Long userId);
     int  countByModuleId(Long moduleId);

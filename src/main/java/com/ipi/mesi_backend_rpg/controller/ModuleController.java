@@ -103,4 +103,10 @@ public class ModuleController {
         List<ModuleResponseDTO> modules = moduleService.searchModules(query);
         return new ResponseEntity<>(modules, HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/duplicate")
+    public ResponseEntity<ModuleResponseDTO> duplicateModule(@PathVariable Long id) {
+        ModuleResponseDTO duplicatedModule = moduleService.duplicateModule(id);
+        return new ResponseEntity<>(duplicatedModule, HttpStatus.CREATED);
+    }
 }

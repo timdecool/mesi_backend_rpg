@@ -161,4 +161,108 @@ public class ModuleService {
         return moduleRepository.findMostRatedModules(PageRequest.of(page, limit))
                 .stream().map(moduleMapper::toDTO).collect(Collectors.toList());
     }
+
+    @Transactional
+    public ModuleResponseDTO duplicateModule(Long moduleId) {
+        Module originalModule = moduleRepository.findById(moduleId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module not found"));
+        
+        User currentUser = userService.getAuthenticatedUser();
+        
+        Module duplicatedModule = new Module();
+        duplicatedModule.setTitle(originalModule.getTitle() + " (Copie)");
+        duplicatedModule.setDescription(originalModule.getDescription());
+        duplicatedModule.setIsTemplate(originalModule.getIsTemplate());
+        duplicatedModule.setType(originalModule.getType());
+        duplicatedModule.setCreator(currentUser);
+        duplicatedModule.setCreatedAt(LocalDateTime.now());
+        duplicatedModule.setUpdatedAt(LocalDateTime.now());
+        
+        if (originalModule.getPicture() != null) {
+            Picture duplicatedPicture = new Picture();
+            duplicatedPicture.setTitle(originalModule.getPicture().getTitle());
+            duplicatedPicture.setSrc(originalModule.getPicture().getSrc());
+            duplicatedPicture.setCreatedAt(LocalDateTime.now());
+            duplicatedPicture.setUpdatedAt(LocalDateTime.now());
+            duplicatedModule.setPicture(duplicatedPicture);
+        }
+        
+        GameSystem gameSystem = gameSystemRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("Default gameSystem not found"));
+        
+        ModuleVersion initialModuleVersion = new ModuleVersion();
+        initialModuleVersion.setVersion(1);
+        initialModuleVersion.setCreator(currentUser);
+        initialModuleVersion.setPublished(false);
+        initialModuleVersion.setGameSystem(gameSystem);
+        initialModuleVersion.setLanguage("");
+        initialModuleVersion.setModule(duplicatedModule);
+        
+        for (ModuleVersion originalVersion : originalModule.getVersions()) {
+            if (originalVersion.getBlocks() != null) {
+                for (Block originalBlock : originalVersion.getBlocks()) {
+                    Block duplicatedBlock = duplicateBlock(originalBlock);
+                    duplicatedBlock.setModuleVersion(initialModuleVersion);
+                    initialModuleVersion.addBlock(duplicatedBlock);
+                }
+            }
+        }
+        
+        duplicatedModule.addVersion(initialModuleVersion);
+        
+        ModuleAccess initialModuleAccess = new ModuleAccess();
+        initialModuleAccess.setUser(currentUser);
+        initialModuleAccess.setCanEdit(true);
+        initialModuleAccess.setCanView(true);
+        initialModuleAccess.setCanPublish(true);
+        initialModuleAccess.setCanInvite(true);
+        initialModuleAccess.setModule(duplicatedModule);
+        duplicatedModule.addAccess(initialModuleAccess);
+        
+        Module savedModule = moduleRepository.save(duplicatedModule);
+        return moduleMapper.toDTO(savedModule);
+    }
+    
+    private Block duplicateBlock(Block originalBlock) {
+        Block duplicatedBlock;
+        
+        if (originalBlock instanceof ParagraphBlock) {
+            ParagraphBlock originalParagraph = (ParagraphBlock) originalBlock;
+            ParagraphBlock duplicatedParagraph = new ParagraphBlock();
+            duplicatedParagraph.setParagraph(originalParagraph.getParagraph());
+            duplicatedParagraph.setStyle(originalParagraph.getStyle());
+            duplicatedBlock = duplicatedParagraph;
+        } else if (originalBlock instanceof PictureBlock) {
+            PictureBlock originalPicture = (PictureBlock) originalBlock;
+            PictureBlock duplicatedPicture = new PictureBlock();
+            duplicatedPicture.setLabel(originalPicture.getLabel());
+            if (originalPicture.getPicture() != null) {
+                Picture newPicture = new Picture();
+                newPicture.setTitle(originalPicture.getPicture().getTitle());
+                newPicture.setSrc(originalPicture.getPicture().getSrc());
+                duplicatedPicture.setPicture(newPicture);
+            }
+            duplicatedBlock = duplicatedPicture;
+        } else if (originalBlock instanceof MusicBlock) {
+            MusicBlock originalMusic = (MusicBlock) originalBlock;
+            MusicBlock duplicatedMusic = new MusicBlock();
+            duplicatedMusic.setLabel(originalMusic.getLabel());
+            duplicatedMusic.setSrc(originalMusic.getSrc());
+            duplicatedBlock = duplicatedMusic;
+        } else if (originalBlock instanceof StatBlock) {
+            StatBlock originalStat = (StatBlock) originalBlock;
+            StatBlock duplicatedStat = new StatBlock();
+            duplicatedStat.setStatRules(originalStat.getStatRules());
+            duplicatedStat.setStatValues(originalStat.getStatValues());
+            duplicatedBlock = duplicatedStat;
+        } else {
+            duplicatedBlock = new Block();
+        }
+        
+        duplicatedBlock.setTitle(originalBlock.getTitle());
+        duplicatedBlock.setBlockOrder(originalBlock.getBlockOrder());
+        duplicatedBlock.setType(originalBlock.getType());
+        
+        return duplicatedBlock;
+    }
 }

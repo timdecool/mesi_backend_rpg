@@ -36,8 +36,10 @@ public class BlockMapper {
                     userMapper.toDTO(paragraphBlock.getCreator()));
         }
         if (block instanceof IntegratedModuleBlock integratedModuleBlock) {
+            Long moduleId = integratedModuleBlock.getModule() != null ? 
+                integratedModuleBlock.getModule().getId() : null;
             return new IntegratedModuleBlockDTO(
-                    integratedModuleBlock.getModule().getId(),
+                    moduleId,
                     integratedModuleBlock.getId(),
                     integratedModuleBlock.getModuleVersion().getId(),
                     integratedModuleBlock.getTitle(),
@@ -96,8 +98,11 @@ public class BlockMapper {
             statBlock.setStatRules(statDTO.getStatRules());
             statBlock.setStatValues(statDTO.getStatValues());
         } else if (entity instanceof IntegratedModuleBlock integratedBlock && dto instanceof IntegratedModuleBlockDTO integratedDTO) {
-            Module module = moduleRepository.findById(integratedDTO.getModuleId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module for IntegratedModuleBlock not found"));
+            Module module = null;
+            if (integratedDTO.getModuleId() != null) {
+                module = moduleRepository.findById(integratedDTO.getModuleId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Module for IntegratedModuleBlock not found"));
+            }
             integratedBlock.setModule(module);
         } else if (entity instanceof PictureBlock pictureBlock && dto instanceof PictureBlockDTO pictureDTO) {
             pictureBlock.setLabel(pictureDTO.getLabel());
@@ -141,6 +146,10 @@ public class BlockMapper {
         }
 
         if (blockDTO instanceof IntegratedModuleBlockDTO integratedModuleBlockDTO) {
+            Module module = null;
+            if (integratedModuleBlockDTO.getModuleId() != null) {
+                module = moduleRepository.findById(integratedModuleBlockDTO.getModuleId()).orElse(null);
+            }
             return new IntegratedModuleBlock(
                     moduleVersionRepository.findById(integratedModuleBlockDTO.getModuleVersionId())
                             .orElseThrow(() -> new IllegalArgumentException(
@@ -149,7 +158,7 @@ public class BlockMapper {
                     integratedModuleBlockDTO.getBlockOrder(),
                     "block",
                     userRepository.findById(integratedModuleBlockDTO.getCreator().id()).orElse(null),
-                    moduleRepository.findById(integratedModuleBlockDTO.getModuleId()).orElse(null));
+                    module);
         }
 
         if (blockDTO instanceof StatBlockDTO statBlockDTO) {

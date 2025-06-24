@@ -70,4 +70,12 @@ public class ModuleVersion {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
+
+    public void addBlock(Block block) {
+        if (this.blocks == null) {
+            this.blocks = new java.util.ArrayList<>();
+        }
+        this.blocks.add(block);
+        block.setModuleVersion(this);
+    }
 }

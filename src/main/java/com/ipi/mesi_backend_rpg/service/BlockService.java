@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -100,6 +101,9 @@ public class BlockService {
                         "Target ModuleVersion with id " + targetModuleVersionId + " not found."));
 
         List<BlockDTO> dtosToProcess = (incomingBlockDTOs == null) ? new ArrayList<>() : incomingBlockDTOs;
+        
+        // Sort DTOs by blockOrder to ensure correct order processing
+        dtosToProcess.sort(Comparator.comparing(BlockDTO::getBlockOrder, Comparator.nullsLast(Comparator.naturalOrder())));
 
         // Create a mutable copy of the existing blocks from the ModuleVersion entity
         // IMPORTANT: Ensure moduleVersion.getBlocks() is initialized before calling stream()
@@ -139,6 +143,9 @@ public class BlockService {
             }
         }
 
+        // Sort the final collection by blockOrder to ensure correct order
+        newBlocksCollection.sort(Comparator.comparing(Block::getBlockOrder, Comparator.nullsLast(Comparator.naturalOrder())));
+        
         // Now, update the actual collection on the managed ModuleVersion entity.
         // Hibernate's orphanRemoval=true on ModuleVersion.blocks will handle deletions
         // for blocks present in currentBlocksInDb but not in newBlocksCollection.

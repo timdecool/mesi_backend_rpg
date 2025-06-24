@@ -27,6 +27,12 @@ public class ModuleVersionMapper {
         List<BlockDTO> blockDTOs = new ArrayList<>();
         if (moduleVersion.getBlocks() != null) {
         blockDTOs = moduleVersion.getBlocks().stream()
+                        .sorted((b1, b2) -> {
+                            if (b1.getBlockOrder() == null && b2.getBlockOrder() == null) return 0;
+                            if (b1.getBlockOrder() == null) return 1;
+                            if (b2.getBlockOrder() == null) return -1;
+                            return b1.getBlockOrder().compareTo(b2.getBlockOrder());
+                        })
                         .map(blockMapper::toDTO)
                         .collect(Collectors.toList());
         }

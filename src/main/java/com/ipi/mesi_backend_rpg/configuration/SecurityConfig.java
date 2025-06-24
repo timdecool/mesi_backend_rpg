@@ -32,9 +32,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/public/**", "/ws/**").permitAll()
-                        .requestMatchers("/api/modules", "/api/modules/*/", "/api/modules/search/*", "/api/modules/most-commented", "/api/modules/most-saved", "/api/modules/most-recent").permitAll()
+                        .requestMatchers("/api/modules", "/api/modules/*/","/api/modules/*", "/api/modules/search/*", "/api/modules/most-commented","/api/modules/most-rated", "/api/modules/most-saved", "/api/modules/most-recent").permitAll()
                         .requestMatchers("/api/user-profile/user/*").permitAll()
-                        .requestMatchers("/api/comments/module/*").permitAll()
+                        .requestMatchers("/api/comments/module/*", "/api/comments/version/*").permitAll()
+                        .requestMatchers("/api/ratings/", "/api/ratings/module/*/all", "/api/ratings/module/*", "/api/ratings/version/*").permitAll()
+                        .requestMatchers("/api/tags/module/*", "/api/tags/most-used").permitAll()
+                        .requestMatchers("/api/versions/*", "/api/tags/most-used").permitAll()
+                        .requestMatchers("/api/game-system").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
