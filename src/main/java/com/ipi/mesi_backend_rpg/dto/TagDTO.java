@@ -6,7 +6,7 @@ import java.util.List;
 
 public record TagDTO(
                 Long id,
-                String name,
-                List<Module> modules) {
+                String name
+) {
 
 }

@@ -1,8 +1,6 @@
 package com.ipi.mesi_backend_rpg.mapper;
 
-import com.ipi.mesi_backend_rpg.dto.TagDTO;
-import com.ipi.mesi_backend_rpg.dto.TagRequestDTO;
-import com.ipi.mesi_backend_rpg.dto.TagResponseDTO;
+import com.ipi.mesi_backend_rpg.dto.*;
 import com.ipi.mesi_backend_rpg.dto.simpleDTO.SimpleModuleDTO;
 import com.ipi.mesi_backend_rpg.model.Tag;
 import com.ipi.mesi_backend_rpg.repository.ModuleRepository;
@@ -17,12 +15,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TagMapper {
     private final ModuleRepository moduleRepository;
-    
+
     public TagDTO toDTO(Tag tag) {
+
         return new TagDTO(
             tag.getId(),
-            tag.getName(),
-            tag.getModules()
+            tag.getName()
         );
     }
     
@@ -30,18 +28,18 @@ public class TagMapper {
         Tag tag = new Tag();
         tag.setName(tagDTO.name());
         
-        if (tagDTO.modules() != null && !tagDTO.modules().isEmpty()) {
-            List<Module> managedModules = new ArrayList<>();
-            for (Module moduleFromDto : tagDTO.modules()) {
-                // Récupérer les modules gérés depuis la base de données
-                Module managedModule = moduleRepository.findById(moduleFromDto.getId());
-                // Vérifier si le module existe avant de l'ajouter
-                if (managedModule != null) {
-                    managedModules.add(managedModule);
-                }
-            }
-            tag.setModules(managedModules);
-        }
+//        if (tagDTO.modules() != null && !tagDTO.modules().isEmpty()) {
+//            List<Module> managedModules = new ArrayList<>();
+//            for (Module moduleFromDto : tagDTO.modules()) {
+//                // Récupérer les modules gérés depuis la base de données
+//                Module managedModule = moduleRepository.findById(moduleFromDto.getId());
+//                // Vérifier si le module existe avant de l'ajouter
+//                if (managedModule != null) {
+//                    managedModules.add(managedModule);
+//                }
+//            }
+//            tag.setModules(managedModules);
+//        }
         return tag;
     }
     
